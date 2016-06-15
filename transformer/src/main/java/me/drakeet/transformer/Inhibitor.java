@@ -60,13 +60,9 @@ public class Inhibitor extends IntentService implements Updatable {
                 .thenCreateAtNow();
             AgeraBus.repository().accept(new NewInEvent(in));
         }
-    }
-
-
-    @Override public void onDestroy() {
-        super.onDestroy();
         repository.removeUpdatable(this);
     }
+
 }
 
 
