@@ -17,6 +17,7 @@ import java.util.List;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.CoreFragment;
 import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.MessageDispatcher;
 import me.drakeet.timemachine.TimeKey;
 
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity
     private DrawerLayout drawer;
     private List<Message> messages = new ArrayList<Message>(100) {
         {
-            add(new Message.Builder()
+            add(new SimpleMessage.Builder()
                 .setContent("Can I help you?")
                 .setFromUserId("transformer")
                 .setToUserId(TimeKey.userId)
@@ -55,6 +56,12 @@ public class MainActivity extends AppCompatActivity
     }
 
 
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        dispatcher.destroy();
+    }
+
+
     private void setupDrawerLayout(Toolbar toolbar) {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
@@ -72,7 +79,8 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
-            Message message = new Message.Builder().setContent("求王垠的最新文章")
+            SimpleMessage message = new SimpleMessage.Builder()
+                .setContent("求王垠的最新文章")
                 .setFromUserId(TimeKey.userId)
                 .setToUserId(MessageHandler.SELF)
                 .thenCreateAtNow();
@@ -139,16 +147,11 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override public void update() {
-        Message message = new Message.Builder().setContent("求王垠的最新文章")
+        SimpleMessage message = new SimpleMessage.Builder().setContent("求王垠的最新文章")
             .setFromUserId(TimeKey.userId)
             .setToUserId(MessageHandler.SELF)
             .thenCreateAtNow();
         dispatcher.addNewOut(message);
     }
 
-
-    @Override protected void onDestroy() {
-        super.onDestroy();
-        dispatcher.destroy();
-    }
 }

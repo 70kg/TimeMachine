@@ -23,7 +23,7 @@ import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
 import me.drakeet.agera.eventbus.AgeraBus;
-import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
 /**
@@ -53,7 +53,7 @@ public class Inhibitor extends IntentService implements Updatable {
 
     @Override public void update() {
         if (repository.get().succeeded()) {
-            Message in = new Message.Builder()
+            SimpleMessage in = new SimpleMessage.Builder()
                 .setContent(repository.get().get())
                 .setFromUserId(TAG)
                 .setToUserId(TimeKey.userId)

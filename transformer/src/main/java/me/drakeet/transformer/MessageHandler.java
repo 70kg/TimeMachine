@@ -7,6 +7,7 @@ import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.Now;
 import me.drakeet.timemachine.TimeKey;
 
@@ -43,9 +44,9 @@ public class MessageHandler extends BaseService implements Updatable {
 
 
     @Override public void onNewOut(Message message) {
-        switch (message.content) {
+        switch (message.getContent()) {
             case "滚":
-                addNewIn(new Message.Builder()
+                addNewIn(new SimpleMessage.Builder()
                     .setContent("但是...但是...")
                     .setFromUserId(SELF)
                     .setToUserId(TimeKey.userId)
@@ -57,7 +58,7 @@ public class MessageHandler extends BaseService implements Updatable {
                 break;
             default:
                 // echo
-                Message _message = message.clone();
+                SimpleMessage _message = ((SimpleMessage)message).clone();
                 _message.fromUserId = SELF;
                 _message.toUserId = TimeKey.userId;
                 _message.createdAt = new Now();
@@ -69,7 +70,7 @@ public class MessageHandler extends BaseService implements Updatable {
 
     @Override public void update() {
         repository.get().ifSucceededSendTo(value -> {
-            Message message = new Message.Builder()
+            SimpleMessage message = new SimpleMessage.Builder()
                 .setContent(value)
                 .setFromUserId(SELF)
                 .setToUserId(TimeKey.userId)

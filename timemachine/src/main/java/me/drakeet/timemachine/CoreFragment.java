@@ -147,7 +147,7 @@ public class CoreFragment extends Fragment
         if (id == R.id.left_action) {
             delegate.onLeftActionClick();
         } else if (id == R.id.right_action) {
-            Message message = new Message.Builder()
+            Message message = new SimpleMessage.Builder()
                 .setContent(input.getText().toString())
                 .setFromUserId(TimeKey.userId)
                 .setToUserId(null)
@@ -177,7 +177,7 @@ public class CoreFragment extends Fragment
 
 
     private void addMessage(Message message) {
-        if (message.content.isEmpty()) {
+        if (message.getContent().isEmpty()) {
             return;
         }
         int _size = messages.size();

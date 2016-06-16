@@ -32,13 +32,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
         Message data = list.get(position);
-        holder.content.setText(data.content);
+        holder.content.setText(data.getContent());
     }
 
 
     @Override public int getItemViewType(int position) {
         Message message = list.get(position);
-        if (TimeKey.isCurrentUser(message.fromUserId)) {
+        if (TimeKey.isCurrentUser(message.getFromUserId())) {
             return TYPE_OUT;
         } else {
             return TYPE_IN;

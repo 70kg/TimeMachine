@@ -2,22 +2,22 @@ package me.drakeet.transformer;
 
 import android.support.annotation.NonNull;
 import com.google.android.agera.Supplier;
-import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.SimpleMessage;
 
 /**
  * @author drakeet
  */
-public class NewInEvent implements Supplier<Message> {
+public class NewInEvent implements Supplier<SimpleMessage> {
 
-    @NonNull public final Message message;
+    @NonNull public final SimpleMessage message;
 
 
-    public NewInEvent(@NonNull Message in) {
+    public NewInEvent(@NonNull SimpleMessage in) {
         this.message = in;
     }
 
 
-    @NonNull @Override public Message get() {
+    @NonNull @Override public SimpleMessage get() {
         return message;
     }
 }
