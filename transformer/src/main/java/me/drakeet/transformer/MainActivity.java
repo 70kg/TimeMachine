@@ -1,6 +1,5 @@
 package me.drakeet.transformer;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
@@ -12,9 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import com.google.android.agera.Observable;
 import com.google.android.agera.Updatable;
-import com.google.android.agera.content.ContentObservables;
 import java.util.ArrayList;
 import java.util.List;
 import me.drakeet.timemachine.CoreContract;
@@ -81,9 +78,6 @@ public class MainActivity extends AppCompatActivity
                 .thenCreateAtNow();
             dispatcher.addNewOut(message);
         }
-        Observable observable = ContentObservables.broadcastObservable(this,
-            Intent.ACTION_USER_PRESENT);
-        observable.addUpdatable(this);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

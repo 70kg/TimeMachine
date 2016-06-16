@@ -69,7 +69,7 @@ public class Requests {
             .thenApply(matcher -> {
                 if (matcher.find()) {
                     return Result.success("为你找到最新的一篇文章是: \n" +
-                        matcher.group(2) + matcher.group(1));
+                        matcher.group(2) + "\n" + matcher.group(1));
                 } else {
                     return Result.absent();
                 }
