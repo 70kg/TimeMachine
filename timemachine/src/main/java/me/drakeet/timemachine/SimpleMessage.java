@@ -5,16 +5,12 @@ import java.util.Date;
 /**
  * @author drakeet
  */
-public class SimpleMessage implements Cloneable, Message {
+public class SimpleMessage implements Message<String> {
 
-    public String content;
-    public String fromUserId;
-    public String toUserId;
-    public Date createdAt;
-
-
-    public SimpleMessage() {
-    }
+    private final String content;
+    private final String fromUserId;
+    private final String toUserId;
+    private final Date createdAt;
 
 
     private SimpleMessage(String content, String fromUserId, String toUserId, Date createdAt) {
@@ -62,18 +58,6 @@ public class SimpleMessage implements Cloneable, Message {
             ", toUserId='" + toUserId + '\'' +
             ", createdAt=" + createdAt +
             '}';
-    }
-
-
-    @Override public SimpleMessage clone() {
-        SimpleMessage message = null;
-        try {
-            message = (SimpleMessage) super.clone();
-            message.createdAt = new Date(message.createdAt.getTime());
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return message;
     }
 
 

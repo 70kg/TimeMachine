@@ -5,9 +5,9 @@ import java.util.Date;
 /**
  * @author drakeet
  */
-public interface Message {
+public interface Message<T> {
 
-    String getContent();
+    T getContent();
     String getFromUserId();
     String getToUserId();
     Date getCreatedAt();

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -146,7 +147,7 @@ public class CoreFragment extends Fragment
         int id = v.getId();
         if (id == R.id.left_action) {
             delegate.onLeftActionClick();
-        } else if (id == R.id.right_action) {
+        } else if (id == R.id.right_action && !TextUtils.isEmpty(input.getText().toString())) {
             Message message = new SimpleMessage.Builder()
                 .setContent(input.getText().toString())
                 .setFromUserId(TimeKey.userId)
@@ -177,9 +178,6 @@ public class CoreFragment extends Fragment
 
 
     private void addMessage(Message message) {
-        if (message.getContent().isEmpty()) {
-            return;
-        }
         int _size = messages.size();
         messages.add(message);
         adapter.notifyItemInserted(_size);

@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
-        dispatcher = new MessageDispatcher(fragment, new MessageHandler(fragment));
+        dispatcher = new MessageDispatcher(fragment, new MessageService(fragment));
         dispatcher.start();
         transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
     }
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
             SimpleMessage message = new SimpleMessage.Builder()
                 .setContent("求王垠的最新文章")
                 .setFromUserId(TimeKey.userId)
-                .setToUserId(MessageHandler.SELF)
+                .setToUserId(MessageService.SELF)
                 .thenCreateAtNow();
             dispatcher.addNewOut(message);
         }
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity
     @Override public void update() {
         SimpleMessage message = new SimpleMessage.Builder().setContent("求王垠的最新文章")
             .setFromUserId(TimeKey.userId)
-            .setToUserId(MessageHandler.SELF)
+            .setToUserId(MessageService.SELF)
             .thenCreateAtNow();
         dispatcher.addNewOut(message);
     }

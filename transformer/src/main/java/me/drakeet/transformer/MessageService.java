@@ -8,21 +8,20 @@ import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
-import me.drakeet.timemachine.Now;
 import me.drakeet.timemachine.TimeKey;
 
 /**
  * @author drakeet
  */
-public class MessageHandler extends BaseService implements Updatable {
+public class MessageService extends BaseService implements Updatable {
 
-    public static final String SELF = MessageHandler.class.getSimpleName();
+    public static final String SELF = MessageService.class.getSimpleName();
 
     private Repository<Result<String>> repository;
     private Updatable newInEvent;
 
 
-    public MessageHandler(CoreContract.View view) {
+    public MessageService(CoreContract.View view) {
         super(view);
     }
 
@@ -43,7 +42,9 @@ public class MessageHandler extends BaseService implements Updatable {
     }
 
 
-    @Override public void onNewOut(Message message) {
+    @Override public void onNewOut(final Message _message) {
+        // TODO: 16/6/17 instanceof
+        SimpleMessage message = (SimpleMessage) _message;
         switch (message.getContent()) {
             case "滚":
                 addNewIn(new SimpleMessage.Builder()
@@ -58,11 +59,12 @@ public class MessageHandler extends BaseService implements Updatable {
                 break;
             default:
                 // echo
-                SimpleMessage _message = ((SimpleMessage)message).clone();
-                _message.fromUserId = SELF;
-                _message.toUserId = TimeKey.userId;
-                _message.createdAt = new Now();
-                addNewIn(_message);
+                SimpleMessage simpleMessage = new SimpleMessage.Builder()
+                    .setContent(message.getContent())
+                    .setFromUserId(SELF)
+                    .setToUserId(TimeKey.userId)
+                    .thenCreateAtNow();
+                addNewIn(simpleMessage);
                 break;
         }
     }
@@ -77,5 +79,6 @@ public class MessageHandler extends BaseService implements Updatable {
                 .thenCreateAtNow();
             addNewIn(message);
         });
+        repository.removeUpdatable(this);
     }
 }
