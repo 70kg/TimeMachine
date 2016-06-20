@@ -1,6 +1,8 @@
 # TimeMachine
 时空稳定装置
 
+It is still in its infancy. Change frequently.
+
 SDK:
 `/timemachine`
 
