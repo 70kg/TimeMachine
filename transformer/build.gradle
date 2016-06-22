@@ -2,14 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "24.0.0-rc4"
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode 10
+        versionName "0.0.10"
         jackOptions {
             enabled true
         }

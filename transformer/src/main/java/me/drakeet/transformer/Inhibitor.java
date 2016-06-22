@@ -26,6 +26,8 @@ import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
+import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
+
 /**
  * Created by drakeet on 16/6/13.
  */
@@ -42,27 +44,28 @@ public class Inhibitor extends IntentService implements Updatable {
 
 
     @Override protected void onHandleIntent(Intent intent) {
-        if (AgeraBus.repository().hasObservers()) {
-            repository = Requests.requestYinSync();
-            repository.addUpdatable(this);
-        } else {
-            // TODO: 16/6/14 Save the Message
-        }
+        repository = Requests.requestYinSync();
+        repository.addUpdatable(this);
     }
 
 
     @Override public void update() {
         if (repository.get().succeeded()) {
             SimpleMessage in = new SimpleMessage.Builder()
-                .setContent(repository.get().get())
-                .setFromUserId(TAG)
-                .setToUserId(TimeKey.userId)
-                .thenCreateAtNow();
-            AgeraBus.repository().accept(new NewInEvent(in));
+                    .setContent(repository.get().get())
+                    .setFromUserId(TAG)
+                    .setToUserId(TimeKey.userId)
+                    .thenCreateAtNow();
+            if (AgeraBus.repository().hasObservers()) {
+                AgeraBus.repository().accept(new NewInEvent(in));
+            } else {
+                // TODO: 16/6/22 Save the message
+            }
+            final SimpleMessagesStore store = messagesStore(getApplicationContext());
+            store.insert(in);
         }
         repository.removeUpdatable(this);
     }
-
 }
 
 

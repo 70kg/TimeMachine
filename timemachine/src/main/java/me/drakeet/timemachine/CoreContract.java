@@ -12,12 +12,14 @@ public interface CoreContract {
         void setService(Service service);
         void onNewIn(Message message);
         void onNewOut(Message message);
+        void notifyDataSetChanged();
     }
 
 
     interface Delegate {
         List<Message> provideInitialMessages();
         void onNewOut(Message message);
+        void onNewIn(Message message);
         void onMessageClick(Message message);
         void onMessageLongClick(Message message);
         boolean onLeftActionClick();

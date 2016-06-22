@@ -134,6 +134,7 @@ public class CoreFragment extends Fragment
 
     @Override public void onNewIn(Message message) {
         addMessage(message);
+        delegate.onNewIn(message);
     }
 
 
@@ -151,7 +152,7 @@ public class CoreFragment extends Fragment
             Message message = new SimpleMessage.Builder()
                 .setContent(input.getText().toString())
                 .setFromUserId(TimeKey.userId)
-                .setToUserId(null)
+                .setToUserId("")
                 .setCreatedAt(new Now())
                 .build();
             if (!delegate.onRightActionClick()) {
@@ -181,5 +182,10 @@ public class CoreFragment extends Fragment
         int _size = messages.size();
         messages.add(message);
         adapter.notifyItemInserted(_size);
+    }
+
+
+    @Override public void notifyDataSetChanged() {
+        adapter.notifyDataSetChanged();
     }
 }

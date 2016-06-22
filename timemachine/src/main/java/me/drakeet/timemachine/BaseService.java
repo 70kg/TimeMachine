@@ -24,4 +24,9 @@ public abstract class BaseService implements CoreContract.Service, Dispatcher {
         view.onNewOut(message);
         this.onNewOut(message);
     }
+
+
+    @Override public void notifyDataSetChanged() {
+        view.notifyDataSetChanged();
+    }
 }

@@ -10,6 +10,8 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
+import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
+
 /**
  * @author drakeet
  */
@@ -19,10 +21,12 @@ public class MessageService extends BaseService implements Updatable {
 
     private Repository<Result<String>> repository;
     private Updatable newInEvent;
+    private final SimpleMessagesStore store;
 
 
     public MessageService(CoreContract.View view) {
         super(view);
+        store = messagesStore(App.getContext());
     }
 
 
@@ -43,15 +47,17 @@ public class MessageService extends BaseService implements Updatable {
 
 
     @Override public void onNewOut(final Message _message) {
-        // TODO: 16/6/17 instanceof
-        SimpleMessage message = (SimpleMessage) _message;
+        if (!(_message instanceof SimpleMessage)) {
+            throw new IllegalArgumentException("Only supports SimpleMessage currently.");
+        }
+        final SimpleMessage message = (SimpleMessage) _message;
         switch (message.getContent()) {
             case "滚":
-                addNewIn(new SimpleMessage.Builder()
-                    .setContent("但是...但是...")
-                    .setFromUserId(SELF)
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow());
+                insertNewIn(new SimpleMessage.Builder()
+                        .setContent("但是...但是...")
+                        .setFromUserId(SELF)
+                        .setToUserId(TimeKey.userId)
+                        .thenCreateAtNow());
                 break;
             case "求王垠的最新文章":
                 repository = Requests.requestYinAsync();
@@ -59,25 +65,30 @@ public class MessageService extends BaseService implements Updatable {
                 break;
             default:
                 // echo
-                SimpleMessage simpleMessage = new SimpleMessage.Builder()
-                    .setContent(message.getContent())
-                    .setFromUserId(SELF)
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow();
-                addNewIn(simpleMessage);
+                insertNewIn(new SimpleMessage.Builder()
+                        .setContent(message.getContent())
+                        .setFromUserId(SELF)
+                        .setToUserId(TimeKey.userId)
+                        .thenCreateAtNow());
                 break;
         }
+        store.insert(message);
+    }
+
+
+    private void insertNewIn(SimpleMessage simpleMessage) {
+        addNewIn(simpleMessage);
+        store.insert(simpleMessage);
     }
 
 
     @Override public void update() {
         repository.get().ifSucceededSendTo(value -> {
-            SimpleMessage message = new SimpleMessage.Builder()
-                .setContent(value)
-                .setFromUserId(SELF)
-                .setToUserId(TimeKey.userId)
-                .thenCreateAtNow();
-            addNewIn(message);
+            insertNewIn(new SimpleMessage.Builder()
+                    .setContent(value)
+                    .setFromUserId(SELF)
+                    .setToUserId(TimeKey.userId)
+                    .thenCreateAtNow());
         });
         repository.removeUpdatable(this);
     }

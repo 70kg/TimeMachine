@@ -26,6 +26,11 @@ public class MessageDispatcher implements Dispatcher, LifeCycle {
     }
 
 
+    @Override public void notifyDataSetChanged() {
+        view.notifyDataSetChanged();
+    }
+
+
     @Override public void start() {
         service.start();
     }

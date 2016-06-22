@@ -11,18 +11,19 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.google.android.agera.Repository;
 import com.google.android.agera.Updatable;
+import me.drakeet.timemachine.*;
+
 import java.util.ArrayList;
 import java.util.List;
-import me.drakeet.timemachine.CoreContract;
-import me.drakeet.timemachine.CoreFragment;
-import me.drakeet.timemachine.Message;
-import me.drakeet.timemachine.SimpleMessage;
-import me.drakeet.timemachine.MessageDispatcher;
-import me.drakeet.timemachine.TimeKey;
+
+import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
 public class MainActivity extends AppCompatActivity
-    implements NavigationView.OnNavigationItemSelectedListener, CoreContract.Delegate, Updatable {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        CoreContract.Delegate,
+        Updatable {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -31,13 +32,14 @@ public class MainActivity extends AppCompatActivity
     private List<Message> messages = new ArrayList<Message>(100) {
         {
             add(new SimpleMessage.Builder()
-                .setContent("Can I help you?")
-                .setFromUserId("transformer")
-                .setToUserId(TimeKey.userId)
-                .thenCreateAtNow());
+                    .setContent("Can I help you?")
+                    .setFromUserId("transformer")
+                    .setToUserId(TimeKey.userId)
+                    .thenCreateAtNow());
         }
     };
     private MessageDispatcher dispatcher;
+    private Repository<List<SimpleMessage>> storeMessages;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -53,19 +55,23 @@ public class MainActivity extends AppCompatActivity
         dispatcher = new MessageDispatcher(fragment, new MessageService(fragment));
         dispatcher.start();
         transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
+        final SimpleMessagesStore store = messagesStore(getApplicationContext());
+        storeMessages = store.getSimpleMessagesRepository();
+        storeMessages.addUpdatable(this);
     }
 
 
-    @Override protected void onDestroy() {
-        super.onDestroy();
-        dispatcher.destroy();
+    @Override public void update() {
+        messages.addAll(storeMessages.get());
+        dispatcher.notifyDataSetChanged();
+        storeMessages.removeUpdatable(this);
     }
 
 
     private void setupDrawerLayout(Toolbar toolbar) {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close);
+                R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -80,10 +86,10 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
             SimpleMessage message = new SimpleMessage.Builder()
-                .setContent("求王垠的最新文章")
-                .setFromUserId(TimeKey.userId)
-                .setToUserId(MessageService.SELF)
-                .thenCreateAtNow();
+                    .setContent("求王垠的最新文章")
+                    .setFromUserId(TimeKey.userId)
+                    .setToUserId(MessageService.SELF)
+                    .thenCreateAtNow();
             dispatcher.addNewOut(message);
         }
         drawer.closeDrawer(GravityCompat.START);
@@ -98,6 +104,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override public void onNewOut(Message message) {
         Log.v(TAG, "onNewOut: " + message.toString());
+    }
+
+
+    @Override public void onNewIn(Message message) {
+        Notifications.simple(this, "New message",
+                message.getContent().toString(),
+                R.mipmap.ic_launcher, this.getClass());
     }
 
 
@@ -146,12 +159,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override public void update() {
-        SimpleMessage message = new SimpleMessage.Builder().setContent("求王垠的最新文章")
-            .setFromUserId(TimeKey.userId)
-            .setToUserId(MessageService.SELF)
-            .thenCreateAtNow();
-        dispatcher.addNewOut(message);
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        dispatcher.destroy();
     }
-
 }

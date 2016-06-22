@@ -31,9 +31,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
 
     @Override public void onBindViewHolder(ViewHolder holder, int position) {
-        Message data = list.get(position);
-        if (data instanceof SimpleMessage) {
-            holder.content.setText(((SimpleMessage) data).getContent());
+        Message message = list.get(position);
+        if (message instanceof SimpleMessage) {
+            holder.content.setText(((SimpleMessage) message).getContent());
+        } else {
+            // call its register views
         }
     }
 
