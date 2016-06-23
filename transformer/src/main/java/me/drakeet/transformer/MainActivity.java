@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
     @Override public void onNewIn(Message message) {
         Notifications.simple(this, "New message",
                 message.getContent().toString(),
-                R.mipmap.ic_launcher, this.getClass());
+                R.drawable.ic_notification, this.getClass());
     }
 
 

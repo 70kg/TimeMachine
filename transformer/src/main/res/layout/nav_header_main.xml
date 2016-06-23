@@ -12,10 +12,11 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/nav_header_icon_size"
+        android:layout_height="@dimen/nav_header_icon_size"
         android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:src="@android:drawable/sym_def_app_icon"/>
+        android:tint="@color/black"
+        android:src="@drawable/ic_nav_header"/>
 
     <TextView
         android:layout_width="match_parent"
