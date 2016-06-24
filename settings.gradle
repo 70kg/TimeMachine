@@ -1,5 +1,5 @@
 include ':transformer'
 include ':timemachine'
 
-gradle.ext.supportLibraryVersion = '24.0.0'
+gradle.ext.supportLibraryVersion = '23.4.0'
 gradle.ext.ageraVersion = '1.1.0-beta2'
