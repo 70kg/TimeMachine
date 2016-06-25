@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity
                     .thenCreateAtNow());
         }
     };
-    private MessageDispatcher dispatcher;
+    private MessagePresenter presenter;
     private Repository<List<SimpleMessage>> storeMessages;
 
 
@@ -52,8 +52,8 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
-        dispatcher = new MessageDispatcher(fragment, new MessageService(fragment));
-        dispatcher.start();
+        presenter = new MessagePresenter(fragment, new MessageService(fragment));
+        presenter.start();
         transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
         final SimpleMessagesStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override public void update() {
         messages.addAll(storeMessages.get());
-        dispatcher.notifyDataSetChanged();
+        presenter.notifyDataSetChanged();
         storeMessages.removeUpdatable(this);
     }
 
@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity
                     .setFromUserId(TimeKey.userId)
                     .setToUserId(MessageService.SELF)
                     .thenCreateAtNow();
-            dispatcher.addNewOut(message);
+            presenter.addNewOut(message);
         }
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -154,6 +154,8 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         if (id == R.id.action_settings) {
             return true;
+        } else if (id == R.id.action_clear) {
+            presenter.clear();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -161,6 +163,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override protected void onDestroy() {
         super.onDestroy();
-        dispatcher.destroy();
+        presenter.destroy();
     }
 }

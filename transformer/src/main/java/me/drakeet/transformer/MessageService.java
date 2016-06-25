@@ -92,4 +92,10 @@ public class MessageService extends BaseService implements Updatable {
         });
         repository.removeUpdatable(this);
     }
+
+
+    @Override public void clear() {
+        super.clear();
+        store.clear();
+    }
 }

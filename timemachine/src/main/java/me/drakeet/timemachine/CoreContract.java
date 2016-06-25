@@ -13,6 +13,8 @@ public interface CoreContract {
         void onNewIn(Message message);
         void onNewOut(Message message);
         void notifyDataSetChanged();
+        // TODO: 16/6/24
+        void clear();
     }
 
 
@@ -29,5 +31,13 @@ public interface CoreContract {
 
     interface Service extends LifeCycle {
         void onNewOut(Message message);
+        void clear();
+    }
+
+
+    interface Presenter {
+        void addNewIn(Message message);
+        void addNewOut(Message message);
+        void notifyDataSetChanged();
     }
 }

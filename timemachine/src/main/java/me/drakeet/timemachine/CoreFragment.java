@@ -37,7 +37,7 @@ public class CoreFragment extends Fragment
     OnRecyclerItemClickListener itemClickListener;
     GestureDetector gestureDetector;
     CoreHelper coreHelper;
-    MessageDispatcher dispatcher;
+    MessagePresenter dispatcher;
 
 
     public CoreFragment() {
@@ -64,7 +64,7 @@ public class CoreFragment extends Fragment
 
     @Override public void setService(CoreContract.Service service) {
         this.service = service;
-        dispatcher = new MessageDispatcher(this, service);
+        dispatcher = new MessagePresenter(this, service);
     }
 
 
@@ -187,5 +187,11 @@ public class CoreFragment extends Fragment
 
     @Override public void notifyDataSetChanged() {
         adapter.notifyDataSetChanged();
+    }
+
+
+    @Override public void clear() {
+        messages.clear();
+        notifyDataSetChanged();
     }
 }

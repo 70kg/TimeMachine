@@ -3,7 +3,7 @@ package me.drakeet.timemachine;
 /**
  * @author drakeet
  */
-public abstract class BaseService implements CoreContract.Service, Dispatcher {
+public abstract class BaseService implements CoreContract.Service, CoreContract.Presenter {
 
     private CoreContract.View view;
 
@@ -28,5 +28,10 @@ public abstract class BaseService implements CoreContract.Service, Dispatcher {
 
     @Override public void notifyDataSetChanged() {
         view.notifyDataSetChanged();
+    }
+
+
+    @Override public void clear() {
+        view.clear();
     }
 }
