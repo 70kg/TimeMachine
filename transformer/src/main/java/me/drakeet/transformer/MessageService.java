@@ -99,7 +99,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    @Override public void onClear() {
+    @Override public void onClean() {
         store.clear();
     }
 }

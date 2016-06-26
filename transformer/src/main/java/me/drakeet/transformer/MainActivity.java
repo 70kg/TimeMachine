@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             return true;
         } else if (id == R.id.action_clear) {
-            presenter.clear();
+            presenter.clean();
         }
         return super.onOptionsItemSelected(item);
     }

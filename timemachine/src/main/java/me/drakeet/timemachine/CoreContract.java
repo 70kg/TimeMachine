@@ -15,7 +15,7 @@ public interface CoreContract {
         void onNewIn(Message message);
         void onNewOut(Message message);
         void onDataSetChanged();
-        void onClear();
+        void onClean();
     }
 
 
@@ -34,7 +34,7 @@ public interface CoreContract {
     interface Service extends LifeCycle {
         void setPresenter(Presenter presenter);
         void onNewOut(Message message);
-        void onClear();
+        void onClean();
     }
 
 
@@ -42,6 +42,6 @@ public interface CoreContract {
         void addNewIn(Message message);
         void addNewOut(Message message);
         void notifyDataSetChanged();
-        void clear();
+        void clean();
     }
 }

@@ -205,7 +205,7 @@ public class CoreFragment extends Fragment
     }
 
 
-    @Override public void onClear() {
+    @Override public void onClean() {
         messages.clear();
         onDataSetChanged();
     }

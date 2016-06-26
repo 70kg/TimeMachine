@@ -27,9 +27,9 @@ public class MessagePresenter implements CoreContract.Presenter {
     }
 
 
-    @Override public void clear() {
-        view.onClear();
-        service.onClear();
+    @Override public void clean() {
+        view.onClean();
+        service.onClean();
     }
 
 
