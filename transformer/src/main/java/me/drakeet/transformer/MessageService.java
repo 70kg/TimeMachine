@@ -16,7 +16,7 @@ import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
  */
 public class MessageService implements CoreContract.Service, Updatable {
 
-    public static final String SELF = MessageService.class.getSimpleName();
+    public static final String YIN = "YIN";
 
     private Repository<Result<String>> repository;
     private Updatable newInEvent;
@@ -60,7 +60,7 @@ public class MessageService implements CoreContract.Service, Updatable {
             case "滚":
                 insertNewIn(new SimpleMessage.Builder()
                         .setContent("但是...但是...")
-                        .setFromUserId(SELF)
+                        .setFromUserId(YIN)
                         .setToUserId(TimeKey.userId)
                         .thenCreateAtNow());
                 break;
@@ -72,7 +72,7 @@ public class MessageService implements CoreContract.Service, Updatable {
                 // echo
                 insertNewIn(new SimpleMessage.Builder()
                         .setContent(message.getContent())
-                        .setFromUserId(SELF)
+                        .setFromUserId(YIN)
                         .setToUserId(TimeKey.userId)
                         .thenCreateAtNow());
                 break;
@@ -91,7 +91,7 @@ public class MessageService implements CoreContract.Service, Updatable {
         repository.get().ifSucceededSendTo(value -> {
             insertNewIn(new SimpleMessage.Builder()
                     .setContent(value)
-                    .setFromUserId(SELF)
+                    .setFromUserId(YIN)
                     .setToUserId(TimeKey.userId)
                     .thenCreateAtNow());
         });

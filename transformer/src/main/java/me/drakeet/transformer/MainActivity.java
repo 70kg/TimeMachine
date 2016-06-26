@@ -18,6 +18,7 @@ import me.drakeet.timemachine.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.drakeet.transformer.MessageService.YIN;
 import static me.drakeet.transformer.Services.messageService;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity
             SimpleMessage message = new SimpleMessage.Builder()
                 .setContent("求王垠的最新文章")
                 .setFromUserId(TimeKey.userId)
-                .setToUserId(MessageService.SELF)
+                .setToUserId(YIN)
                 .thenCreateAtNow();
             presenter.addNewOut(message);
         }
@@ -114,8 +115,14 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override public void onNewIn(Message message) {
-        Notifications.simple(this, "New message",
-            message.getContent().toString(),
+        String title = message.getFromUserId();
+        String content = message.getContent().toString();
+        if (Objects.equals(message.getFromUserId(), YIN)) {
+            String[] messageContents = message.getContent().toString().split("\n");
+            title = messageContents[0];
+            content = messageContents[1];
+        }
+        Notifications.simple(this, title, content,
             R.drawable.ic_notification, this.getClass());
     }
 
