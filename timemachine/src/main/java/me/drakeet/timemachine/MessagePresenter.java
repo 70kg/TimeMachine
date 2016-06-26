@@ -3,7 +3,7 @@ package me.drakeet.timemachine;
 /**
  * @author drakeet
  */
-public class MessagePresenter implements CoreContract.Presenter, LifeCycle {
+public class MessagePresenter implements CoreContract.Presenter {
 
     private CoreContract.View view;
     private CoreContract.Service service;
@@ -12,6 +12,7 @@ public class MessagePresenter implements CoreContract.Presenter, LifeCycle {
     public MessagePresenter(CoreContract.View view, CoreContract.Service service) {
         this.view = view;
         this.service = service;
+        service.setPresenter(this);
     }
 
 
@@ -26,8 +27,14 @@ public class MessagePresenter implements CoreContract.Presenter, LifeCycle {
     }
 
 
+    @Override public void clear() {
+        view.onClear();
+        service.onClear();
+    }
+
+
     @Override public void notifyDataSetChanged() {
-        view.notifyDataSetChanged();
+        view.onDataSetChanged();
     }
 
 
@@ -40,8 +47,4 @@ public class MessagePresenter implements CoreContract.Presenter, LifeCycle {
         service.destroy();
     }
 
-
-    public void clear() {
-        this.service.clear();
-    }
 }

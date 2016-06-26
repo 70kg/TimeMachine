@@ -22,22 +22,21 @@ import java.util.List;
 public class CoreFragment extends Fragment
     implements CoreContract.View, View.OnClickListener, CoreHelper.CoreFragment {
 
-    private RecyclerView recyclerView;
-    private LinearLayoutManager layoutManager;
-    private MessageAdapter adapter;
     private ImageButton leftAction;
     private ImageButton rightAction;
     private EditText input;
-    private View inputField;
 
+    private RecyclerView recyclerView;
+    private LinearLayoutManager layoutManager;
+    private MessageAdapter adapter;
     private List<Message> messages;
 
-    CoreContract.Delegate delegate;
-    CoreContract.Service service;
-    OnRecyclerItemClickListener itemClickListener;
-    GestureDetector gestureDetector;
-    CoreHelper coreHelper;
-    MessagePresenter dispatcher;
+    private OnRecyclerItemClickListener itemClickListener;
+    private GestureDetector gestureDetector;
+
+    private CoreContract.Presenter presenter;
+    private CoreContract.Delegate delegate;
+    private CoreHelper coreHelper;
 
 
     public CoreFragment() {
@@ -52,19 +51,36 @@ public class CoreFragment extends Fragment
     }
 
 
-    private void parseArguments() {
-        Bundle bundle = this.getArguments();
-    }
-
-
     @Override public void setDelegate(CoreContract.Delegate delegate) {
         this.delegate = delegate;
     }
 
 
     @Override public void setService(CoreContract.Service service) {
-        this.service = service;
-        dispatcher = new MessagePresenter(this, service);
+        initPresenter(service);
+    }
+
+
+    /**
+     * To notify the implementor should init the presenter
+     *
+     * @return for misuse
+     */
+    @Override public CoreContract.Presenter initPresenter(CoreContract.Service service) {
+        CoreContract.Presenter presenter = new MessagePresenter(this, service);
+        this.changePresenter(presenter);
+        return presenter;
+    }
+
+
+    /**
+     * For change presenter by someone
+     *
+     * @param presenter new presenter
+     */
+    @Override public void changePresenter(CoreContract.Presenter presenter) {
+        this.presenter = presenter;
+        delegate.setPresenter(presenter);
     }
 
 
@@ -82,7 +98,6 @@ public class CoreFragment extends Fragment
         setupRecyclerView(rootView);
         leftAction = (ImageButton) rootView.findViewById(R.id.left_action);
         input = (EditText) rootView.findViewById(R.id.input);
-        inputField = rootView.findViewById(R.id.input_field);
         rightAction = (ImageButton) rootView.findViewById(R.id.right_action);
         leftAction.setOnClickListener(this);
         rightAction.setOnClickListener(this);
@@ -157,7 +172,7 @@ public class CoreFragment extends Fragment
                 .build();
             if (!delegate.onRightActionClick()) {
                 input.setText("");
-                dispatcher.addNewOut(message);
+                presenter.addNewOut(message);
                 offsetIfInBottom();
             }
             delegate.onRightActionClick();
@@ -185,13 +200,13 @@ public class CoreFragment extends Fragment
     }
 
 
-    @Override public void notifyDataSetChanged() {
+    @Override public void onDataSetChanged() {
         adapter.notifyDataSetChanged();
     }
 
 
-    @Override public void clear() {
+    @Override public void onClear() {
         messages.clear();
-        notifyDataSetChanged();
+        onDataSetChanged();
     }
 }

@@ -4,7 +4,6 @@ import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
 import me.drakeet.agera.eventbus.AgeraBus;
-import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
@@ -15,7 +14,7 @@ import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 /**
  * @author drakeet
  */
-public class MessageService extends BaseService implements Updatable {
+public class MessageService implements CoreContract.Service, Updatable {
 
     public static final String SELF = MessageService.class.getSimpleName();
 
@@ -23,10 +22,16 @@ public class MessageService extends BaseService implements Updatable {
     private Updatable newInEvent;
     private final SimpleMessagesStore store;
 
+    private CoreContract.Presenter presenter;
 
-    public MessageService(CoreContract.View view) {
-        super(view);
+
+    public MessageService() {
         store = messagesStore(App.getContext());
+    }
+
+
+    @Override public void setPresenter(CoreContract.Presenter presenter) {
+        this.presenter = presenter;
     }
 
 
@@ -34,7 +39,7 @@ public class MessageService extends BaseService implements Updatable {
         newInEvent = () -> {
             if (AgeraBus.repository().get() instanceof NewInEvent) {
                 NewInEvent event = (NewInEvent) AgeraBus.repository().get();
-                addNewIn(event.get());
+                presenter.addNewIn(event.get());
             }
         };
         AgeraBus.repository().addUpdatable(newInEvent);
@@ -77,7 +82,7 @@ public class MessageService extends BaseService implements Updatable {
 
 
     private void insertNewIn(SimpleMessage simpleMessage) {
-        addNewIn(simpleMessage);
+        presenter.addNewIn(simpleMessage);
         store.insert(simpleMessage);
     }
 
@@ -94,8 +99,7 @@ public class MessageService extends BaseService implements Updatable {
     }
 
 
-    @Override public void clear() {
-        super.clear();
+    @Override public void onClear() {
         store.clear();
     }
 }

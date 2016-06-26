@@ -18,12 +18,13 @@ import me.drakeet.timemachine.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static me.drakeet.transformer.Services.messageService;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        CoreContract.Delegate,
-        Updatable {
+    implements NavigationView.OnNavigationItemSelectedListener,
+    CoreContract.Delegate,
+    Updatable {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -32,13 +33,13 @@ public class MainActivity extends AppCompatActivity
     private List<Message> messages = new ArrayList<Message>(100) {
         {
             add(new SimpleMessage.Builder()
-                    .setContent("Can I help you?")
-                    .setFromUserId("transformer")
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow());
+                .setContent("Can I help you?")
+                .setFromUserId("transformer")
+                .setToUserId(TimeKey.userId)
+                .thenCreateAtNow());
         }
     };
-    private MessagePresenter presenter;
+    private CoreContract.Presenter presenter;
     private Repository<List<SimpleMessage>> storeMessages;
 
 
@@ -52,12 +53,17 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
-        presenter = new MessagePresenter(fragment, new MessageService(fragment));
-        presenter.start();
+        fragment.setService(messageService());
         transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
         final SimpleMessagesStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
         storeMessages.addUpdatable(this);
+    }
+
+
+    @Override public void setPresenter(CoreContract.Presenter presenter) {
+        this.presenter = presenter;
+        this.presenter.start();
     }
 
 
@@ -71,7 +77,7 @@ public class MainActivity extends AppCompatActivity
     private void setupDrawerLayout(Toolbar toolbar) {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
+            R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -81,15 +87,15 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody") @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
             SimpleMessage message = new SimpleMessage.Builder()
-                    .setContent("求王垠的最新文章")
-                    .setFromUserId(TimeKey.userId)
-                    .setToUserId(MessageService.SELF)
-                    .thenCreateAtNow();
+                .setContent("求王垠的最新文章")
+                .setFromUserId(TimeKey.userId)
+                .setToUserId(MessageService.SELF)
+                .thenCreateAtNow();
             presenter.addNewOut(message);
         }
         drawer.closeDrawer(GravityCompat.START);
@@ -109,8 +115,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override public void onNewIn(Message message) {
         Notifications.simple(this, "New message",
-                message.getContent().toString(),
-                R.drawable.ic_notification, this.getClass());
+            message.getContent().toString(),
+            R.drawable.ic_notification, this.getClass());
     }
 
 

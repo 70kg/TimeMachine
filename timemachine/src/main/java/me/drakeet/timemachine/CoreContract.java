@@ -8,18 +8,20 @@ import java.util.List;
 public interface CoreContract {
 
     interface View {
+        Presenter initPresenter(Service service);
+        void changePresenter(Presenter presenter);
         void setDelegate(Delegate delegate);
         void setService(Service service);
         void onNewIn(Message message);
         void onNewOut(Message message);
-        void notifyDataSetChanged();
-        // TODO: 16/6/24
-        void clear();
+        void onDataSetChanged();
+        void onClear();
     }
 
 
     interface Delegate {
         List<Message> provideInitialMessages();
+        void setPresenter(Presenter presenter);
         void onNewOut(Message message);
         void onNewIn(Message message);
         void onMessageClick(Message message);
@@ -30,14 +32,16 @@ public interface CoreContract {
 
 
     interface Service extends LifeCycle {
+        void setPresenter(Presenter presenter);
         void onNewOut(Message message);
-        void clear();
+        void onClear();
     }
 
 
-    interface Presenter {
+    interface Presenter extends LifeCycle {
         void addNewIn(Message message);
         void addNewOut(Message message);
         void notifyDataSetChanged();
+        void clear();
     }
 }
