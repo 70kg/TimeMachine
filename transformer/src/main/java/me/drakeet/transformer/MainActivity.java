@@ -115,15 +115,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override public void onNewIn(Message message) {
-        String title = message.getFromUserId();
-        String content = message.getContent().toString();
-        if (Objects.equals(message.getFromUserId(), YIN)) {
-            String[] messageContents = message.getContent().toString().split("\n");
-            title = messageContents[0];
-            content = messageContents[1];
-        }
-        Notifications.simple(this, title, content,
-            R.drawable.ic_notification, this.getClass());
+        Log.v(TAG, "onNewIn: " + message.toString());
     }
 
 

@@ -19,6 +19,7 @@ package me.drakeet.transformer;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.util.Log;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
@@ -26,6 +27,7 @@ import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
+import static me.drakeet.transformer.MessageService.YIN;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
 /**
@@ -52,19 +54,32 @@ public class Inhibitor extends IntentService implements Updatable {
     @Override public void update() {
         if (repository.get().succeeded()) {
             SimpleMessage in = new SimpleMessage.Builder()
-                    .setContent(repository.get().get())
-                    .setFromUserId(TAG)
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow();
+                .setContent(repository.get().get())
+                .setFromUserId(TAG)
+                .setToUserId(TimeKey.userId)
+                .thenCreateAtNow();
             if (AgeraBus.repository().hasObservers()) {
                 AgeraBus.repository().accept(new NewInEvent(in));
             } else {
-                // TODO: 16/6/22 Save the message
+                Log.d(YIN, "DeadEvent");
+                notify(in);
             }
-            final SimpleMessagesStore store = messagesStore(getApplicationContext());
-            store.insert(in);
+            messagesStore(getApplicationContext()).insert(in);
         }
         repository.removeUpdatable(this);
+    }
+
+
+    private void notify(SimpleMessage message) {
+        String title = message.getFromUserId();
+        String content = message.getContent().toString();
+        if (Objects.equals(message.getFromUserId(), YIN)) {
+            String[] messageContents = message.getContent().toString().split("\n");
+            title = messageContents[0];
+            content = messageContents[1];
+        }
+        Notifications.simple(this, title, content,
+            R.drawable.ic_notification, this.getClass());
     }
 }
 
