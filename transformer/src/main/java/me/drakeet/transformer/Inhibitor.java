@@ -55,7 +55,7 @@ public class Inhibitor extends IntentService implements Updatable {
         if (repository.get().succeeded()) {
             SimpleMessage in = new SimpleMessage.Builder()
                 .setContent(repository.get().get())
-                .setFromUserId(TAG)
+                .setFromUserId(YIN)
                 .setToUserId(TimeKey.userId)
                 .thenCreateAtNow();
             if (AgeraBus.repository().hasObservers()) {
@@ -79,7 +79,7 @@ public class Inhibitor extends IntentService implements Updatable {
             content = messageContents[1];
         }
         Notifications.simple(this, title, content,
-            R.drawable.ic_notification, this.getClass());
+            R.drawable.ic_notification, MainActivity.class);
     }
 }
 
