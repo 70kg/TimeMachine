@@ -3,7 +3,7 @@ package me.drakeet.transformer;
 import android.app.Application;
 import android.content.Context;
 import java.util.concurrent.Executor;
-import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.*;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
 
@@ -23,6 +23,7 @@ public class App extends Application {
         if (context == null) {
             context = this.getApplicationContext();
         }
+        Log.debug = BuildConfig.DEBUG;
     }
 
 

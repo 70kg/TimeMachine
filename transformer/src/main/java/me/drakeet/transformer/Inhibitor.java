@@ -35,7 +35,7 @@ import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
  */
 public class Inhibitor extends IntentService implements Updatable {
 
-    private final static String TAG = "Inhibitor";
+    private final static String TAG = Inhibitor.class.getSimpleName();
 
     private Repository<Result<String>> repository;
 

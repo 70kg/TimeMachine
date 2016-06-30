@@ -14,6 +14,8 @@ import static com.google.android.agera.net.HttpFunctions.httpFunction;
 import static com.google.android.agera.net.HttpRequests.httpGetRequest;
 import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.networkExecutor;
+import static me.drakeet.transformer.LogFunctions.requestInterceptor;
+import static me.drakeet.transformer.LogFunctions.responseInterceptor;
 
 /**
  * @author drakeet
@@ -25,8 +27,10 @@ public class Requests {
 
     public static Function<String, Result<HttpResponse>> urlToResponse() {
         return Functions.functionFrom(String.class)
+            .apply(requestInterceptor())
             .apply(url -> httpGetRequest(url).compile())
-            .thenApply(httpFunction());
+            .apply(httpFunction())
+            .thenApply(responseInterceptor());
     }
 
 
