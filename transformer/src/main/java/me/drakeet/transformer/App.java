@@ -23,7 +23,6 @@ public class App extends Application {
         if (context == null) {
             context = this.getApplicationContext();
         }
-        Log.debug = BuildConfig.DEBUG;
     }
 
 

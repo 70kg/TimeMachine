@@ -9,4 +9,5 @@
     <dimen name="message_padding_normal">12dp</dimen>
     <dimen name="message_padding_arrow">24dp</dimen>
     <dimen name="message_margin_vertical">4dp</dimen>
+    <dimen name="message_margin_outline">2dp</dimen>
 </resources>

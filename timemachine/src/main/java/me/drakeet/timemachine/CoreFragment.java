@@ -3,7 +3,6 @@ package me.drakeet.timemachine;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -15,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
+import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
 /**
  * @author drakeet
@@ -22,6 +22,7 @@ import java.util.List;
 public class CoreFragment extends Fragment
     implements CoreContract.View, View.OnClickListener, CoreHelper.CoreFragment {
 
+    private static final String TAG = CoreFragment.class.getSimpleName();
     private ImageButton leftAction;
     private ImageButton rightAction;
     private EditText input;
@@ -37,6 +38,8 @@ public class CoreFragment extends Fragment
     private CoreContract.Presenter presenter;
     private CoreContract.Delegate delegate;
     private CoreHelper coreHelper;
+
+    private RecyclerView.SmoothScroller smoothScroller;
 
 
     public CoreFragment() {
@@ -116,7 +119,6 @@ public class CoreFragment extends Fragment
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
         itemClickListener = new OnRecyclerItemClickListener(getContext()) {
             @Override void onItemClick(View view, int position) {
@@ -144,6 +146,8 @@ public class CoreFragment extends Fragment
                 return gestureDetector.onTouchEvent(event);
             }
         });
+        smoothScroller = new SnapperSmoothScroller(getContext())
+            .setMillisecondsPerInchSearchingTarget(100f);
     }
 
 
@@ -156,6 +160,14 @@ public class CoreFragment extends Fragment
     @Override public void onNewOut(Message message) {
         addMessage(message);
         delegate.onNewOut(message);
+    }
+
+
+    private void addMessage(Message message) {
+        int _size = messages.size();
+        messages.add(message);
+        adapter.notifyItemInserted(_size);
+        smoothScrollToBottom();
     }
 
 
@@ -173,40 +185,36 @@ public class CoreFragment extends Fragment
             if (!delegate.onRightActionClick()) {
                 input.setText("");
                 presenter.addNewOut(message);
-                offsetIfInBottom();
             }
             delegate.onRightActionClick();
         }
     }
 
 
-    private void offsetIfInBottom() {
-        if (layoutManager.findLastVisibleItemPosition() == messages.size() - 2) {
-            recyclerView.smoothScrollToPosition(Integer.MAX_VALUE);
+    private void smoothScrollToBottom() {
+        int last = messages.size() - 1;
+        if (layoutManager.findLastVisibleItemPosition() == last - 2) {
+            smoothScroller.setTargetPosition(last);
+            recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
         }
-    }
-
-
-    @Override public void onDestroy() {
-        super.onDestroy();
-        recyclerView.removeOnItemTouchListener(itemClickListener);
-    }
-
-
-    private void addMessage(Message message) {
-        int _size = messages.size();
-        messages.add(message);
-        adapter.notifyItemInserted(_size);
     }
 
 
     @Override public void onDataSetChanged() {
         adapter.notifyDataSetChanged();
+        // TODO: 16/6/30
+        recyclerView.scrollToPosition(messages.size() - 1);
     }
 
 
     @Override public void onClean() {
         messages.clear();
         onDataSetChanged();
+    }
+
+
+    @Override public void onDestroy() {
+        super.onDestroy();
+        recyclerView.removeOnItemTouchListener(itemClickListener);
     }
 }

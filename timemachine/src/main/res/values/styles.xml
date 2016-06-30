@@ -24,6 +24,7 @@
         <item name="android:paddingRight">@dimen/message_padding_arrow</item>
         <item name="android:paddingTop">@dimen/message_padding_normal</item>
         <item name="android:layout_marginLeft">@dimen/message_padding_arrow</item>
+        <item name="android:layout_marginRight">@dimen/message_margin_outline</item>
         <item name="android:background">@drawable/bg_msg_out</item>
     </style>
 
@@ -32,6 +33,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/message_padding_arrow</item>
         <item name="android:paddingRight">@dimen/message_padding_normal</item>
+        <item name="android:layout_marginLeft">@dimen/message_margin_outline</item>
         <item name="android:layout_marginRight">@dimen/message_padding_arrow</item>
         <item name="android:background">@drawable/bg_msg_in</item>
     </style>

@@ -1,5 +1,6 @@
 package me.drakeet.transformer;
 
+import android.util.Log;
 import com.google.android.agera.Function;
 import com.google.android.agera.Result;
 import com.google.android.agera.net.HttpResponse;
@@ -19,7 +20,11 @@ public class LogFunctions {
 
     public static Function<Result<HttpResponse>, Result<HttpResponse>> responseInterceptor() {
         return input -> {
-            Log.d("Response Interceptor", new String(input.get().getBody()));
+            if (input.succeeded()) {
+                Log.d("Response Interceptor", new String(input.get().getBody()));
+            } else {
+                Log.e("Response Interceptor", "Failed", input.getFailure());
+            }
             return input;
         };
     }
