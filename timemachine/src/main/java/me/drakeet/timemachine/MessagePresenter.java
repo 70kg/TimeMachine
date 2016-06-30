@@ -43,8 +43,8 @@ public class MessagePresenter implements CoreContract.Presenter {
     }
 
 
-    @Override public void destroy() {
-        service.destroy();
+    @Override public void stop() {
+        service.stop();
     }
 
 }

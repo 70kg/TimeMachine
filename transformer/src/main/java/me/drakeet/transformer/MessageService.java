@@ -47,7 +47,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    @Override public void destroy() {
+    @Override public void stop() {
         AgeraBus.repository().removeUpdatable(newInEvent);
     }
 

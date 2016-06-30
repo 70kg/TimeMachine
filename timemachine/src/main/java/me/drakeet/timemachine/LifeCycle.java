@@ -7,5 +7,5 @@ package me.drakeet.timemachine;
 public interface LifeCycle {
 
     void start();
-    void destroy();
+    void stop();
 }
