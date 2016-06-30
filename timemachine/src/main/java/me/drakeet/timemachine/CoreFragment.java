@@ -193,7 +193,7 @@ public class CoreFragment extends Fragment
 
     private void smoothScrollToBottom() {
         int last = messages.size() - 1;
-        if (layoutManager.findLastVisibleItemPosition() == last - 2) {
+        if (layoutManager.findLastVisibleItemPosition() + 2 >= last) {
             smoothScroller.setTargetPosition(last);
             recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
         }
