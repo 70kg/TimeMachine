@@ -167,7 +167,7 @@ public class CoreFragment extends Fragment
         int _size = messages.size();
         messages.add(message);
         adapter.notifyItemInserted(_size);
-        smoothScrollToBottom();
+        attemptSmoothScrollToBottom();
     }
 
 
@@ -191,7 +191,7 @@ public class CoreFragment extends Fragment
     }
 
 
-    private void smoothScrollToBottom() {
+    private void attemptSmoothScrollToBottom() {
         int last = messages.size() - 1;
         if (layoutManager.findLastVisibleItemPosition() + 2 >= last) {
             smoothScroller.setTargetPosition(last);
