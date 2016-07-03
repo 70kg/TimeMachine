@@ -2,6 +2,7 @@ package me.drakeet.transformer;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
 import com.google.android.agera.Repositories;
@@ -27,6 +28,8 @@ import static me.drakeet.transformer.Requests.Preferences.defaultPreferences;
  * @author drakeet
  */
 public class Requests {
+
+    public static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
 
     public static Supplier<String> yin = () -> "http://www.yinwang.org";
 
@@ -87,25 +90,25 @@ public class Requests {
     }
 
 
-    public static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
-
-
     public static class Preferences {
 
         private static SharedPreferences preferences;
 
 
-        public static SharedPreferences defaultPreferences() {
+        @NonNull public static SharedPreferences defaultPreferences() {
             if (preferences != null) {
                 return preferences;
             }
             preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
             return preferences;
         }
+
+
+        private Preferences() {}
     }
 
 
-    public static Repository<Result<String>> requestObserveLightAndDarkGate() {
+    @NonNull public static Repository<Result<String>> observeLightAndDarkGate() {
         final SharedPreferences preferences = defaultPreferences();
         return Repositories.repositoryWithInitialValue(Result.<String>absent())
             .observe(sharedPreferencesObservable(preferences, LIGHT_AND_DARK_GATE))
@@ -130,4 +133,7 @@ public class Requests {
             .putBoolean(LIGHT_AND_DARK_GATE, open)
             .apply();
     }
+
+
+    private Requests() {}
 }

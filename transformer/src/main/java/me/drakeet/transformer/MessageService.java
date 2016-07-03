@@ -73,7 +73,7 @@ public class MessageService implements CoreContract.Service, Updatable {
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
                 // TODO: 16/7/3 Support multi-repository
-                repository = Requests.requestObserveLightAndDarkGate();
+                repository = Requests.observeLightAndDarkGate();
                 repository.addUpdatable(this);
                 break;
             case "关闭混沌仪式":
