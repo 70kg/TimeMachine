@@ -49,6 +49,7 @@ public class MessageService implements CoreContract.Service, Updatable {
 
     @Override public void stop() {
         AgeraBus.repository().removeUpdatable(newInEvent);
+        repository.removeUpdatable(this);
     }
 
 
@@ -60,25 +61,32 @@ public class MessageService implements CoreContract.Service, Updatable {
         switch (message.getContent()) {
             case "滚":
                 insertNewIn(new SimpleMessage.Builder()
-                        .setContent("但是...但是...")
-                        .setFromUserId(DEFAULT)
-                        .setToUserId(TimeKey.userId)
-                        .thenCreateAtNow());
+                    .setContent("但是...但是...")
+                    .setFromUserId(DEFAULT)
+                    .setToUserId(TimeKey.userId)
+                    .thenCreateAtNow());
                 break;
             case "求王垠的最新文章":
                 repository = Requests.requestYinAsync();
                 repository.addUpdatable(this);
                 break;
-            case "发动魔法卡——神圣的召唤!":
-            case "神圣的召唤":
-
+            case "发动魔法卡——混沌仪式!":
+            case "混沌仪式":
+                // TODO: 16/7/3 Support multi-repository
+                repository = Requests.requestObserveLightAndDarkGate();
+                repository.addUpdatable(this);
+                break;
+            case "关闭混沌仪式":
+            case "关闭混沌世界":
+                Requests.lightAndDarkGateTerminal(false);
+                break;
             default:
                 // echo
                 insertNewIn(new SimpleMessage.Builder()
-                        .setContent(message.getContent())
-                        .setFromUserId(DEFAULT)
-                        .setToUserId(TimeKey.userId)
-                        .thenCreateAtNow());
+                    .setContent(message.getContent())
+                    .setFromUserId(DEFAULT)
+                    .setToUserId(TimeKey.userId)
+                    .thenCreateAtNow());
                 break;
         }
         store.insert(message);
@@ -94,12 +102,11 @@ public class MessageService implements CoreContract.Service, Updatable {
     @Override public void update() {
         repository.get().ifSucceededSendTo(value -> {
             insertNewIn(new SimpleMessage.Builder()
-                    .setContent(value)
-                    .setFromUserId(YIN)
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow());
+                .setContent(value)
+                .setFromUserId(YIN)
+                .setToUserId(TimeKey.userId)
+                .thenCreateAtNow());
         });
-        repository.removeUpdatable(this);
     }
 
 

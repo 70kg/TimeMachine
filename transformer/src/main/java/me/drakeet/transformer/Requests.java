@@ -1,5 +1,7 @@
 package me.drakeet.transformer;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
 import com.google.android.agera.Repositories;
@@ -9,13 +11,17 @@ import com.google.android.agera.Supplier;
 import com.google.android.agera.net.HttpResponse;
 import java.util.regex.Pattern;
 
+import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
+import static com.google.android.agera.content.ContentObservables.sharedPreferencesObservable;
 import static com.google.android.agera.net.HttpFunctions.httpFunction;
 import static com.google.android.agera.net.HttpRequests.httpGetRequest;
 import static me.drakeet.transformer.App.calculationExecutor;
+import static me.drakeet.transformer.App.getContext;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.LogFunctions.requestInterceptor;
 import static me.drakeet.transformer.LogFunctions.responseInterceptor;
+import static me.drakeet.transformer.Requests.Preferences.defaultPreferences;
 
 /**
  * @author drakeet
@@ -35,7 +41,7 @@ public class Requests {
 
 
     public static Repository<Result<String>> requestYinAsync() {
-        return Repositories.repositoryWithInitialValue(Result.<String>absent())
+        return repositoryWithInitialValue(Result.<String>absent())
             .observe()
             .onUpdatesPerLoop()
             .goTo(networkExecutor)
@@ -50,7 +56,7 @@ public class Requests {
 
 
     public static Repository<Result<String>> requestYinSync() {
-        return Repositories.repositoryWithInitialValue(Result.<String>absent())
+        return repositoryWithInitialValue(Result.<String>absent())
             .observe()
             .onUpdatesPerLoop()
             .getFrom(yin)
@@ -78,5 +84,50 @@ public class Requests {
                     return Result.absent();
                 }
             });
+    }
+
+
+    public static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
+
+
+    public static class Preferences {
+
+        private static SharedPreferences preferences;
+
+
+        public static SharedPreferences defaultPreferences() {
+            if (preferences != null) {
+                return preferences;
+            }
+            preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+            return preferences;
+        }
+    }
+
+
+    public static Repository<Result<String>> requestObserveLightAndDarkGate() {
+        final SharedPreferences preferences = defaultPreferences();
+        return Repositories.repositoryWithInitialValue(Result.<String>absent())
+            .observe(sharedPreferencesObservable(preferences, LIGHT_AND_DARK_GATE))
+            .onUpdatesPerLoop()
+            .goLazy()
+            .transform(input -> preferences.getBoolean(LIGHT_AND_DARK_GATE, true))
+            .thenTransform(input -> {
+                if (input) {
+                    return Result.success("混沌世界: 开启!");
+                } else {
+                    return Result.success("混沌世界: 关闭!");
+                }
+            })
+            .onDeactivation(SEND_INTERRUPT)
+            .compile();
+    }
+
+
+    public static void lightAndDarkGateTerminal(final boolean open) {
+        final SharedPreferences preferences = defaultPreferences();
+        preferences.edit()
+            .putBoolean(LIGHT_AND_DARK_GATE, open)
+            .apply();
     }
 }
