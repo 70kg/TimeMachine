@@ -69,6 +69,9 @@ public class MessageService implements CoreContract.Service, Updatable {
                 repository = Requests.requestYinAsync();
                 repository.addUpdatable(this);
                 break;
+            case "发动魔法卡——神圣的召唤!":
+            case "神圣的召唤":
+
             default:
                 // echo
                 insertNewIn(new SimpleMessage.Builder()
@@ -101,6 +104,6 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     @Override public void onClean() {
-        store.clear();
+        store.clean();
     }
 }
