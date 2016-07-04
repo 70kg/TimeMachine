@@ -36,3 +36,5 @@ build/
 .DS_Store
 
 *.keystore
+
+transformer/src/main/java/me/drakeet/transformer/BuildVars.java
