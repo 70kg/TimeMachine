@@ -174,7 +174,7 @@ final class SimpleMessagesStore {
     }
 
 
-    public void insert(final SimpleMessage message) {
+    public void insert(@NonNull final SimpleMessage message) {
         writeRequestReceiver.accept(sqlInsertRequest()
             .table(TABLE)
             .column(ID_COLUMN, message.getId())

@@ -34,7 +34,7 @@ public class Requests {
     public static Supplier<String> yin = () -> "http://www.yinwang.org";
 
 
-    public static Function<String, Result<HttpResponse>> urlToResponse() {
+    @NonNull public static Function<String, Result<HttpResponse>> urlToResponse() {
         return Functions.functionFrom(String.class)
             .apply(requestInterceptor())
             .apply(url -> httpGetRequest(url).compile())
@@ -43,7 +43,7 @@ public class Requests {
     }
 
 
-    public static Repository<Result<String>> requestYinAsync() {
+    @NonNull public static Repository<Result<String>> requestYinAsync() {
         return repositoryWithInitialValue(Result.<String>absent())
             .observe()
             .onUpdatesPerLoop()
@@ -58,7 +58,7 @@ public class Requests {
     }
 
 
-    public static Repository<Result<String>> requestYinSync() {
+    @NonNull public static Repository<Result<String>> requestYinSync() {
         return repositoryWithInitialValue(Result.<String>absent())
             .observe()
             .onUpdatesPerLoop()
@@ -71,7 +71,7 @@ public class Requests {
     }
 
 
-    public static Function<HttpResponse, Result<String>> yinResponseToResult() {
+    @NonNull public static Function<HttpResponse, Result<String>> yinResponseToResult() {
         return Functions.functionFrom(HttpResponse.class)
             .apply(input -> new String(input.getBody()))
             .apply(body -> {

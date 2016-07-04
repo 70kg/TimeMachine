@@ -1,6 +1,7 @@
 package me.drakeet.timemachine;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -54,12 +55,12 @@ public class CoreFragment extends Fragment
     }
 
 
-    @Override public void setDelegate(CoreContract.Delegate delegate) {
+    @Override public void setDelegate(@NonNull final CoreContract.Delegate delegate) {
         this.delegate = delegate;
     }
 
 
-    @Override public void setService(CoreContract.Service service) {
+    @Override public void setService(@NonNull final CoreContract.Service service) {
         initPresenter(service);
     }
 
@@ -69,7 +70,8 @@ public class CoreFragment extends Fragment
      *
      * @return for misuse
      */
-    @Override public CoreContract.Presenter initPresenter(CoreContract.Service service) {
+    @NonNull @Override
+    public CoreContract.Presenter initPresenter(@NonNull final CoreContract.Service service) {
         CoreContract.Presenter presenter = new MessagePresenter(this, service);
         this.changePresenter(presenter);
         return presenter;
@@ -81,7 +83,7 @@ public class CoreFragment extends Fragment
      *
      * @param presenter new presenter
      */
-    @Override public void changePresenter(CoreContract.Presenter presenter) {
+    @Override public void changePresenter(@NonNull final CoreContract.Presenter presenter) {
         this.presenter = presenter;
         delegate.setPresenter(presenter);
     }
@@ -113,7 +115,7 @@ public class CoreFragment extends Fragment
     }
 
 
-    private void setupRecyclerView(View rootView) {
+    private void setupRecyclerView(@NonNull final View rootView) {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
         layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -151,19 +153,19 @@ public class CoreFragment extends Fragment
     }
 
 
-    @Override public void onNewIn(Message message) {
+    @Override public void onNewIn(@NonNull final Message message) {
         addMessage(message);
         delegate.onNewIn(message);
     }
 
 
-    @Override public void onNewOut(Message message) {
+    @Override public void onNewOut(@NonNull final Message message) {
         addMessage(message);
         delegate.onNewOut(message);
     }
 
 
-    private void addMessage(Message message) {
+    private void addMessage(@NonNull final Message message) {
         int _size = messages.size();
         messages.add(message);
         adapter.notifyItemInserted(_size);

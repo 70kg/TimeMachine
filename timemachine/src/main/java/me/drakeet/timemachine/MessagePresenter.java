@@ -1,5 +1,7 @@
 package me.drakeet.timemachine;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author drakeet
  */
@@ -9,19 +11,21 @@ public class MessagePresenter implements CoreContract.Presenter {
     private CoreContract.Service service;
 
 
-    public MessagePresenter(CoreContract.View view, CoreContract.Service service) {
+    public MessagePresenter(
+        @NonNull final CoreContract.View view,
+        @NonNull final CoreContract.Service service) {
         this.view = view;
         this.service = service;
         service.setPresenter(this);
     }
 
 
-    @Override public void addNewIn(Message message) {
+    @Override public void addNewIn(@NonNull final Message message) {
         this.view.onNewIn(message);
     }
 
 
-    @Override public void addNewOut(Message message) {
+    @Override public void addNewOut(@NonNull final Message message) {
         this.view.onNewOut(message);
         this.service.onNewOut(message);
     }

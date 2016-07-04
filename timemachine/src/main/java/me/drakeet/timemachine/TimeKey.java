@@ -1,5 +1,7 @@
 package me.drakeet.timemachine;
 
+import android.support.annotation.NonNull;
+
 /**
  * The entrance of time machine SDK
  *
@@ -22,13 +24,13 @@ public class TimeKey {
      * @param appName your app name
      * @param userId your current user uuid.
      */
-    public static void install(String appName, String userId) {
+    public static void install(@NonNull final String appName, @NonNull final String userId) {
         TimeKey.appName = appName;
         TimeKey.userId = userId;
     }
 
 
-    public static boolean isCurrentUser(String userId) {
+    public static boolean isCurrentUser(@NonNull final String userId) {
         if (TimeKey.userId == null) {
             throw new RuntimeException("TimeKey.userId is null, did you initialize the TimeKey?");
         } else {

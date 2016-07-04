@@ -1,5 +1,6 @@
 package me.drakeet.timemachine;
 
+import android.support.annotation.NonNull;
 import java.util.Date;
 
 /**
@@ -7,8 +8,8 @@ import java.util.Date;
  */
 public interface Message<T> {
 
-    T getContent();
-    String getFromUserId();
-    String getToUserId();
-    Date getCreatedAt();
+    @NonNull T getContent();
+    @NonNull String getFromUserId();
+    @NonNull String getToUserId();
+    @NonNull Date getCreatedAt();
 }

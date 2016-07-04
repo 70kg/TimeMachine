@@ -22,10 +22,11 @@ public class Notifications {
     }
 
 
-    public static void simple(@NonNull Context context,
-                              @NonNull CharSequence title,
-                              @NonNull CharSequence message,
-                              int smallIconResId, Class<?> targetActivity) {
+    public static void simple(@NonNull final Context context,
+                              @NonNull final CharSequence title,
+                              @NonNull final CharSequence message,
+                              int smallIconResId,
+                              @NonNull final Class<?> targetActivity) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
             .setPriority(PRIORITY_MAX)
             .setContentTitle(title)

@@ -1,5 +1,7 @@
 package me.drakeet.transformer;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author drakeet
  */
@@ -9,7 +11,7 @@ public class Services {
     }
 
 
-    public static MessageService messageService() {
+    @NonNull public static MessageService messageService() {
         return new MessageService();
     }
 }

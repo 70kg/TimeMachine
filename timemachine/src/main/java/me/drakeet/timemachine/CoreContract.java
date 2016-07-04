@@ -1,5 +1,6 @@
 package me.drakeet.timemachine;
 
+import android.support.annotation.NonNull;
 import java.util.List;
 
 /**
@@ -8,39 +9,39 @@ import java.util.List;
 public interface CoreContract {
 
     interface View {
-        Presenter initPresenter(Service service);
-        void changePresenter(Presenter presenter);
-        void setDelegate(Delegate delegate);
-        void setService(Service service);
-        void onNewIn(Message message);
-        void onNewOut(Message message);
+        @NonNull Presenter initPresenter(@NonNull Service service);
+        void changePresenter(@NonNull Presenter presenter);
+        void setDelegate(@NonNull Delegate delegate);
+        void setService(@NonNull Service service);
+        void onNewIn(@NonNull Message message);
+        void onNewOut(@NonNull Message message);
         void onDataSetChanged();
         void onClean();
     }
 
 
     interface Delegate {
-        List<Message> provideInitialMessages();
-        void setPresenter(Presenter presenter);
-        void onNewOut(Message message);
-        void onNewIn(Message message);
-        void onMessageClick(Message message);
-        void onMessageLongClick(Message message);
+        @NonNull List<Message> provideInitialMessages();
+        void setPresenter(@NonNull Presenter presenter);
+        void onNewOut(@NonNull Message message);
+        void onNewIn(@NonNull Message message);
+        void onMessageClick(@NonNull Message message);
+        void onMessageLongClick(@NonNull Message message);
         boolean onLeftActionClick();
         boolean onRightActionClick();
     }
 
 
     interface Service extends LifeCycle {
-        void setPresenter(Presenter presenter);
-        void onNewOut(Message message);
+        void setPresenter(@NonNull Presenter presenter);
+        void onNewOut(@NonNull Message message);
         void onClean();
     }
 
 
     interface Presenter extends LifeCycle {
-        void addNewIn(Message message);
-        void addNewOut(Message message);
+        void addNewIn(@NonNull Message message);
+        void addNewOut(@NonNull Message message);
         void notifyDataSetChanged();
         void clean();
     }

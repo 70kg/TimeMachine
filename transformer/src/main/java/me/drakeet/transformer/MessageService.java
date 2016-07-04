@@ -1,5 +1,6 @@
 package me.drakeet.transformer;
 
+import android.support.annotation.NonNull;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
@@ -31,7 +32,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    @Override public void setPresenter(CoreContract.Presenter presenter) {
+    @Override public void setPresenter(@NonNull final CoreContract.Presenter presenter) {
         this.presenter = presenter;
     }
 
@@ -53,7 +54,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    @Override public void onNewOut(final Message _message) {
+    @Override public void onNewOut(@NonNull final Message _message) {
         if (!(_message instanceof SimpleMessage)) {
             throw new IllegalArgumentException("Only supports SimpleMessage currently.");
         }
@@ -93,7 +94,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    private void insertNewIn(SimpleMessage simpleMessage) {
+    private void insertNewIn(@NonNull final SimpleMessage simpleMessage) {
         presenter.addNewIn(simpleMessage);
         store.insert(simpleMessage);
     }

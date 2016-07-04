@@ -12,7 +12,7 @@ public class NewInEvent implements Supplier<SimpleMessage> {
     @NonNull public final SimpleMessage message;
 
 
-    public NewInEvent(@NonNull SimpleMessage in) {
+    public NewInEvent(@NonNull final SimpleMessage in) {
         this.message = in;
     }
 

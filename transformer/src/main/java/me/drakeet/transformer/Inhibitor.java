@@ -19,6 +19,7 @@ package me.drakeet.transformer;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
@@ -70,7 +71,7 @@ public class Inhibitor extends IntentService implements Updatable {
     }
 
 
-    private void notify(SimpleMessage message) {
+    private void notify(@NonNull final SimpleMessage message) {
         String title = message.getFromUserId();
         String content = message.getContent().toString();
         if (Objects.equals(message.getFromUserId(), YIN)) {

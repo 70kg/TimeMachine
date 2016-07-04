@@ -1,6 +1,7 @@
 package me.drakeet.timemachine;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -9,7 +10,7 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class Keyboards {
 
-    public static void show(View view) {
+    public static void show(@NonNull final View view) {
         if (view == null) {
             return;
         }
@@ -19,7 +20,7 @@ public class Keyboards {
     }
 
 
-    public static boolean isShown(View view) {
+    public static boolean isShown(@NonNull final View view) {
         if (view == null) {
             return false;
         }
@@ -29,7 +30,7 @@ public class Keyboards {
     }
 
 
-    public static void hide(View view) {
+    public static void hide(@NonNull final View view) {
         if (view == null) {
             return;
         }

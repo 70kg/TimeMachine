@@ -1,6 +1,7 @@
 package me.drakeet.transformer;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override public void setPresenter(CoreContract.Presenter presenter) {
+    @Override public void setPresenter(@NonNull final CoreContract.Presenter presenter) {
         this.presenter = presenter;
     }
 
@@ -104,27 +105,27 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    @Override public List<Message> provideInitialMessages() {
+    @NonNull @Override public List<Message> provideInitialMessages() {
         return messages;
     }
 
 
-    @Override public void onNewOut(Message message) {
+    @Override public void onNewOut(@NonNull final Message message) {
         Log.v(TAG, "onNewOut: " + message.toString());
     }
 
 
-    @Override public void onNewIn(Message message) {
+    @Override public void onNewIn(@NonNull final Message message) {
         Log.v(TAG, "onNewIn: " + message.toString());
     }
 
 
-    @Override public void onMessageClick(Message message) {
+    @Override public void onMessageClick(@NonNull final Message message) {
         Log.v(TAG, "onMessageClicked: " + message.toString());
     }
 
 
-    @Override public void onMessageLongClick(Message message) {
+    @Override public void onMessageLongClick(@NonNull final Message message) {
         Log.v(TAG, "onMessageLongClicked: " + message.toString());
     }
 
