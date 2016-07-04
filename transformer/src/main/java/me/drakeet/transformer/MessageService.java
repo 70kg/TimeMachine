@@ -1,6 +1,7 @@
 package me.drakeet.transformer;
 
 import android.support.annotation.NonNull;
+import com.google.android.agera.Receiver;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
@@ -10,6 +11,8 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
+import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_CLOSE;
+import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_OPEN;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
 /**
@@ -20,11 +23,12 @@ public class MessageService implements CoreContract.Service, Updatable {
     public static final String YIN = "YIN";
     public static final String DEFAULT = "default";
 
-    private Repository<Result<String>> repository;
+    private Repository<Result<String>> transientRepo;
     private Updatable newInEvent;
     private final SimpleMessagesStore store;
 
     private CoreContract.Presenter presenter;
+    private boolean translateMode;
 
 
     public MessageService() {
@@ -50,7 +54,6 @@ public class MessageService implements CoreContract.Service, Updatable {
 
     @Override public void stop() {
         AgeraBus.repository().removeUpdatable(newInEvent);
-        repository.removeUpdatable(this);
     }
 
 
@@ -59,7 +62,20 @@ public class MessageService implements CoreContract.Service, Updatable {
             throw new IllegalArgumentException("Only supports SimpleMessage currently.");
         }
         final SimpleMessage message = (SimpleMessage) _message;
-        switch (message.getContent()) {
+        final String content = message.getContent();
+        if (translateMode && !content.equals("关闭混沌世界")) {
+            transientRepo = Requests.requestTranslate(content);
+            transientRepo.addUpdatable(this);
+        } else {
+            handleContent(content);
+        }
+
+        store.insert(message);
+    }
+
+
+    private void handleContent(String content) {
+        switch (content) {
             case "滚":
                 insertNewIn(new SimpleMessage.Builder()
                     .setContent("但是...但是...")
@@ -68,29 +84,30 @@ public class MessageService implements CoreContract.Service, Updatable {
                     .thenCreateAtNow());
                 break;
             case "求王垠的最新文章":
-                repository = Requests.requestYinAsync();
-                repository.addUpdatable(this);
+                transientRepo = Requests.requestYinAsync();
+                transientRepo.addUpdatable(this);
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                // TODO: 16/7/3 Support multi-repository
-                repository = Requests.observeLightAndDarkGate();
-                repository.addUpdatable(this);
+                Requests.lightAndDarkGateTerminal(true);
+                stringReceiver().accept(LIGHT_AND_DARK_GATE_OPEN);
+                this.translateMode = true;
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
                 Requests.lightAndDarkGateTerminal(false);
+                stringReceiver().accept(LIGHT_AND_DARK_GATE_CLOSE);
+                this.translateMode = false;
                 break;
             default:
                 // echo
                 insertNewIn(new SimpleMessage.Builder()
-                    .setContent(message.getContent())
+                    .setContent(content)
                     .setFromUserId(DEFAULT)
                     .setToUserId(TimeKey.userId)
                     .thenCreateAtNow());
                 break;
         }
-        store.insert(message);
     }
 
 
@@ -101,13 +118,17 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     @Override public void update() {
-        repository.get().ifSucceededSendTo(value -> {
-            insertNewIn(new SimpleMessage.Builder()
-                .setContent(value)
-                .setFromUserId(YIN)
-                .setToUserId(TimeKey.userId)
-                .thenCreateAtNow());
-        });
+        transientRepo.get().ifSucceededSendTo(stringReceiver());
+        transientRepo.removeUpdatable(this);
+    }
+
+
+    private Receiver<String> stringReceiver() {
+        return value -> insertNewIn(new SimpleMessage.Builder()
+            .setContent(value)
+            .setFromUserId(YIN)
+            .setToUserId(TimeKey.userId)
+            .thenCreateAtNow());
     }
 
 

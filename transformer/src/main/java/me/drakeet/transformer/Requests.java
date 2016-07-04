@@ -10,7 +10,9 @@ import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Supplier;
 import com.google.android.agera.net.HttpResponse;
+import com.google.gson.Gson;
 import java.util.regex.Pattern;
+import me.drakeet.transformer.entity.YouDao;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -23,6 +25,7 @@ import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.LogFunctions.requestInterceptor;
 import static me.drakeet.transformer.LogFunctions.responseInterceptor;
 import static me.drakeet.transformer.Requests.Preferences.defaultPreferences;
+import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 
 /**
  * @author drakeet
@@ -30,8 +33,16 @@ import static me.drakeet.transformer.Requests.Preferences.defaultPreferences;
 public class Requests {
 
     public static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
+    public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!";
+    public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
 
-    public static Supplier<String> yin = () -> "http://www.yinwang.org";
+    public final static Supplier<String> YIN = () -> "http://www.yinwang.org";
+    public final static Supplier<String> YOU_DAO
+        = () -> String.format(
+        "http://fanyi.youdao.com/openapi.do?keyfrom=%s&key=%s" +
+            "&type=data&doctype=json&version=1.1&only=translate&q=",
+        BuildVars.YOUDAO_TRANSLATE_KEY_FROM,
+        BuildVars.YOUDAO_TRANSLATE_KEY);
 
 
     @NonNull public static Function<String, Result<HttpResponse>> urlToResponse() {
@@ -48,7 +59,7 @@ public class Requests {
             .observe()
             .onUpdatesPerLoop()
             .goTo(networkExecutor)
-            .getFrom(yin)
+            .getFrom(YIN)
             .attemptTransform(urlToResponse())
             .orEnd(Result::failure)
             .goTo(calculationExecutor)
@@ -62,7 +73,7 @@ public class Requests {
         return repositoryWithInitialValue(Result.<String>absent())
             .observe()
             .onUpdatesPerLoop()
-            .getFrom(yin)
+            .getFrom(YIN)
             .attemptTransform(urlToResponse())
             .orEnd(Result::failure)
             .thenTransform(yinResponseToResult())
@@ -86,6 +97,37 @@ public class Requests {
                 } else {
                     return Result.absent();
                 }
+            });
+    }
+
+
+    @NonNull
+    public static Repository<Result<String>> requestTranslate(@NonNull final String content) {
+
+        return repositoryWithInitialValue(Result.<String>absent())
+            .observe()
+            .onUpdatesPerLoop()
+            .goTo(networkExecutor)
+            .getFrom(YOU_DAO)
+            .transform(input -> input + toUtf8URLEncode(content))
+            .attemptTransform(urlToResponse())
+            .orEnd(Result::failure)
+            .goTo(calculationExecutor)
+            .thenTransform(youdaoResponseToResult())
+            .onDeactivation(SEND_INTERRUPT)
+            .compile();
+    }
+
+
+    @NonNull private static Function<HttpResponse, Result<String>> youdaoResponseToResult() {
+        return Functions.functionFrom(HttpResponse.class)
+            .apply(input -> new String(input.getBody()))
+            .thenApply(json -> {
+                YouDao youDao = new Gson().fromJson(json, YouDao.class);
+                if (youDao.isSuccessful() && youDao.translation.size() > 0) {
+                    return Result.success(youDao.translation.get(0));
+                }
+                return Result.failure();
             });
     }
 
@@ -115,11 +157,11 @@ public class Requests {
             .onUpdatesPerLoop()
             .goLazy()
             .transform(input -> preferences.getBoolean(LIGHT_AND_DARK_GATE, true))
-            .thenTransform(input -> {
-                if (input) {
-                    return Result.success("混沌世界: 开启!");
+            .thenTransform(open -> {
+                if (open) {
+                    return Result.success(LIGHT_AND_DARK_GATE_OPEN);
                 } else {
-                    return Result.success("混沌世界: 关闭!");
+                    return Result.success(LIGHT_AND_DARK_GATE_CLOSE);
                 }
             })
             .onDeactivation(SEND_INTERRUPT)
