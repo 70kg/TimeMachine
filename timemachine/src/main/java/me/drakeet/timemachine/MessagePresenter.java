@@ -26,8 +26,13 @@ public class MessagePresenter implements CoreContract.Presenter {
 
 
     @Override public void addNewOut(@NonNull final Message message) {
-        this.view.onNewOut(message);
-        this.service.onNewOut(message);
+        view.onNewOut(message);
+        service.onNewOut(message);
+    }
+
+
+    @Override public void setInputText(@NonNull CharSequence text) {
+        view.setInputText(text);
     }
 
 

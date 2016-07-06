@@ -173,6 +173,12 @@ public class CoreFragment extends Fragment
     }
 
 
+    @Override public void setInputText(@NonNull CharSequence text) {
+        input.setText(text);
+        input.setSelection(text.length());
+    }
+
+
     @Override public void onClick(View v) {
         int id = v.getId();
         if (id == R.id.left_action) {

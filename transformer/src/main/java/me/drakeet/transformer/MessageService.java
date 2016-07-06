@@ -65,7 +65,9 @@ public class MessageService implements CoreContract.Service, Updatable {
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
             transientRepo = Requests.requestTranslate(content);
-            transientRepo.addUpdatable(this);
+            transientRepo.addUpdatable(
+                () -> transientRepo.get()
+                    .ifSucceededSendTo(value -> presenter.setInputText(value)));
         } else {
             handleContent(content);
         }

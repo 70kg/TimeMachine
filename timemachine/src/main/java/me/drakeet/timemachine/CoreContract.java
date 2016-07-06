@@ -15,6 +15,7 @@ public interface CoreContract {
         void setService(@NonNull Service service);
         void onNewIn(@NonNull Message message);
         void onNewOut(@NonNull Message message);
+        void setInputText(@NonNull CharSequence text);
         void onDataSetChanged();
         void onClean();
     }
@@ -42,6 +43,7 @@ public interface CoreContract {
     interface Presenter extends LifeCycle {
         void addNewIn(@NonNull Message message);
         void addNewOut(@NonNull Message message);
+        void setInputText(@NonNull CharSequence text);
         void notifyDataSetChanged();
         void clean();
     }
