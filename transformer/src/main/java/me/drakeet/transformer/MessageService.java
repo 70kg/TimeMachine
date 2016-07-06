@@ -21,6 +21,7 @@ import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 public class MessageService implements CoreContract.Service, Updatable {
 
     public static final String YIN = "YIN";
+    public static final String TRANSFORMER = "transformer";
     public static final String DEFAULT = "default";
 
     private Repository<Result<String>> transientRepo;

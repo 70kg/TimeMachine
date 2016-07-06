@@ -5,7 +5,12 @@
         <item
             android:id="@+id/nav_yin"
             android:icon="@drawable/ic_yin"
-            android:title="Yinwang.org"/>
+            android:title="YinWang.org"/>
+
+        <item
+            android:id="@+id/nav_translate"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Translate Mode"/>
     </group>
 
     <item android:title="Communicate">

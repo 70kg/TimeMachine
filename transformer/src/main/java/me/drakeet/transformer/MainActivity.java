@@ -22,6 +22,7 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
+import static me.drakeet.transformer.MessageService.TRANSFORMER;
 import static me.drakeet.transformer.MessageService.YIN;
 import static me.drakeet.transformer.Services.messageService;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
@@ -97,6 +98,13 @@ public class MainActivity extends AppCompatActivity
                 .setContent("求王垠的最新文章")
                 .setFromUserId(TimeKey.userId)
                 .setToUserId(YIN)
+                .thenCreateAtNow();
+            presenter.addNewOut(message);
+        } else if (id == R.id.nav_translate) {
+            SimpleMessage message = new SimpleMessage.Builder()
+                .setContent("发动魔法卡——混沌仪式!")
+                .setFromUserId(TimeKey.userId)
+                .setToUserId(TRANSFORMER)
                 .thenCreateAtNow();
             presenter.addNewOut(message);
         }
