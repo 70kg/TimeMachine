@@ -105,6 +105,13 @@ public class SimpleMessage implements Message<String> {
         private String extra;
 
 
+        /**
+         * Set the id of SimpleMessage, it's optional,
+         * will be set with {@code UUID.randomUUID()} when null at build
+         *
+         * @param id uuid
+         * @return Builder self
+         */
         public Builder setId(@NonNull String id) {
             this.id = id;
             return this;
