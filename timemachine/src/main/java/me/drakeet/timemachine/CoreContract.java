@@ -47,6 +47,6 @@ public interface CoreContract {
         void setInputText(@NonNull CharSequence text);
         void notifyDataSetChanged();
         void clean();
-        boolean onInterceptNewOut(Message message);
+        boolean onInterceptNewOut(@NonNull Message message);
     }
 }
