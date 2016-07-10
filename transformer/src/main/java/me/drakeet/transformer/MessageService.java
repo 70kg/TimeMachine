@@ -126,7 +126,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    private Receiver<String> stringReceiver() {
+    @NonNull private Receiver<String> stringReceiver() {
         return value -> insertNewIn(new SimpleMessage.Builder()
             .setContent(value)
             .setFromUserId(YIN)
