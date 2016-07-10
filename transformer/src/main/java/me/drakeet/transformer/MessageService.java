@@ -63,7 +63,7 @@ public class MessageService implements CoreContract.Service, Updatable {
 
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
         if (isConfirmMessage) {
-            presenter.addNewIn(new SimpleMessage.Builder()
+            insertNewIn(new SimpleMessage.Builder()
                 .setContent((String) message.getContent())
                 .setFromUserId(TRANSFORMER)
                 .setToUserId(TimeKey.userId)
