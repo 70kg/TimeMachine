@@ -90,6 +90,11 @@ public class SimpleMessage implements Message<String> {
     }
 
 
+    @Nullable public String getExtra() {
+        return extra;
+    }
+
+
     public static class Builder implements me.drakeet.timemachine.Builder<SimpleMessage> {
 
         private String id;
