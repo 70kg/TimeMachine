@@ -68,7 +68,7 @@ public class MessageService implements CoreContract.Service, Updatable {
             transientRepo = Requests.requestTranslate(content);
             transientRepo.addUpdatable(
                 () -> transientRepo.get()
-                    .ifSucceededSendTo(value -> presenter.setInputText(value)));
+                    .ifSucceededSendTo(value -> confirmTranslation(value)));
         } else {
             handleContent(content);
         }
@@ -117,6 +117,12 @@ public class MessageService implements CoreContract.Service, Updatable {
     private void insertNewIn(@NonNull final SimpleMessage simpleMessage) {
         presenter.addNewIn(simpleMessage);
         store.insert(simpleMessage);
+    }
+
+
+    private void confirmTranslation(@NonNull String value) {
+        presenter.setInputText(value);
+        // TODO: 16/7/10 save to file
     }
 
 

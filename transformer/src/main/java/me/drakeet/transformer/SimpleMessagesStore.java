@@ -47,7 +47,6 @@ import static com.google.android.agera.database.SqlRequests.sqlInsertRequest;
 import static com.google.android.agera.database.SqlRequests.sqlRequest;
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static me.drakeet.timemachine.SimpleMessage.simpleMessage;
 import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.CONTENT_COLUMN;
 import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.CREATED_AT_COLUMN;
 import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.FROM_USER_ID_COLUMN;
@@ -153,12 +152,13 @@ final class SimpleMessagesStore {
             .goLazy() // todo: add go lazy to reload the same content when restart
             .getFrom(() -> sqlRequest().sql(GET_MESSAGES_FROM_TABLE).compile())
             .thenAttemptTransform(databaseQueryFunction(databaseSupplier,
-                cursor -> simpleMessage(
-                    cursor.getString(ID_COLUMN_INDEX),
-                    cursor.getString(CONTENT_COLUMN_INDEX),
-                    cursor.getString(FROM_USER_ID_COLUMN_INDEX),
-                    cursor.getString(TO_USER_ID_COLUMN_INDEX),
-                    cursor.getLong(CREATED_AT_COLUMN_INDEX))
+                cursor -> new SimpleMessage.Builder()
+                    .setId(cursor.getString(ID_COLUMN_INDEX))
+                    .setContent(cursor.getString(CONTENT_COLUMN_INDEX))
+                    .setFromUserId(cursor.getString(FROM_USER_ID_COLUMN_INDEX))
+                    .setToUserId(cursor.getString(TO_USER_ID_COLUMN_INDEX))
+                    .setCreatedAt(cursor.getLong(CREATED_AT_COLUMN_INDEX))
+                    .build()
             ))
             .orEnd(staticFunction(INITIAL_VALUE))
             .onConcurrentUpdate(SEND_INTERRUPT)

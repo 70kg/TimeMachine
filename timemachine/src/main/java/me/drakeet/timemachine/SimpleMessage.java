@@ -1,6 +1,7 @@
 package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import java.util.Date;
 import java.util.UUID;
 
@@ -14,46 +15,31 @@ public class SimpleMessage implements Message<String> {
     @NonNull private final String fromUserId;
     @NonNull private final String toUserId;
     @NonNull private final Date createdAt;
+    @Nullable private final String extra;
 
 
     private SimpleMessage(@NonNull String id, @NonNull String content,
                           @NonNull String fromUserId, @NonNull String toUserId,
-                          @NonNull Date createdAt) {
+                          @NonNull Date createdAt, @Nullable String extra) {
         this.id = id;
         this.content = content;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.createdAt = createdAt;
-    }
-
-
-    private SimpleMessage(@NonNull String id, @NonNull SimpleMessage message) {
-        this.id = id;
-        this.content = message.content;
-        this.fromUserId = message.fromUserId;
-        this.toUserId = message.toUserId;
-        this.createdAt = message.createdAt;
-    }
-
-
-    @NonNull
-    public static SimpleMessage simpleMessage(@NonNull String id, @NonNull String content,
-                                              @NonNull String fromUserId, @NonNull String toUserId,
-                                              @NonNull long createdAtTime) {
-        return new SimpleMessage(id, content, fromUserId, toUserId, new Date(createdAtTime));
+        this.extra = extra;
     }
 
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         SimpleMessage that = (SimpleMessage) o;
-        if (!id.equals(that.id)) return false;
-        if (!content.equals(that.content)) return false;
-        if (!fromUserId.equals(that.fromUserId)) return false;
-        if (!toUserId.equals(that.toUserId)) return false;
-        return createdAt.equals(that.createdAt);
-
+        return id.equals(that.id) && content.equals(that.content) &&
+            fromUserId.equals(that.fromUserId) &&
+            toUserId.equals(that.toUserId) &&
+            createdAt.equals(that.createdAt);
     }
 
 
@@ -68,12 +54,13 @@ public class SimpleMessage implements Message<String> {
 
 
     @Override public String toString() {
-        return "SimpleMessage{" +
-            "id=" + id +
+        return "SimpleMessage {" +
+            "id='" + id + '\'' +
             ", content='" + content + '\'' +
             ", fromUserId='" + fromUserId + '\'' +
             ", toUserId='" + toUserId + '\'' +
             ", createdAt=" + createdAt +
+            ", extra='" + extra + '\'' +
             '}';
     }
 
@@ -104,10 +91,19 @@ public class SimpleMessage implements Message<String> {
 
 
     public static class Builder implements me.drakeet.timemachine.Builder<SimpleMessage> {
-        @NonNull private String content;
-        @NonNull private String fromUserId;
-        @NonNull private String toUserId;
-        @NonNull private Date createdAt;
+
+        private String id;
+        private String content;
+        private String fromUserId;
+        private String toUserId;
+        private Date createdAt;
+        private String extra;
+
+
+        public Builder setId(@NonNull String id) {
+            this.id = id;
+            return this;
+        }
 
 
         public Builder setContent(@NonNull String content) {
@@ -134,6 +130,18 @@ public class SimpleMessage implements Message<String> {
         }
 
 
+        public Builder setCreatedAt(long milliseconds) {
+            this.createdAt = new Date(milliseconds);
+            return this;
+        }
+
+
+        public Builder setExtra(@Nullable String extra) {
+            this.extra = extra;
+            return this;
+        }
+
+
         public SimpleMessage thenCreateAtNow() {
             this.createdAt = new Now();
             return build();
@@ -141,8 +149,11 @@ public class SimpleMessage implements Message<String> {
 
 
         @Override public SimpleMessage build() {
-            return new SimpleMessage(UUID.randomUUID().toString(), content, fromUserId, toUserId,
-                createdAt);
+            if (this.id == null) {
+                this.id = UUID.randomUUID().toString();
+            }
+            return new SimpleMessage(id, content, fromUserId, toUserId,
+                createdAt, extra);
         }
     }
 }
