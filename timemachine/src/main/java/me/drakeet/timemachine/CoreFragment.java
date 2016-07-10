@@ -190,7 +190,7 @@ public class CoreFragment extends Fragment
                 .setToUserId("")
                 .setCreatedAt(new Now())
                 .build();
-            if (!delegate.onRightActionClick()) {
+            if (!delegate.onRightActionClick() && !presenter.onInterceptNewOut(message)) {
                 input.setText("");
                 presenter.addNewOut(message);
             }

@@ -18,4 +18,9 @@ public class Strings {
         }
         return null;
     }
+
+
+    @NonNull public static CharSequence empty() {
+        return "";
+    }
 }

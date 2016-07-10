@@ -1,11 +1,14 @@
 package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 /**
  * @author drakeet
  */
 public class MessagePresenter implements CoreContract.Presenter {
+
+    private static final String TAG = MessagePresenter.class.getSimpleName();
 
     private CoreContract.View view;
     private CoreContract.Service service;
@@ -31,7 +34,18 @@ public class MessagePresenter implements CoreContract.Presenter {
     }
 
 
-    @Override public void setInputText(@NonNull CharSequence text) {
+    @Override public boolean onInterceptNewOut(@NonNull final Message message) {
+        if (service.onInterceptNewOut(message)) {
+            return true;
+        } else {
+            Log.d(TAG, "The new out Message(" + message.getContent() +
+                ") has been intercepted by Service");
+        }
+        return false;
+    }
+
+
+    @Override public void setInputText(@NonNull final CharSequence text) {
         view.setInputText(text);
     }
 

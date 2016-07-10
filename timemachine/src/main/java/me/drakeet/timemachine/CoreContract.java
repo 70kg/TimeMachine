@@ -37,6 +37,7 @@ public interface CoreContract {
         void setPresenter(@NonNull Presenter presenter);
         void onNewOut(@NonNull Message message);
         void onClean();
+        boolean onInterceptNewOut(@NonNull Message message);
     }
 
 
@@ -46,5 +47,6 @@ public interface CoreContract {
         void setInputText(@NonNull CharSequence text);
         void notifyDataSetChanged();
         void clean();
+        boolean onInterceptNewOut(Message message);
     }
 }

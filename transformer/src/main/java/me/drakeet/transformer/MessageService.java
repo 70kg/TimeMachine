@@ -14,6 +14,7 @@ import me.drakeet.timemachine.TimeKey;
 import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_CLOSE;
 import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_OPEN;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
+import static me.drakeet.transformer.Strings.empty;
 
 /**
  * @author drakeet
@@ -30,6 +31,8 @@ public class MessageService implements CoreContract.Service, Updatable {
 
     private CoreContract.Presenter presenter;
     private boolean translateMode;
+    // TODO: 16/7/10 to improve
+    private boolean isConfirmMessage;
 
 
     public MessageService() {
@@ -55,6 +58,23 @@ public class MessageService implements CoreContract.Service, Updatable {
 
     @Override public void stop() {
         AgeraBus.repository().removeUpdatable(newInEvent);
+    }
+
+
+    @Override public boolean onInterceptNewOut(@NonNull final Message message) {
+        if (isConfirmMessage) {
+            presenter.addNewIn(new SimpleMessage.Builder()
+                .setContent((String) message.getContent())
+                .setFromUserId(TRANSFORMER)
+                .setToUserId(TimeKey.userId)
+                .setExtra("Confirmed")
+                .thenCreateAtNow()
+            );
+            presenter.setInputText(empty());
+            isConfirmMessage = false;
+            return true;
+        }
+        return false;
     }
 
 
@@ -122,6 +142,7 @@ public class MessageService implements CoreContract.Service, Updatable {
 
     private void confirmTranslation(@NonNull String value) {
         presenter.setInputText(value);
+        isConfirmMessage = true;
         // TODO: 16/7/10 save to file
     }
 
