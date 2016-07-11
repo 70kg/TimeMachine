@@ -12,12 +12,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Updatable;
 import java.util.ArrayList;
 import java.util.List;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.CoreFragment;
+import me.drakeet.timemachine.Keyboards;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
@@ -83,6 +85,11 @@ public class MainActivity extends AppCompatActivity
             R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
+        drawer.addDrawerListener(new DrawerListenerAdapter() {
+            @Override public void onDrawerOpened(View drawerView) {
+                Keyboards.hide(drawerView);
+            }
+        });
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
@@ -170,6 +177,7 @@ public class MainActivity extends AppCompatActivity
             return true;
         } else if (id == R.id.action_clear) {
             presenter.clean();
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
