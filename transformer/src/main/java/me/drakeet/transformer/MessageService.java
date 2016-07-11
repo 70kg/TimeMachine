@@ -148,7 +148,10 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     @Override public void update() {
-        transientRepo.get().ifSucceededSendTo(stringReceiver());
+        transientRepo.get()
+            .ifSucceededSendTo(stringReceiver())
+            .ifFailedSendTo(value ->
+                stringReceiver().accept(value.getMessage()));
         transientRepo.removeUpdatable(this);
     }
 
