@@ -107,9 +107,16 @@ public class MainActivity extends AppCompatActivity
                 .setToUserId(YIN)
                 .thenCreateAtNow();
             presenter.addNewOut(message);
-        } else if (id == R.id.nav_translate) {
+        } else if (id == R.id.nav_translate_open) {
             SimpleMessage message = new SimpleMessage.Builder()
                 .setContent("发动魔法卡——混沌仪式!")
+                .setFromUserId(TimeKey.userId)
+                .setToUserId(TRANSFORMER)
+                .thenCreateAtNow();
+            presenter.addNewOut(message);
+        } else if (id == R.id.nav_translate_close) {
+            SimpleMessage message = new SimpleMessage.Builder()
+                .setContent("关闭混沌世界")
                 .setFromUserId(TimeKey.userId)
                 .setToUserId(TRANSFORMER)
                 .thenCreateAtNow();

@@ -8,9 +8,14 @@
             android:title="YinWang.org"/>
 
         <item
-            android:id="@+id/nav_translate"
+            android:id="@+id/nav_translate_open"
             android:icon="@drawable/ic_menu_send"
-            android:title="Translate Mode"/>
+            android:title="Open Translate Mode"/>
+
+        <item
+            android:id="@+id/nav_translate_close"
+            android:icon="@drawable/ic_menu_send"
+            android:title="Close Translate Mode"/>
     </group>
 
     <item android:title="Communicate">
