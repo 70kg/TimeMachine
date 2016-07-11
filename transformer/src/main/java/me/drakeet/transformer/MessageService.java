@@ -165,7 +165,7 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    @Override public void onClean() {
-        store.clean();
+    @Override public void onClear() {
+        store.clear();
     }
 }

@@ -196,7 +196,7 @@ final class SimpleMessagesStore {
     }
 
 
-    public void clean() {
+    public void clear() {
         writeRequestReceiver.accept(sqlDeleteRequest()
             .table(TABLE)
             .compile());
