@@ -1,6 +1,8 @@
 # TimeMachine
 时空稳定装置
 
+It's a SDK that looks like IM, but it's not IM.
+
 It is still in its infancy. Change frequently.
 
 Service sample:
