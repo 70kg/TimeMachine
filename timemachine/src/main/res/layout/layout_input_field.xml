@@ -4,9 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
+    android:paddingLeft="@dimen/input_field_padding_horizontal"
+    android:paddingRight="@dimen/input_field_padding_horizontal"
     android:orientation="horizontal"
     android:gravity="bottom"
-    android:background="@color/black"
+    android:background="@color/dark"
     tools:showIn="@layout/fragment_core">
 
     <ImageButton
@@ -29,8 +31,9 @@
         android:minHeight="@dimen/input_field_height"
         android:maxHeight="@dimen/input_field_max_height"
         android:background="@null"
+        android:textCursorDrawable="@drawable/input_cursor"
         android:textColorHint="@color/hint_light"
-        android:textColor="@color/white"
+        android:textColor="@color/light"
         android:hint="@string/hint_input"/>
 
     <ImageButton

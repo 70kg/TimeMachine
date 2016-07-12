@@ -6,9 +6,13 @@
     android:layout_height="wrap_content"
     android:gravity="right">
 
+    <!--TODO: Modify the background drawable -->
+
     <TextView
         style="@style/Message.Content.Out"
         android:id="@+id/content"
+        android:backgroundTint="@color/dark"
+        android:textColor="@color/light"
         tools:text="World"/>
 
 </LinearLayout>
