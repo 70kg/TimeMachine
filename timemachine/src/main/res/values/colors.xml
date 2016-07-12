@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="core_background">#FFF4F1</color>
-    <color name="white">#ffffff</color>
-    <color name="black">#de000000</color>
+
+    <color name="light">#ffffff</color>
+    <color name="dark">#000000</color>
+
     <color name="hint_light">#99ffffff</color>
 
     <color name="textColorPrimary">#de000000</color>
