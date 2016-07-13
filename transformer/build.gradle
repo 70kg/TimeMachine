@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 
+def keyStore = file('transformer.keystore')
+
 android {
     compileSdkVersion 23
     buildToolsVersion "24.0.0"
@@ -15,14 +17,34 @@ android {
         }
     }
 
+    signingConfigs {
+        app {
+            storeFile file('transformer.keystore')
+            storePassword project.hasProperty('STOREPASS') ? STOREPASS : ''
+            keyAlias project.hasProperty('KEYALIAS') ? KEYALIAS : ''
+            keyPassword project.hasProperty('KEYPASS') ? KEYPASS : ''
+        }
+    }
+
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
         }
 
         release {
-            minifyEnabled false
+            buildConfigField "boolean", "LOG_DEBUG", "false"
+
+            debuggable true
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+            if (keyStore.exists()) {
+                println "transformer: using drakeet's key"
+                signingConfig signingConfigs.app
+            } else {
+                println "transformer: using default key"
+            }
         }
     }
 
