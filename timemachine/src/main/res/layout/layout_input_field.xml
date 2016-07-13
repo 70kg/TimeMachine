@@ -42,6 +42,6 @@
         android:layout_width="@dimen/input_field_height"
         android:layout_height="@dimen/input_field_height"
         android:scaleType="centerInside"
-        android:src="@drawable/ic_send_light"/>
+        android:src="@drawable/ic_send_light_small"/>
 
 </LinearLayout>
