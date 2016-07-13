@@ -151,7 +151,8 @@ public class MessageService implements CoreContract.Service, Updatable {
         transientRepo.get()
             .ifSucceededSendTo(stringReceiver())
             .ifFailedSendTo(value ->
-                stringReceiver().accept(value.toString()));
+                stringReceiver().accept(
+                    (value.getMessage() != null) ? value.getMessage() : "网络异常, 请重试"));
         transientRepo.removeUpdatable(this);
     }
 
