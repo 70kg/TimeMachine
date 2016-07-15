@@ -10,8 +10,8 @@ android {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 10
-        versionName "0.0.10"
+        versionCode 20
+        versionName "0.0.20"
         jackOptions {
             enabled true
         }
