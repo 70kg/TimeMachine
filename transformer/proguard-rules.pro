@@ -15,10 +15,16 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-keepclassmembernames class *** {
+    static synthetic *** lambda$*(...);
+}
 
--keep class me.drakeet.transformer.** { *;}
+-keep class me.drakeet.transformer.*** { *;}
 -keep class me.drakeet.timemachine.** { *;}
--keepattributes SourceFile, LineNumberTable
+-keepclassmembernames class me.drakeet.transformer.*** {
+    synthetic <fields>;
+}
+-keepattributes SourceFile, LineNumberTable, InnerClasses, EnclosingMethod, Exceptions
 -keepattributes *Annotation*
 -keepattributes Signature
 
