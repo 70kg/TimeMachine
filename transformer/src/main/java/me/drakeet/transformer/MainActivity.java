@@ -26,6 +26,7 @@ import me.drakeet.timemachine.TimeKey;
 
 import static me.drakeet.transformer.MessageService.TRANSFORMER;
 import static me.drakeet.transformer.MessageService.YIN;
+import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.Services.messageService;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
@@ -60,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
-        fragment.setService(messageService());
+        fragment.setService(messageService(this));
         transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
         final SimpleMessagesStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
@@ -75,7 +76,7 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override public void setPresenter(@NonNull final CoreContract.Presenter presenter) {
-        this.presenter = presenter;
+        this.presenter = requireNonNull(presenter);
     }
 
 

@@ -1,11 +1,13 @@
 package me.drakeet.transformer;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import com.google.android.agera.Receiver;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
 import me.drakeet.agera.eventbus.AgeraBus;
+import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
@@ -14,15 +16,15 @@ import me.drakeet.transformer.request.TranslateRequests;
 import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.transformer.Objects.requireNonNull;
-import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_CLOSE;
-import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_OPEN;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
+import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_CLOSE;
+import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_OPEN;
 
 /**
  * @author drakeet
  */
-public class MessageService implements CoreContract.Service, Updatable {
+public class MessageService extends BaseService implements Updatable {
 
     public static final String YIN = "YIN";
     public static final String TRANSFORMER = "transformer";
@@ -38,8 +40,9 @@ public class MessageService implements CoreContract.Service, Updatable {
     private boolean isConfirmMessage;
 
 
-    public MessageService() {
-        store = messagesStore(App.getContext());
+    public MessageService(Context context) {
+        super(context);
+        store = messagesStore(getContext().getApplicationContext());
     }
 
 
@@ -117,13 +120,13 @@ public class MessageService implements CoreContract.Service, Updatable {
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                TranslateRequests.lightAndDarkGateTerminal(true);
+                TranslateRequests.lightAndDarkGateTerminal(getContext(), true);
                 stringReceiver().accept(LIGHT_AND_DARK_GATE_OPEN);
                 this.translateMode = true;
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
-                TranslateRequests.lightAndDarkGateTerminal(false);
+                TranslateRequests.lightAndDarkGateTerminal(getContext(), false);
                 stringReceiver().accept(LIGHT_AND_DARK_GATE_CLOSE);
                 this.translateMode = false;
                 break;

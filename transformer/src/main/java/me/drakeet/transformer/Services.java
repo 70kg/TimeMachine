@@ -1,5 +1,6 @@
 package me.drakeet.transformer;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 
 /**
@@ -12,7 +13,7 @@ public class Services {
     }
 
 
-    @NonNull public static MessageService messageService() {
-        return new MessageService();
+    @NonNull public static MessageService messageService(@NonNull Context context) {
+        return new MessageService(context);
     }
 }
