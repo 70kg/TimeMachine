@@ -29,6 +29,7 @@ import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
 import static me.drakeet.transformer.MessageService.YIN;
+import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
 /**
@@ -72,6 +73,7 @@ public class Inhibitor extends IntentService implements Updatable {
 
 
     private void notify(@NonNull final SimpleMessage message) {
+        requireNonNull(message);
         String title = message.getFromUserId();
         String content = message.getContent().toString();
         if (Objects.equals(message.getFromUserId(), YIN)) {

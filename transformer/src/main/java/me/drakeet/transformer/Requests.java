@@ -24,6 +24,7 @@ import static me.drakeet.transformer.App.getContext;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.LogFunctions.requestInterceptor;
 import static me.drakeet.transformer.LogFunctions.responseInterceptor;
+import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.Requests.Preferences.defaultPreferences;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 
@@ -103,7 +104,7 @@ public class Requests {
 
     @NonNull
     public static Repository<Result<String>> requestTranslate(@NonNull final String content) {
-
+        requireNonNull(content);
         return repositoryWithInitialValue(Result.<String>absent())
             .observe()
             .onUpdatesPerLoop()
@@ -132,12 +133,12 @@ public class Requests {
     }
 
 
-    public static class Preferences {
+    static class Preferences {
 
         private static SharedPreferences preferences;
 
 
-        @NonNull public static SharedPreferences defaultPreferences() {
+        @NonNull static SharedPreferences defaultPreferences() {
             if (preferences != null) {
                 return preferences;
             }
@@ -146,7 +147,9 @@ public class Requests {
         }
 
 
-        private Preferences() {}
+        private Preferences() {
+            throw new AssertionError();
+        }
     }
 
 
@@ -177,5 +180,7 @@ public class Requests {
     }
 
 
-    private Requests() {}
+    private Requests() {
+        throw new AssertionError();
+    }
 }

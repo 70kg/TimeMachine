@@ -1,9 +1,12 @@
 package me.drakeet.timemachine;
 
+import android.support.annotation.NonNull;
+
 /**
  * @author drakeet
  */
 
 public interface Builder<T> {
-    T build();
+
+    @NonNull T build();
 }

@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 public class Services {
 
     private Services() {
+        throw new AssertionError();
     }
 
 

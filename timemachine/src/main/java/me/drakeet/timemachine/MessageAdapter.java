@@ -61,7 +61,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         TextView content;
 
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             context = itemView.getContext();
             content = (TextView) itemView.findViewById(R.id.content);

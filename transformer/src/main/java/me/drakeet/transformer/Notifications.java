@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
 import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
+import static me.drakeet.transformer.Objects.requireNonNull;
 
 /**
  * Created by drakeet on 16/6/21.
@@ -19,6 +20,7 @@ public class Notifications {
 
 
     private Notifications() {
+        throw new AssertionError();
     }
 
 
@@ -29,12 +31,12 @@ public class Notifications {
                               @NonNull final Class<?> targetActivity) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
             .setPriority(PRIORITY_MAX)
-            .setContentTitle(title)
-            .setContentText(message)
+            .setContentTitle(requireNonNull(title))
+            .setContentText(requireNonNull(message))
             .setVibrate(new long[] { 0 })
             .setAutoCancel(true)
             .setSmallIcon(smallIconResId);
-        Intent intent = new Intent(context, targetActivity);
+        Intent intent = new Intent(context, requireNonNull(targetActivity));
         // Sets the Activity to start in a new, empty task
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent notifyPendingIntent = PendingIntent

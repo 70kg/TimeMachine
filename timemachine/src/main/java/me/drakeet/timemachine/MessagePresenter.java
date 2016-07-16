@@ -3,6 +3,8 @@ package me.drakeet.timemachine;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * @author drakeet
  */
@@ -17,24 +19,27 @@ public class MessagePresenter implements CoreContract.Presenter {
     public MessagePresenter(
         @NonNull final CoreContract.View view,
         @NonNull final CoreContract.Service service) {
-        this.view = view;
-        this.service = service;
+        this.view = requireNonNull(view);
+        this.service = requireNonNull(service);
         service.setPresenter(this);
     }
 
 
     @Override public void addNewIn(@NonNull final Message message) {
+        requireNonNull(message);
         this.view.onNewIn(message);
     }
 
 
     @Override public void addNewOut(@NonNull final Message message) {
+        requireNonNull(message);
         view.onNewOut(message);
         service.onNewOut(message);
     }
 
 
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
+        requireNonNull(message);
         if (service.onInterceptNewOut(message)) {
             return true;
         } else {
@@ -46,6 +51,7 @@ public class MessagePresenter implements CoreContract.Presenter {
 
 
     @Override public void setInputText(@NonNull final CharSequence text) {
+        requireNonNull(text);
         view.setInputText(text);
     }
 

@@ -21,17 +21,19 @@ public class CoreHelper extends Fragment {
     }
 
 
-    public static <ParentFrag extends Fragment & CoreFragment> CoreHelper attach(ParentFrag parent) {
+    public static <ParentFragment extends Fragment & CoreFragment> CoreHelper attach(
+        @Nullable ParentFragment parent) {
         return attach(parent.getChildFragmentManager());
     }
 
 
-    public static <ParentActivity extends FragmentActivity & CoreFragment> CoreHelper attach(ParentActivity parent) {
+    public static <ParentActivity extends FragmentActivity & CoreFragment> CoreHelper attach(
+        @Nullable ParentActivity parent) {
         return attach(parent.getSupportFragmentManager());
     }
 
 
-    private static CoreHelper attach(FragmentManager fragmentManager) {
+    private static CoreHelper attach(@Nullable FragmentManager fragmentManager) {
         CoreHelper helper = (CoreHelper) fragmentManager.findFragmentByTag(FRAG_TAG);
         if (helper == null) {
             helper = new CoreHelper();

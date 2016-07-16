@@ -47,6 +47,7 @@ import static com.google.android.agera.database.SqlRequests.sqlInsertRequest;
 import static com.google.android.agera.database.SqlRequests.sqlRequest;
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
+import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.CONTENT_COLUMN;
 import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.CREATED_AT_COLUMN;
 import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.FROM_USER_ID_COLUMN;
@@ -175,6 +176,7 @@ final class SimpleMessagesStore {
 
 
     public void insert(@NonNull final SimpleMessage message) {
+        requireNonNull(message);
         writeRequestReceiver.accept(sqlInsertRequest()
             .table(TABLE)
             .column(ID_COLUMN, message.getId())
@@ -187,6 +189,7 @@ final class SimpleMessagesStore {
 
 
     public boolean delete(@NonNull final SimpleMessage message) {
+        requireNonNull(message);
         writeRequestReceiver.accept(sqlDeleteRequest()
             .table(TABLE)
             .where(MODIFY_WHERE)

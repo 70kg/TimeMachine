@@ -11,6 +11,7 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
 
+import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_CLOSE;
 import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_OPEN;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
@@ -41,7 +42,7 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     @Override public void setPresenter(@NonNull final CoreContract.Presenter presenter) {
-        this.presenter = presenter;
+        this.presenter = requireNonNull(presenter);
     }
 
 
@@ -62,6 +63,7 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
+        requireNonNull(message);
         if (isConfirmMessage) {
             insertNewIn(new SimpleMessage.Builder()
                 .setContent((String) message.getContent())
@@ -79,6 +81,7 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     @Override public void onNewOut(@NonNull final Message _message) {
+        requireNonNull(_message);
         if (!(_message instanceof SimpleMessage)) {
             throw new IllegalArgumentException("Only supports SimpleMessage currently.");
         }
@@ -97,8 +100,8 @@ public class MessageService implements CoreContract.Service, Updatable {
     }
 
 
-    private void handleContent(String content) {
-        switch (content) {
+    private void handleContent(@NonNull String content) {
+        switch (requireNonNull(content)) {
             case "滚":
                 insertNewIn(new SimpleMessage.Builder()
                     .setContent("但是...但是...")
@@ -135,13 +138,14 @@ public class MessageService implements CoreContract.Service, Updatable {
 
 
     private void insertNewIn(@NonNull final SimpleMessage simpleMessage) {
+        requireNonNull(simpleMessage);
         presenter.addNewIn(simpleMessage);
         store.insert(simpleMessage);
     }
 
 
     private void confirmTranslation(@NonNull String value) {
-        presenter.setInputText(value);
+        presenter.setInputText(requireNonNull(value));
         isConfirmMessage = true;
         // TODO: 16/7/10 save to file
     }

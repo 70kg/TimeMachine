@@ -17,6 +17,8 @@ import android.widget.ImageButton;
 import java.util.List;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * @author drakeet
  */
@@ -56,12 +58,12 @@ public class CoreFragment extends Fragment
 
 
     @Override public void setDelegate(@NonNull final CoreContract.Delegate delegate) {
-        this.delegate = delegate;
+        this.delegate = requireNonNull(delegate);
     }
 
 
     @Override public void setService(@NonNull final CoreContract.Service service) {
-        initPresenter(service);
+        initPresenter(requireNonNull(service));
     }
 
 
@@ -72,6 +74,7 @@ public class CoreFragment extends Fragment
      */
     @NonNull @Override
     public CoreContract.Presenter initPresenter(@NonNull final CoreContract.Service service) {
+        requireNonNull(service);
         CoreContract.Presenter presenter = new MessagePresenter(this, service);
         this.changePresenter(presenter);
         return presenter;
@@ -84,7 +87,7 @@ public class CoreFragment extends Fragment
      * @param presenter new presenter
      */
     @Override public void changePresenter(@NonNull final CoreContract.Presenter presenter) {
-        this.presenter = presenter;
+        this.presenter = requireNonNull(presenter);
         delegate.setPresenter(presenter);
     }
 
@@ -116,6 +119,7 @@ public class CoreFragment extends Fragment
 
 
     private void setupRecyclerView(@NonNull final View rootView) {
+        requireNonNull(rootView);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
         layoutManager = new LinearLayoutManager(getContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -154,18 +158,21 @@ public class CoreFragment extends Fragment
 
 
     @Override public void onNewIn(@NonNull final Message message) {
+        requireNonNull(message);
         addMessage(message);
         delegate.onNewIn(message);
     }
 
 
     @Override public void onNewOut(@NonNull final Message message) {
+        requireNonNull(message);
         addMessage(message);
         delegate.onNewOut(message);
     }
 
 
     private void addMessage(@NonNull final Message message) {
+        requireNonNull(message);
         int _size = messages.size();
         messages.add(message);
         adapter.notifyItemInserted(_size);
@@ -174,6 +181,7 @@ public class CoreFragment extends Fragment
 
 
     @Override public void setInputText(@NonNull CharSequence text) {
+        requireNonNull(text);
         input.setText(text);
         input.setSelection(text.length());
     }

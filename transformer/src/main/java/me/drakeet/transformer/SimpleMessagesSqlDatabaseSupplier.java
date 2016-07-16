@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import com.google.android.agera.database.SqlDatabaseSupplier;
 
+import static me.drakeet.transformer.Objects.requireNonNull;
+
 /**
  * @author drakeet
  */
@@ -43,7 +45,7 @@ final class SimpleMessagesSqlDatabaseSupplier extends SqlDatabaseSupplier {
 
     @Override
     public void onCreate(@NonNull final SQLiteDatabase sqLiteDatabase) {
-        sqLiteDatabase.execSQL(CREATE_TABLE);
+        requireNonNull(sqLiteDatabase).execSQL(CREATE_TABLE);
     }
 
 

@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import java.util.Date;
 import java.util.UUID;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * @author drakeet
  */
@@ -113,31 +115,31 @@ public class SimpleMessage implements Message<String> {
          * @return Builder self
          */
         public Builder setId(@NonNull String id) {
-            this.id = id;
+            this.id = requireNonNull(id);
             return this;
         }
 
 
         public Builder setContent(@NonNull String content) {
-            this.content = content;
+            this.content = requireNonNull(content);
             return this;
         }
 
 
         public Builder setFromUserId(@NonNull String fromUserId) {
-            this.fromUserId = fromUserId;
+            this.fromUserId = requireNonNull(fromUserId);
             return this;
         }
 
 
         public Builder setToUserId(@NonNull String toUserId) {
-            this.toUserId = toUserId;
+            this.toUserId = requireNonNull(toUserId);
             return this;
         }
 
 
         public Builder setCreatedAt(@NonNull Date createdAt) {
-            this.createdAt = createdAt;
+            this.createdAt = requireNonNull(createdAt);
             return this;
         }
 
@@ -149,7 +151,7 @@ public class SimpleMessage implements Message<String> {
 
 
         public Builder setExtra(@Nullable String extra) {
-            this.extra = extra;
+            this.extra = requireNonNull(extra);
             return this;
         }
 
