@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import me.drakeet.transformer.BuildVars;
 import me.drakeet.transformer.entity.YouDao;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static com.google.android.agera.content.ContentObservables.sharedPreferencesObservable;
@@ -20,7 +21,6 @@ import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.getContext;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Objects.requireNonNull;
-import static me.drakeet.transformer.Preferences.defaultPreferences;
 import static me.drakeet.transformer.Requests.urlToResponse;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 
@@ -73,7 +73,7 @@ public class TranslateRequests {
 
 
     public static void lightAndDarkGateTerminal(final boolean open) {
-        final SharedPreferences preferences = defaultPreferences(getContext());
+        final SharedPreferences preferences = getDefaultSharedPreferences(getContext());
         preferences.edit()
             .putBoolean(LIGHT_AND_DARK_GATE, open)
             .apply();
@@ -81,7 +81,7 @@ public class TranslateRequests {
 
 
     @NonNull public static Repository<Result<String>> observeLightAndDarkGate() {
-        final SharedPreferences preferences = defaultPreferences(getContext());
+        final SharedPreferences preferences = getDefaultSharedPreferences(getContext());
         return Repositories.repositoryWithInitialValue(Result.<String>absent())
             .observe(sharedPreferencesObservable(preferences, LIGHT_AND_DARK_GATE))
             .onUpdatesPerLoop()
