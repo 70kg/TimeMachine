@@ -2,10 +2,12 @@ package me.drakeet.transformer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import com.google.android.agera.Observable;
 import com.google.android.agera.Receiver;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
+import java.util.HashMap;
 import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
@@ -38,11 +40,13 @@ public class MessageService extends BaseService implements Updatable {
     private boolean translateMode;
     // TODO: 16/7/10 to improve
     private boolean isConfirmMessage;
+    private final HashMap<Observable, Updatable> observableMap;
 
 
     public MessageService(Context context) {
         super(context);
         store = messagesStore(getContext().getApplicationContext());
+        observableMap = new HashMap<>();
     }
 
 
@@ -172,6 +176,13 @@ public class MessageService extends BaseService implements Updatable {
             .setFromUserId(YIN)
             .setToUserId(TimeKey.userId)
             .thenCreateAtNow());
+    }
+
+
+    private void addToObservable(
+        @NonNull final Observable observable, @NonNull Updatable updatable) {
+        observableMap.put(observable, updatable);
+        observable.addUpdatable(updatable);
     }
 
 
