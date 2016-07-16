@@ -27,6 +27,7 @@ import com.google.android.agera.Updatable;
 import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.transformer.MessageService.YIN;
 import static me.drakeet.transformer.Objects.requireNonNull;
@@ -48,7 +49,7 @@ public class Inhibitor extends IntentService implements Updatable {
 
 
     @Override protected void onHandleIntent(Intent intent) {
-        repository = Requests.requestYinSync();
+        repository = YinRequests.sync();
         repository.addUpdatable(this);
     }
 

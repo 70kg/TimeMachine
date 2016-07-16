@@ -10,10 +10,12 @@ import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.transformer.request.TranslateRequests;
+import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.transformer.Objects.requireNonNull;
-import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_CLOSE;
-import static me.drakeet.transformer.Requests.LIGHT_AND_DARK_GATE_OPEN;
+import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_CLOSE;
+import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_OPEN;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
 
@@ -88,7 +90,7 @@ public class MessageService implements CoreContract.Service, Updatable {
         final SimpleMessage message = (SimpleMessage) _message;
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
-            transientRepo = Requests.requestTranslate(content);
+            transientRepo = TranslateRequests.translate(content);
             transientRepo.addUpdatable(
                 () -> transientRepo.get()
                     .ifSucceededSendTo(value -> confirmTranslation(value)));
@@ -110,18 +112,18 @@ public class MessageService implements CoreContract.Service, Updatable {
                     .thenCreateAtNow());
                 break;
             case "求王垠的最新文章":
-                transientRepo = Requests.requestYinAsync();
+                transientRepo = YinRequests.async();
                 transientRepo.addUpdatable(this);
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                Requests.lightAndDarkGateTerminal(true);
+                TranslateRequests.lightAndDarkGateTerminal(true);
                 stringReceiver().accept(LIGHT_AND_DARK_GATE_OPEN);
                 this.translateMode = true;
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
-                Requests.lightAndDarkGateTerminal(false);
+                TranslateRequests.lightAndDarkGateTerminal(false);
                 stringReceiver().accept(LIGHT_AND_DARK_GATE_CLOSE);
                 this.translateMode = false;
                 break;
