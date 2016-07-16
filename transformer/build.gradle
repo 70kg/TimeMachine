@@ -44,6 +44,7 @@ android {
                 signingConfig signingConfigs.app
             } else {
                 println "transformer: using default key"
+                signingConfig signingConfigs.debug
             }
         }
     }
