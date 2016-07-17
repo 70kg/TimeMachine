@@ -136,17 +136,14 @@ public class MessageService extends BaseService {
     private void handleContent(@NonNull String content) {
         switch (requireNonNull(content)) {
             case "滚":
-                insertNewIn(new SimpleMessage.Builder()
-                    .setContent("但是...但是...")
-                    .setFromUserId(DEFAULT)
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow());
+                stringReceiver().accept("但是...但是...");
                 break;
             case "求王垠的最新文章":
                 yinReaction.accept(content);
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
+                // TODO: 16/7/17  
                 TranslateRequests.lightAndDarkGateTerminal(getContext(), true);
                 stringReceiver().accept(LIGHT_AND_DARK_GATE_OPEN);
                 this.translateMode = true;
@@ -158,7 +155,6 @@ public class MessageService extends BaseService {
                 this.translateMode = false;
                 break;
             default:
-                // echo
                 echoReaction.accept(content);
                 break;
         }
@@ -182,7 +178,7 @@ public class MessageService extends BaseService {
     @NonNull private Receiver<String> stringReceiver() {
         return value -> insertNewIn(new SimpleMessage.Builder()
             .setContent(value)
-            .setFromUserId(YIN)
+            .setFromUserId(DEFAULT)
             .setToUserId(TimeKey.userId)
             .thenCreateAtNow());
     }
