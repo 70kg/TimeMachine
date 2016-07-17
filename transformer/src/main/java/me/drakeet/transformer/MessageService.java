@@ -2,12 +2,11 @@ package me.drakeet.transformer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.google.android.agera.Observable;
 import com.google.android.agera.Receiver;
 import com.google.android.agera.Repository;
+import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
-import java.util.HashMap;
 import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
@@ -17,6 +16,8 @@ import me.drakeet.timemachine.TimeKey;
 import me.drakeet.transformer.request.TranslateRequests;
 import me.drakeet.transformer.request.YinRequests;
 
+import static com.google.android.agera.Repositories.repositoryWithInitialValue;
+import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
@@ -26,27 +27,29 @@ import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GA
 /**
  * @author drakeet
  */
-public class MessageService extends BaseService implements Updatable {
+public class MessageService extends BaseService {
 
     public static final String YIN = "YIN";
     public static final String TRANSFORMER = "transformer";
     public static final String DEFAULT = "default";
+    public static final String EMPTY = "";
 
-    private Repository<Result<String>> transientRepo;
     private Updatable newInEvent;
     private final SimpleMessagesStore store;
+    private ObservableHelper helper;
 
     private CoreContract.Presenter presenter;
     private boolean translateMode;
     // TODO: 16/7/10 to improve
     private boolean isConfirmMessage;
-    private final HashMap<Observable, Updatable> observableMap;
+    private Reservoir<String> echoReaction;
+    private Reservoir<String> yinReaction;
 
 
     public MessageService(Context context) {
         super(context);
         store = messagesStore(getContext().getApplicationContext());
-        observableMap = new HashMap<>();
+        helper = new ObservableHelper();
     }
 
 
@@ -63,11 +66,33 @@ public class MessageService extends BaseService implements Updatable {
             }
         };
         AgeraBus.repository().addUpdatable(newInEvent);
+
+        echoReaction = Reservoirs.<String>reactionReservoir();
+        Repository<String> echoRepo = repositoryWithInitialValue(EMPTY)
+            .observe(echoReaction)
+            .onUpdatesPerLoop()
+            .thenAttemptGetFrom(echoReaction).orSkip()
+            .notifyIf((last, cur) -> !cur.isEmpty())
+            .onDeactivation(SEND_INTERRUPT)
+            .compile();
+        helper.addToObservable(echoRepo, () -> stringReceiver().accept(echoRepo.get()));
+
+        yinReaction = Reservoirs.<String>reactionReservoir();
+        Repository<Result<String>> yinRepo = YinRequests.async(yinReaction);
+        helper.addToObservable(yinRepo,
+            () -> yinRepo.get()
+                .ifSucceededSendTo(stringReceiver())
+                .ifFailedSendTo(value -> {
+                    stringReceiver().accept(
+                        (value.getMessage() != null) ? value.getMessage() : "网络异常, 请重试");
+                })
+        );
     }
 
 
     @Override public void stop() {
         AgeraBus.repository().removeUpdatable(newInEvent);
+        helper.removeObservables();
     }
 
 
@@ -97,10 +122,9 @@ public class MessageService extends BaseService implements Updatable {
         final SimpleMessage message = (SimpleMessage) _message;
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
-            transientRepo = TranslateRequests.translate(content);
-            transientRepo.addUpdatable(
-                () -> transientRepo.get()
-                    .ifSucceededSendTo(value -> confirmTranslation(value)));
+            Repository<Result<String>> transientRepo = TranslateRequests.translate(content);
+            transientRepo.addUpdatable(() -> transientRepo.get()
+                .ifSucceededSendTo(value -> confirmTranslation(value)));
         } else {
             handleContent(content);
         }
@@ -119,8 +143,7 @@ public class MessageService extends BaseService implements Updatable {
                     .thenCreateAtNow());
                 break;
             case "求王垠的最新文章":
-                transientRepo = YinRequests.async();
-                transientRepo.addUpdatable(this);
+                yinReaction.accept(content);
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
@@ -136,11 +159,7 @@ public class MessageService extends BaseService implements Updatable {
                 break;
             default:
                 // echo
-                insertNewIn(new SimpleMessage.Builder()
-                    .setContent(content)
-                    .setFromUserId(DEFAULT)
-                    .setToUserId(TimeKey.userId)
-                    .thenCreateAtNow());
+                echoReaction.accept(content);
                 break;
         }
     }
@@ -160,29 +179,12 @@ public class MessageService extends BaseService implements Updatable {
     }
 
 
-    @Override public void update() {
-        transientRepo.get()
-            .ifSucceededSendTo(stringReceiver())
-            .ifFailedSendTo(value ->
-                stringReceiver().accept(
-                    (value.getMessage() != null) ? value.getMessage() : "网络异常, 请重试"));
-        transientRepo.removeUpdatable(this);
-    }
-
-
     @NonNull private Receiver<String> stringReceiver() {
         return value -> insertNewIn(new SimpleMessage.Builder()
             .setContent(value)
             .setFromUserId(YIN)
             .setToUserId(TimeKey.userId)
             .thenCreateAtNow());
-    }
-
-
-    private void addToObservable(
-        @NonNull final Observable observable, @NonNull Updatable updatable) {
-        observableMap.put(observable, updatable);
-        observable.addUpdatable(updatable);
     }
 
 
