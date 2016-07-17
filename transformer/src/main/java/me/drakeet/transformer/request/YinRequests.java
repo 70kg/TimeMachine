@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
 import com.google.android.agera.Repository;
+import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
 import com.google.android.agera.Supplier;
 import com.google.android.agera.net.HttpResponse;
@@ -23,10 +24,11 @@ public class YinRequests {
     private final static Supplier<String> YIN = () -> "http://www.YinWang.org";
 
 
-    @NonNull public static Repository<Result<String>> async() {
+    @NonNull public static Repository<Result<String>> async(Reservoir<String> reaction) {
         return repositoryWithInitialValue(Result.<String>absent())
-            .observe()
+            .observe(reaction)
             .onUpdatesPerLoop()
+            .attemptGetFrom(reaction).orSkip()
             .goTo(networkExecutor)
             .getFrom(YIN)
             .attemptTransform(urlToResponse())
