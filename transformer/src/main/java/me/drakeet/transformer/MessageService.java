@@ -44,6 +44,7 @@ public class MessageService extends BaseService {
     private boolean isConfirmMessage;
     private Reservoir<String> echoReaction;
     private Reservoir<String> yinReaction;
+    private Reservoir<String> translateReaction;
 
 
     public MessageService(Context context) {
@@ -75,6 +76,7 @@ public class MessageService extends BaseService {
             .notifyIf((last, cur) -> !cur.isEmpty())
             .onDeactivation(SEND_INTERRUPT)
             .compile();
+        // TODO: 16/7/17 add
         helper.addToObservable(echoRepo, () -> stringReceiver().accept(echoRepo.get()));
 
         yinReaction = Reservoirs.<String>reactionReservoir();
@@ -87,6 +89,8 @@ public class MessageService extends BaseService {
                         (value.getMessage() != null) ? value.getMessage() : "网络异常, 请重试");
                 })
         );
+
+        translateReaction = Reservoirs.<String>reactionReservoir();
     }
 
 
@@ -122,9 +126,7 @@ public class MessageService extends BaseService {
         final SimpleMessage message = (SimpleMessage) _message;
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
-            Repository<Result<String>> transientRepo = TranslateRequests.translate(content);
-            transientRepo.addUpdatable(() -> transientRepo.get()
-                .ifSucceededSendTo(value -> confirmTranslation(value)));
+            translateReaction.accept(content);
         } else {
             handleContent(content);
         }
@@ -143,9 +145,12 @@ public class MessageService extends BaseService {
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                // TODO: 16/7/17  
-                TranslateRequests.lightAndDarkGateTerminal(getContext(), true);
-                stringReceiver().accept(LIGHT_AND_DARK_GATE_OPEN);
+                Repository<Result<String>> transientRepo = TranslateRequests.translation(
+                    translateReaction);
+                transientRepo.addUpdatable(() -> transientRepo.get()
+                    .ifSucceededSendTo(value -> handleTranslation(value))
+                    .ifFailedSendTo(failure -> stringReceiver().accept(failure.getMessage()))
+                );
                 this.translateMode = true;
                 break;
             case "关闭混沌仪式":
@@ -168,19 +173,22 @@ public class MessageService extends BaseService {
     }
 
 
-    private void confirmTranslation(@NonNull String value) {
-        presenter.setInputText(requireNonNull(value));
-        isConfirmMessage = true;
-        // TODO: 16/7/10 save to file
-    }
-
-
     @NonNull private Receiver<String> stringReceiver() {
         return value -> insertNewIn(new SimpleMessage.Builder()
             .setContent(value)
             .setFromUserId(DEFAULT)
             .setToUserId(TimeKey.userId)
             .thenCreateAtNow());
+    }
+
+
+    private void handleTranslation(@NonNull String value) {
+        if (value.equals(LIGHT_AND_DARK_GATE_OPEN)) {
+            stringReceiver().accept(value);
+        } else {
+            presenter.setInputText(value);
+            isConfirmMessage = true;
+        }
     }
 
 

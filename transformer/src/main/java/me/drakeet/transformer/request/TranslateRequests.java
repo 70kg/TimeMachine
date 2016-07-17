@@ -7,6 +7,7 @@ import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
 import com.google.android.agera.Repositories;
 import com.google.android.agera.Repository;
+import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
 import com.google.android.agera.Supplier;
 import com.google.android.agera.net.HttpResponse;
@@ -42,14 +43,15 @@ public class TranslateRequests {
 
 
     @NonNull
-    public static Repository<Result<String>> translate(@NonNull final String content) {
-        requireNonNull(content);
+    public static Repository<Result<String>> translation(@NonNull Reservoir<String> reaction) {
+        requireNonNull(reaction);
         return repositoryWithInitialValue(Result.<String>absent())
-            .observe()
+            .observe(reaction)
             .onUpdatesPerLoop()
+            .attemptGetFrom(reaction)
+            .orEnd(input -> Result.success(LIGHT_AND_DARK_GATE_OPEN))
             .goTo(networkExecutor)
-            .getFrom(YOU_DAO)
-            .transform(input -> input + toUtf8URLEncode(content))
+            .mergeIn(YOU_DAO, (input, baseUrl) -> baseUrl + toUtf8URLEncode(input))
             .attemptTransform(urlToResponse())
             .orEnd(Result::failure)
             .goTo(calculationExecutor)
