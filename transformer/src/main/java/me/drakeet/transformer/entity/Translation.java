@@ -29,4 +29,27 @@ public class Translation {
     @NonNull public static Translation working(@NonNull String text) {
         return new Translation(Step.OnWorking, text);
     }
+
+
+    @Override public String toString() {
+        return "Translation {" +
+            "step=" + step +
+            ", text='" + text + '\'' +
+            '}';
+    }
+
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Translation that = (Translation) o;
+        return step == that.step && text.equals(that.text);
+    }
+
+
+    @Override public int hashCode() {
+        int result = step.hashCode();
+        result = 31 * result + text.hashCode();
+        return result;
+    }
 }

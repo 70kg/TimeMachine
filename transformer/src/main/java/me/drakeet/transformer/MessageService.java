@@ -2,6 +2,7 @@ package me.drakeet.transformer;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.google.android.agera.Receiver;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Reservoir;
@@ -13,10 +14,10 @@ import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.transformer.request.YinRequests;
-import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.entity.Step;
+import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.request.TranslateRequests;
+import me.drakeet.transformer.request.YinRequests;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -77,21 +78,20 @@ public class MessageService extends BaseService {
             .notifyIf((last, cur) -> !cur.isEmpty())
             .onDeactivation(SEND_INTERRUPT)
             .compile();
-        // TODO: 16/7/17 add
         helper.addToObservable(echoRepo, () -> stringReceiver().accept(echoRepo.get()));
 
         yinReaction = Reservoirs.<String>reactionReservoir();
         Repository<Result<String>> yinRepo = YinRequests.async(yinReaction);
-        helper.addToObservable(yinRepo,
-            () -> yinRepo.get()
-                .ifSucceededSendTo(stringReceiver())
-                .ifFailedSendTo(value -> {
-                    stringReceiver().accept(
-                        (value.getMessage() != null) ? value.getMessage() : "网络异常, 请重试");
-                })
-        );
+        helper.addToObservable(yinRepo, () -> yinRepo.get()
+            .ifSucceededSendTo(stringReceiver())
+            .ifFailedSendTo(errorHandler()));
 
         translateReaction = Reservoirs.<Translation>reactionReservoir();
+        Repository<Result<Translation>> transientRepo =
+            TranslateRequests.translation(translateReaction);
+        transientRepo.addUpdatable(() -> transientRepo.get()
+            .ifSucceededSendTo(this::handleTranslation)
+            .ifFailedSendTo(errorHandler()));
     }
 
 
@@ -147,16 +147,11 @@ public class MessageService extends BaseService {
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
                 translateReaction.accept(Translation.create());
-                Repository<Result<Translation>> transientRepo = TranslateRequests.translation(
-                    translateReaction);
-                transientRepo.addUpdatable(() -> transientRepo.get()
-                    .ifSucceededSendTo(value -> handleTranslation(value))
-                    .ifFailedSendTo(failure -> stringReceiver().accept(failure.getMessage()))
-                );
                 this.translateMode = true;
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
+                // TODO: 16/7/21
                 TranslateRequests.lightAndDarkGateTerminal(getContext(), false);
                 stringReceiver().accept(LIGHT_AND_DARK_GATE_CLOSE);
                 this.translateMode = false;
@@ -184,9 +179,20 @@ public class MessageService extends BaseService {
     }
 
 
+    private Receiver<Throwable> errorHandler() {
+        return value -> {
+            String error = (value.getMessage() != null) ?
+                           value.getMessage() :
+                           "网络异常, 请重试";
+            stringReceiver().accept(error);
+        };
+    }
+
+
     private void handleTranslation(@NonNull Translation value) {
         requireNonNull(value);
         final String result = requireNonNull(value.text);
+        Log.d("handleTranslation", value.toString());
         if (value.step == Step.OnCreate) {
             stringReceiver().accept(result);
         } else {

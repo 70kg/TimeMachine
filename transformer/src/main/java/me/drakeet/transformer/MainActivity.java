@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity
     };
     private CoreContract.Presenter presenter;
     private Repository<List<SimpleMessage>> storeMessages;
+    private MenuItem currentMenuItem;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +91,20 @@ public class MainActivity extends AppCompatActivity
             @Override public void onDrawerOpened(View drawerView) {
                 Keyboards.hide(drawerView);
             }
+
+
+            @Override public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                MainActivity.this.onNavigationItemSelected(currentMenuItem);
+            }
         });
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            currentMenuItem = item;
+            drawer.closeDrawer(GravityCompat.START);
+            return true;
+        });
         navigationView.setItemIconTintList(null);
     }
 
@@ -123,7 +134,6 @@ public class MainActivity extends AppCompatActivity
                 .thenCreateAtNow();
             presenter.addNewOut(message);
         }
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 

@@ -153,7 +153,7 @@ public class CoreFragment extends Fragment
             }
         });
         smoothScroller = new SnapperSmoothScroller(getContext())
-            .setMillisecondsPerInchSearchingTarget(100f);
+            .setMillisecondsPerInchSearchingTarget(200f);
     }
 
 
@@ -209,7 +209,7 @@ public class CoreFragment extends Fragment
 
     private void attemptSmoothScrollToBottom() {
         int last = messages.size() - 1;
-        if (layoutManager.findLastVisibleItemPosition() + 2 >= last) {
+        if (layoutManager.findLastVisibleItemPosition() >= last - 2) {
             smoothScroller.setTargetPosition(last);
             recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
         }
