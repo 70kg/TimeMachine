@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
+import com.google.android.agera.Merger;
 import com.google.android.agera.Repositories;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Reservoir;
@@ -13,6 +14,8 @@ import com.google.android.agera.Supplier;
 import com.google.android.agera.net.HttpResponse;
 import com.google.gson.Gson;
 import me.drakeet.transformer.BuildVars;
+import me.drakeet.transformer.entity.Step;
+import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.entity.YouDao;
 
 import static android.preference.PreferenceManager.getDefaultSharedPreferences;
@@ -31,7 +34,7 @@ import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 public class TranslateRequests {
 
     private static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
-    public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!";
+    public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!\n请发送一篇你需要翻译的内容";
     public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
 
     private final static Supplier<String> YOU_DAO
@@ -42,20 +45,66 @@ public class TranslateRequests {
         BuildVars.YOUDAO_TRANSLATE_KEY);
 
 
+    private static Function<Translation, Result<Translation>> onCreateFunction() {
+        return Functions.functionFrom(Translation.class)
+            .thenApply(Result::success);
+    }
+
+
+    private static Function<Translation, Result<Translation>> onStartFunction() {
+        return Functions.functionFrom(Translation.class)
+            .thenApply(input -> {
+                input.text = "start";
+                input.step = input.step.next();
+                return Result.success(input);
+            });
+    }
+
+
+    private static Merger<Translation, String, String> urlMerger() {
+        return (input, baseUrl) -> {
+            final String source = requireNonNull(input.text);
+            return baseUrl + toUtf8URLEncode(source);
+        };
+    }
+
+
     @NonNull
-    public static Repository<Result<String>> translation(@NonNull Reservoir<String> reaction) {
+    public static Repository<Result<Translation>> translation(
+        @NonNull Reservoir<Translation> reaction) {
         requireNonNull(reaction);
-        return repositoryWithInitialValue(Result.<String>absent())
+        return repositoryWithInitialValue(Result.<Translation>absent())
             .observe(reaction)
             .onUpdatesPerLoop()
-            .attemptGetFrom(reaction)
-            .orEnd(input -> Result.success(LIGHT_AND_DARK_GATE_OPEN))
+            .attemptGetFrom(reaction).orSkip()
             .goTo(networkExecutor)
-            .mergeIn(YOU_DAO, (input, baseUrl) -> baseUrl + toUtf8URLEncode(input))
+            .check(input -> input.step == Step.OnWorking)
+            .orEnd(input -> {
+                switch (input.step) {
+                    case OnCreate:
+                        return onCreateFunction().apply(input);
+                    case OnStart:
+                        return onStartFunction().apply(input);
+                    case OnDone:
+                        // TODO: 16/7/19
+                        return Result.failure();
+                    default:
+                        // TODO: 16/7/19
+                        return Result.failure();
+                }
+            })
+            .mergeIn(YOU_DAO, urlMerger())
             .attemptTransform(urlToResponse())
             .orEnd(Result::failure)
             .goTo(calculationExecutor)
-            .thenTransform(youdaoResponseToResult())
+            .transform(youdaoResponseToResult())
+            .thenTransform(input -> {
+                if (input.succeeded()) {
+                    return Result.success(Translation.working(input.get()));
+                } else {
+                    return Result.failure(input.getFailure());
+                }
+            })
             .onDeactivation(SEND_INTERRUPT)
             .compile();
     }
@@ -105,4 +154,5 @@ public class TranslateRequests {
     private TranslateRequests() {
         throw new AssertionError();
     }
+
 }

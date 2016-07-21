@@ -13,8 +13,10 @@ import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.transformer.request.TranslateRequests;
 import me.drakeet.transformer.request.YinRequests;
+import me.drakeet.transformer.entity.Translation;
+import me.drakeet.transformer.entity.Step;
+import me.drakeet.transformer.request.TranslateRequests;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -22,7 +24,6 @@ import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
 import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_CLOSE;
-import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_OPEN;
 
 /**
  * @author drakeet
@@ -44,7 +45,7 @@ public class MessageService extends BaseService {
     private boolean isConfirmMessage;
     private Reservoir<String> echoReaction;
     private Reservoir<String> yinReaction;
-    private Reservoir<String> translateReaction;
+    private Reservoir<Translation> translateReaction;
 
 
     public MessageService(Context context) {
@@ -90,7 +91,7 @@ public class MessageService extends BaseService {
                 })
         );
 
-        translateReaction = Reservoirs.<String>reactionReservoir();
+        translateReaction = Reservoirs.<Translation>reactionReservoir();
     }
 
 
@@ -126,7 +127,7 @@ public class MessageService extends BaseService {
         final SimpleMessage message = (SimpleMessage) _message;
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
-            translateReaction.accept(content);
+            translateReaction.accept(Translation.working(content));
         } else {
             handleContent(content);
         }
@@ -145,7 +146,8 @@ public class MessageService extends BaseService {
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                Repository<Result<String>> transientRepo = TranslateRequests.translation(
+                translateReaction.accept(Translation.create());
+                Repository<Result<Translation>> transientRepo = TranslateRequests.translation(
                     translateReaction);
                 transientRepo.addUpdatable(() -> transientRepo.get()
                     .ifSucceededSendTo(value -> handleTranslation(value))
@@ -182,11 +184,13 @@ public class MessageService extends BaseService {
     }
 
 
-    private void handleTranslation(@NonNull String value) {
-        if (value.equals(LIGHT_AND_DARK_GATE_OPEN)) {
-            stringReceiver().accept(value);
+    private void handleTranslation(@NonNull Translation value) {
+        requireNonNull(value);
+        final String result = requireNonNull(value.text);
+        if (value.step == Step.OnCreate) {
+            stringReceiver().accept(result);
         } else {
-            presenter.setInputText(value);
+            presenter.setInputText(result);
             isConfirmMessage = true;
         }
     }
