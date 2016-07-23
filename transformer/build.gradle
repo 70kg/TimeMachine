@@ -3,15 +3,20 @@ apply plugin: 'com.android.application'
 def keyStore = file('transformer.keystore')
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "24.0.0"
+
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
 
     defaultConfig {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
-        targetSdkVersion 23
-        versionCode 20
-        versionName "0.0.20"
+        targetSdkVersion 24
+        versionCode 118
+        versionName "0.0.118"
         jackOptions {
             enabled true
         }
