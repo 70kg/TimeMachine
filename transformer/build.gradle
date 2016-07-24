@@ -1,5 +1,24 @@
-apply plugin: 'com.android.application'
+import org.moallemi.gradle.internal.VersionCodeType
 
+apply plugin: 'com.android.application'
+apply plugin: 'org.moallemi.advanced-build-version'
+
+advancedVersioning {
+    nameOptions {
+        versionPatch versionCode
+    }
+    codeOptions {
+        versionCodeType VersionCodeType.AUTO_INCREMENT_ONE_STEP
+        dependsOnTasks 'assemble'
+    }
+    outputOptions {
+        renameOutput true
+        nameFormat 'Transformer-${buildType}-${versionName}'
+    }
+}
+
+def appVersionName = advancedVersioning.versionName
+def appVersionCode = advancedVersioning.versionCode
 def keyStore = file('transformer.keystore')
 
 android {
@@ -15,8 +34,8 @@ android {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
         targetSdkVersion 24
-        versionCode 118
-        versionName "0.0.118"
+        versionCode appVersionCode
+        versionName appVersionName
         jackOptions {
             enabled true
         }
