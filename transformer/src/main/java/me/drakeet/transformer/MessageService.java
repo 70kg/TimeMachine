@@ -14,7 +14,6 @@ import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.request.TranslateRequests;
 import me.drakeet.transformer.request.YinRequests;
@@ -24,7 +23,6 @@ import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
-import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_CLOSE;
 
 /**
  * @author drakeet
@@ -36,14 +34,13 @@ public class MessageService extends BaseService {
     public static final String DEFAULT = "default";
     public static final String EMPTY = "";
 
-    private Updatable newInEvent;
     private final SimpleMessagesStore store;
-    private ObservableHelper helper;
-
     private CoreContract.Presenter presenter;
     private boolean translateMode;
-    // TODO: 16/7/10 to improve
     private boolean isConfirmMessage;
+
+    private ObservableHelper helper;
+    private Updatable newInEvent;
     private Reservoir<String> echoReaction;
     private Reservoir<String> yinReaction;
     private Reservoir<Translation> translateReaction;
@@ -151,9 +148,7 @@ public class MessageService extends BaseService {
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
-                // TODO: 16/7/21
-                TranslateRequests.lightAndDarkGateTerminal(getContext(), false);
-                stringReceiver().accept(LIGHT_AND_DARK_GATE_CLOSE);
+                translateReaction.accept(Translation.stop());
                 this.translateMode = false;
                 break;
             default:
@@ -184,20 +179,24 @@ public class MessageService extends BaseService {
             String error = (value.getMessage() != null) ?
                            value.getMessage() :
                            "网络异常, 请重试";
+            Log.e("errorHandler", error);
             stringReceiver().accept(error);
         };
     }
 
 
-    private void handleTranslation(@NonNull Translation value) {
-        requireNonNull(value);
-        final String result = requireNonNull(value.text);
-        Log.d("handleTranslation", value.toString());
-        if (value.step == Step.OnCreate) {
-            stringReceiver().accept(result);
-        } else {
-            presenter.setInputText(result);
-            isConfirmMessage = true;
+    private void handleTranslation(@NonNull Translation result) {
+        final String text = requireNonNull(result.text);
+        Log.d("handleTranslation", result.toString());
+        switch (result.step) {
+            case OnCreate:
+            case OnStop:
+                stringReceiver().accept(text);
+                break;
+            default:
+                presenter.setInputText(text);
+                isConfirmMessage = true;
+                break;
         }
     }
 

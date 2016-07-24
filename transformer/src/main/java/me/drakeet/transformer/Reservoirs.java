@@ -1,6 +1,7 @@
 package me.drakeet.transformer;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.google.android.agera.BaseObservable;
 import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
@@ -13,6 +14,8 @@ import static me.drakeet.transformer.Objects.requireNonNull;
  * @author drakeet
  */
 public class Reservoirs {
+
+    private static final String TAG = Reservoirs.class.getSimpleName();
 
     @NonNull public static <T> Reservoir reactionReservoir() {
         return new ReactionReservoir<>(new ArrayDeque<T>());
@@ -31,7 +34,10 @@ public class Reservoirs {
 
         @Override public void accept(@NonNull T value) {
             synchronized (queue) {
-                queue.offer(value);
+                boolean success = queue.offer(value);
+                if (BuildConfig.DEBUG && !success) {
+                    throw new IllegalStateException("queue offer failed");
+                }
             }
             dispatchUpdate();
         }
@@ -47,6 +53,7 @@ public class Reservoirs {
             if (shouldDispatchUpdate) {
                 dispatchUpdate();
             }
+            Log.d(TAG, "get: " + nullableValue);
             return Result.absentIfNull(nullableValue);
         }
 

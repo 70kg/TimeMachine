@@ -27,6 +27,8 @@ import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.Requests.urlToResponse;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;
+import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_CLOSE;
+import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_OPEN;
 
 /**
  * @author drakeet
@@ -34,8 +36,6 @@ import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 public class TranslateRequests {
 
     private static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
-    public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!\n请发送一篇你需要翻译的内容";
-    public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
 
     private final static Supplier<String> YOU_DAO
         = () -> String.format(
@@ -61,6 +61,12 @@ public class TranslateRequests {
     }
 
 
+    private static Function<Translation, Result<Translation>> onStopFunction() {
+        return Functions.functionFrom(Translation.class)
+            .thenApply(Result::success);
+    }
+
+
     private static Merger<Translation, String, String> urlMerger() {
         return (input, baseUrl) -> {
             final String source = requireNonNull(input.text);
@@ -79,20 +85,7 @@ public class TranslateRequests {
             .attemptGetFrom(reaction).orSkip()
             .goTo(networkExecutor)
             .check(input -> input.step == Step.OnWorking)
-            .orEnd(input -> {
-                switch (input.step) {
-                    case OnCreate:
-                        return onCreateFunction().apply(input);
-                    case OnStart:
-                        return onStartFunction().apply(input);
-                    case OnDone:
-                        // TODO: 16/7/19
-                        return Result.failure();
-                    default:
-                        // TODO: 16/7/19
-                        return Result.failure();
-                }
-            })
+            .orEnd(stepHandler())
             .mergeIn(YOU_DAO, urlMerger())
             .attemptTransform(urlToResponse())
             .orEnd(Result::failure)
@@ -107,6 +100,24 @@ public class TranslateRequests {
             })
             .onDeactivation(SEND_INTERRUPT)
             .compile();
+    }
+
+
+    @NonNull private static Function<Translation, Result<Translation>> stepHandler() {
+        return input -> {
+            switch (input.step) {
+                case OnCreate:
+                    return onCreateFunction().apply(input);
+                case OnStart:
+                    return onStartFunction().apply(input);
+                case OnDone:
+                    return Result.failure();
+                case OnStop:
+                    return onStopFunction().apply(input);
+                default:
+                    return Result.failure();
+            }
+        };
     }
 
 

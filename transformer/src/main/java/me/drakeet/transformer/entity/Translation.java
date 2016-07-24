@@ -4,12 +4,15 @@ import android.support.annotation.NonNull;
 
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.entity.Step.OnCreate;
-import static me.drakeet.transformer.request.TranslateRequests.LIGHT_AND_DARK_GATE_OPEN;
+import static me.drakeet.transformer.entity.Step.OnStop;
 
 /**
  * @author drakeet
  */
 public class Translation {
+
+    public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!\n请发送一篇你需要翻译的内容";
+    public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
 
     @NonNull public Step step;
     @NonNull public String text;
@@ -26,8 +29,13 @@ public class Translation {
     }
 
 
-    @NonNull public static Translation working(@NonNull String text) {
+    @NonNull public static Translation working(@NonNull final String text) {
         return new Translation(Step.OnWorking, text);
+    }
+
+
+    @NonNull public static Translation stop() {
+        return new Translation(OnStop, LIGHT_AND_DARK_GATE_CLOSE);
     }
 
 

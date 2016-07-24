@@ -24,6 +24,11 @@ public enum Step {
         @Override public Step next() {
             return null;
         }
+    },
+    OnStop {
+        @Override public Step next() {
+            return OnStart;
+        }
     };
 
 

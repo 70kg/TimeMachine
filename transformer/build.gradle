@@ -12,7 +12,7 @@ advancedVersioning {
         dependsOnTasks 'assemble'
     }
     outputOptions {
-        renameOutput true
+        renameOutput false
         nameFormat 'Transformer-${buildType}-${versionName}'
     }
 }
@@ -52,15 +52,15 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            debuggable true
             applicationIdSuffix ".debug"
         }
 
         release {
-            buildConfigField "boolean", "LOG_DEBUG", "true"
-
-            debuggable true
+            debuggable false
             minifyEnabled false
-            shrinkResources true
+            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             if (keyStore.exists()) {
