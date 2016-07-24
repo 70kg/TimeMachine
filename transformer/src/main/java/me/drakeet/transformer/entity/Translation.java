@@ -9,7 +9,7 @@ import static me.drakeet.transformer.entity.Step.OnStop;
 /**
  * @author drakeet
  */
-public class Translation {
+public class Translation implements Cloneable {
 
     public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!\n请发送一篇你需要翻译的内容";
     public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
@@ -59,5 +59,15 @@ public class Translation {
         int result = step.hashCode();
         result = 31 * result + text.hashCode();
         return result;
+    }
+
+
+    @NonNull @Override public Translation clone() {
+        try {
+            return (Translation) super.clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+        return this;
     }
 }

@@ -3,6 +3,7 @@ package me.drakeet.transformer.request;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
 import com.google.android.agera.Merger;
@@ -37,7 +38,7 @@ public class TranslateRequests {
 
     private static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
 
-    private final static Supplier<String> YOU_DAO
+    @NonNull private final static Supplier<String> YOU_DAO
         = () -> String.format(
         "http://fanyi.youdao.com/openapi.do?keyfrom=%s&key=%s" +
             "&type=data&doctype=json&version=1.1&only=translate&q=",
@@ -45,29 +46,36 @@ public class TranslateRequests {
         BuildVars.YOUDAO_TRANSLATE_KEY);
 
 
-    private static Function<Translation, Result<Translation>> onCreateFunction() {
+    public static void loop(@NonNull final Translation translation, String newContent) {
+        translation.text = newContent;
+        translation.step = translation.step.next();
+    }
+
+
+    @NonNull private static Function<Translation, Result<Translation>> onCreateFunction() {
         return Functions.functionFrom(Translation.class)
             .thenApply(Result::success);
     }
 
 
-    private static Function<Translation, Result<Translation>> onStartFunction() {
+    @NonNull private static Function<Translation, Result<Translation>> onStartFunction() {
         return Functions.functionFrom(Translation.class)
             .thenApply(input -> {
-                input.text = "start";
-                input.step = input.step.next();
-                return Result.success(input);
+                Log.d("onStartFunction", input.toString());
+                final Translation result = input.clone();
+                result.text = "很好, 翻译工作现在开始。";
+                return Result.success(result);
             });
     }
 
 
-    private static Function<Translation, Result<Translation>> onStopFunction() {
+    @NonNull private static Function<Translation, Result<Translation>> onStopFunction() {
         return Functions.functionFrom(Translation.class)
             .thenApply(Result::success);
     }
 
 
-    private static Merger<Translation, String, String> urlMerger() {
+    @NonNull private static Merger<Translation, String, String> urlMerger() {
         return (input, baseUrl) -> {
             final String source = requireNonNull(input.text);
             return baseUrl + toUtf8URLEncode(source);
@@ -75,8 +83,26 @@ public class TranslateRequests {
     }
 
 
-    @NonNull
-    public static Repository<Result<Translation>> translation(
+    @NonNull private static Function<Translation, Result<Translation>> stepHandler() {
+        return input -> {
+            Log.d("stepHandler", input.toString());
+            switch (input.step) {
+                case OnCreate:
+                    return onCreateFunction().apply(input);
+                case OnStart:
+                    return onStartFunction().apply(input);
+                case OnDone:
+                    return Result.failure();
+                case OnStop:
+                    return onStopFunction().apply(input);
+                default:
+                    return Result.failure();
+            }
+        };
+    }
+
+
+    @NonNull public static Repository<Result<Translation>> translation(
         @NonNull Reservoir<Translation> reaction) {
         requireNonNull(reaction);
         return repositoryWithInitialValue(Result.<Translation>absent())
@@ -91,6 +117,7 @@ public class TranslateRequests {
             .orEnd(Result::failure)
             .goTo(calculationExecutor)
             .transform(youdaoResponseToResult())
+            .goLazy()
             .thenTransform(input -> {
                 if (input.succeeded()) {
                     return Result.success(Translation.working(input.get()));
@@ -100,24 +127,6 @@ public class TranslateRequests {
             })
             .onDeactivation(SEND_INTERRUPT)
             .compile();
-    }
-
-
-    @NonNull private static Function<Translation, Result<Translation>> stepHandler() {
-        return input -> {
-            switch (input.step) {
-                case OnCreate:
-                    return onCreateFunction().apply(input);
-                case OnStart:
-                    return onStartFunction().apply(input);
-                case OnDone:
-                    return Result.failure();
-                case OnStop:
-                    return onStopFunction().apply(input);
-                default:
-                    return Result.failure();
-            }
-        };
     }
 
 

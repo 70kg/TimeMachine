@@ -32,12 +32,12 @@ public class MessageService extends BaseService {
     public static final String YIN = "YIN";
     public static final String TRANSFORMER = "transformer";
     public static final String DEFAULT = "default";
-    public static final String EMPTY = "";
 
     private final SimpleMessagesStore store;
     private CoreContract.Presenter presenter;
     private boolean translateMode;
     private boolean isConfirmMessage;
+    private Translation translationToken;
 
     private ObservableHelper helper;
     private Updatable newInEvent;
@@ -68,19 +68,19 @@ public class MessageService extends BaseService {
         AgeraBus.repository().addUpdatable(newInEvent);
 
         echoReaction = Reservoirs.<String>reactionReservoir();
-        Repository<String> echoRepo = repositoryWithInitialValue(EMPTY)
+        Repository<String> echoRepo = repositoryWithInitialValue(empty())
             .observe(echoReaction)
             .onUpdatesPerLoop()
             .thenAttemptGetFrom(echoReaction).orSkip()
             .notifyIf((last, cur) -> !cur.isEmpty())
             .onDeactivation(SEND_INTERRUPT)
             .compile();
-        helper.addToObservable(echoRepo, () -> stringReceiver().accept(echoRepo.get()));
+        helper.addToObservable(echoRepo, () -> newInReceiver().accept(echoRepo.get()));
 
         yinReaction = Reservoirs.<String>reactionReservoir();
         Repository<Result<String>> yinRepo = YinRequests.async(yinReaction);
         helper.addToObservable(yinRepo, () -> yinRepo.get()
-            .ifSucceededSendTo(stringReceiver())
+            .ifSucceededSendTo(newInReceiver())
             .ifFailedSendTo(errorHandler()));
 
         translateReaction = Reservoirs.<Translation>reactionReservoir();
@@ -124,7 +124,8 @@ public class MessageService extends BaseService {
         final SimpleMessage message = (SimpleMessage) _message;
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
-            translateReaction.accept(Translation.working(content));
+            TranslateRequests.loop(translationToken, content);
+            translateReaction.accept(translationToken);
         } else {
             handleContent(content);
         }
@@ -136,14 +137,15 @@ public class MessageService extends BaseService {
     private void handleContent(@NonNull String content) {
         switch (requireNonNull(content)) {
             case "滚":
-                stringReceiver().accept("但是...但是...");
+                newInReceiver().accept("但是...但是...");
                 break;
             case "求王垠的最新文章":
                 yinReaction.accept(content);
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                translateReaction.accept(Translation.create());
+                this.translationToken = Translation.create();
+                translateReaction.accept(translationToken);
                 this.translateMode = true;
                 break;
             case "关闭混沌仪式":
@@ -165,7 +167,7 @@ public class MessageService extends BaseService {
     }
 
 
-    @NonNull private Receiver<String> stringReceiver() {
+    @NonNull private Receiver<String> newInReceiver() {
         return value -> insertNewIn(new SimpleMessage.Builder()
             .setContent(value)
             .setFromUserId(DEFAULT)
@@ -180,7 +182,7 @@ public class MessageService extends BaseService {
                            value.getMessage() :
                            "网络异常, 请重试";
             Log.e("errorHandler", error);
-            stringReceiver().accept(error);
+            newInReceiver().accept(error);
         };
     }
 
@@ -190,8 +192,9 @@ public class MessageService extends BaseService {
         Log.d("handleTranslation", result.toString());
         switch (result.step) {
             case OnCreate:
+            case OnStart:
             case OnStop:
-                stringReceiver().accept(text);
+                newInReceiver().accept(text);
                 break;
             default:
                 presenter.setInputText(text);

@@ -17,7 +17,7 @@ public enum Step {
     },
     OnWorking {
         @Override public Step next() {
-            return Step.OnDone;
+            return Step.OnWorking;
         }
     },
     OnDone {

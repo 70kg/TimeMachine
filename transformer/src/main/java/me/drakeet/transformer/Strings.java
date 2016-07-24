@@ -23,7 +23,7 @@ public class Strings {
     }
 
 
-    @NonNull public static CharSequence empty() {
+    @NonNull public static String empty() {
         return "";
     }
 }
