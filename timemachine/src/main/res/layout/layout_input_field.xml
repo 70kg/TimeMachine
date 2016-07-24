@@ -12,36 +12,21 @@
     tools:showIn="@layout/fragment_core">
 
     <ImageButton
-        style="@style/RippleCompat"
+        style="@style/TimeMachine.Input.ActionButton"
         android:id="@+id/left_action"
-        android:layout_width="@dimen/input_field_height"
-        android:layout_height="@dimen/input_field_height"
-        android:scaleType="centerInside"
         android:src="@drawable/ic_at_light"/>
 
     <EditText
+        style="@style/TimeMachine.Input.EditText"
         android:id="@+id/input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingLeft="@dimen/input_field_padding_horizontal"
-        android:paddingRight="@dimen/input_field_padding_horizontal"
-        android:paddingTop="@dimen/input_field_padding_vertical"
-        android:paddingBottom="@dimen/input_field_padding_vertical"
-        android:minHeight="@dimen/input_field_height"
-        android:maxHeight="@dimen/input_field_max_height"
-        android:background="@null"
-        android:textCursorDrawable="@drawable/input_cursor"
-        android:textColorHint="@color/hint_light"
-        android:textColor="@color/light"
         android:hint="@string/hint_input"/>
 
     <ImageButton
-        style="@style/RippleCompat"
+        style="@style/TimeMachine.Input.ActionButton"
         android:id="@+id/right_action"
-        android:layout_width="@dimen/input_field_height"
-        android:layout_height="@dimen/input_field_height"
-        android:scaleType="centerInside"
         android:src="@drawable/ic_send_light_small"/>
 
 </LinearLayout>

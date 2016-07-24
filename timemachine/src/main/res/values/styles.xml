@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Message"/>
+    <style name="TimeMachine"/>
 
-    <style name="Message.Content">
+    <style name="TimeMachine.Message"/>
+
+    <style name="TimeMachine.Message.Frame">
+        <item name="android:orientation">vertical</item>
+        <item name="android:layout_marginTop">@dimen/message_margin_vertical</item>
+        <item name="android:layout_marginBottom">@dimen/message_margin_vertical</item>
+    </style>
+
+    <style name="TimeMachine.Message.Content">
         <item name="android:textColorLink">#76a1ff</item>
         <item name="android:autoLink">web|email|phone</item>
         <item name="android:textColor">@color/textColorPrimary</item>
@@ -11,13 +19,7 @@
         <item name="android:paddingBottom">@dimen/message_padding_normal</item>
     </style>
 
-    <style name="Message.Frame">
-        <item name="android:orientation">vertical</item>
-        <item name="android:layout_marginTop">@dimen/message_margin_vertical</item>
-        <item name="android:layout_marginBottom">@dimen/message_margin_vertical</item>
-    </style>
-
-    <style name="Message.Content.Out">
+    <style name="TimeMachine.Message.Content.Out">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/message_padding_normal</item>
@@ -28,7 +30,7 @@
         <item name="android:background">@drawable/bg_msg_out</item>
     </style>
 
-    <style name="Message.Content.In">
+    <style name="TimeMachine.Message.Content.In">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/message_padding_arrow</item>
@@ -38,8 +40,30 @@
         <item name="android:background">@drawable/bg_msg_in</item>
     </style>
 
-    <style name="RippleCompat">
+    <style name="TimeMachine.RippleCompat">
         <item name="android:background">@drawable/bg_selectable</item>
+    </style>
+
+    <style name="TimeMachine.Input"/>
+
+    <style name="TimeMachine.Input.EditText">
+        <item name="android:paddingLeft">@dimen/input_field_padding_horizontal</item>
+        <item name="android:paddingRight">@dimen/input_field_padding_horizontal</item>
+        <item name="android:paddingTop">@dimen/input_field_padding_vertical</item>
+        <item name="android:paddingBottom">@dimen/input_field_padding_vertical</item>
+        <item name="android:minHeight">@dimen/input_field_height</item>
+        <item name="android:maxHeight">@dimen/input_field_max_height</item>
+        <item name="android:background">@null</item>
+        <item name="android:textCursorDrawable">@drawable/input_cursor</item>
+        <item name="android:textColorHint">@color/hint_light</item>
+        <item name="android:textColor">@color/light</item>
+    </style>
+
+    <style name="TimeMachine.Input.ActionButton"
+        parent="RippleCompat">
+        <item name="android:layout_width">@dimen/input_field_height</item>
+        <item name="android:layout_height">@dimen/input_field_height</item>
+        <item name="android:scaleType">centerInside</item>
     </style>
 
 </resources>
