@@ -17,6 +17,11 @@ public enum Step {
     },
     OnWorking {
         @Override public Step next() {
+            return Step.OnConfirm;
+        }
+    },
+    OnConfirm {
+        @Override public Step next() {
             return Step.OnWorking;
         }
     },

@@ -15,7 +15,7 @@ import com.google.android.agera.Supplier;
 import com.google.android.agera.net.HttpResponse;
 import com.google.gson.Gson;
 import me.drakeet.transformer.BuildVars;
-import me.drakeet.transformer.entity.Step;
+import me.drakeet.transformer.StringRes;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.entity.YouDao;
 
@@ -28,6 +28,7 @@ import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.Requests.urlToResponse;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;
+import static me.drakeet.transformer.entity.Step.OnConfirm;
 import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_CLOSE;
 import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_OPEN;
 
@@ -46,8 +47,7 @@ public class TranslateRequests {
         BuildVars.YOUDAO_TRANSLATE_KEY);
 
 
-    public static void loop(@NonNull final Translation translation, String newContent) {
-        translation.text = newContent;
+    public static void loop(@NonNull final Translation translation) {
         translation.step = translation.step.next();
     }
 
@@ -62,8 +62,28 @@ public class TranslateRequests {
         return Functions.functionFrom(Translation.class)
             .thenApply(input -> {
                 Log.d("onStartFunction", input.toString());
+                // TODO: 16/7/24 split just mock for test
+                // 必须要新对象
                 final Translation result = input.clone();
-                result.text = "很好, 翻译工作现在开始。";
+                result.current = StringRes.TRANSLATION_START_RULE;
+                result.sources = input.current.split("。");
+                result.last = input;
+                return Result.success(result);
+            });
+    }
+
+
+    @NonNull private static Function<Translation, Result<Translation>> onWorkingFunction() {
+        return Functions.functionFrom(Translation.class)
+            .thenApply(input -> {
+                Log.d("onWorkingFunction", input.toString());
+                // 必须要新对象
+                final Translation result = input.clone();
+                if (result.sources != null && result.currentIndex < result.sources.length) {
+                    result.current = result.sources[result.currentIndex];
+                    result.currentIndex += 1;
+                }
+                result.last = input;
                 return Result.success(result);
             });
     }
@@ -77,7 +97,7 @@ public class TranslateRequests {
 
     @NonNull private static Merger<Translation, String, String> urlMerger() {
         return (input, baseUrl) -> {
-            final String source = requireNonNull(input.text);
+            final String source = requireNonNull(input.current);
             return baseUrl + toUtf8URLEncode(source);
         };
     }
@@ -91,8 +111,8 @@ public class TranslateRequests {
                     return onCreateFunction().apply(input);
                 case OnStart:
                     return onStartFunction().apply(input);
-                case OnDone:
-                    return Result.failure();
+                case OnWorking:
+                    return onWorkingFunction().apply(input);
                 case OnStop:
                     return onStopFunction().apply(input);
                 default:
@@ -110,7 +130,7 @@ public class TranslateRequests {
             .onUpdatesPerLoop()
             .attemptGetFrom(reaction).orSkip()
             .goTo(networkExecutor)
-            .check(input -> input.step == Step.OnWorking)
+            .check(input -> input.step == OnConfirm)
             .orEnd(stepHandler())
             .mergeIn(YOU_DAO, urlMerger())
             .attemptTransform(urlToResponse())
@@ -120,7 +140,7 @@ public class TranslateRequests {
             .goLazy()
             .thenTransform(input -> {
                 if (input.succeeded()) {
-                    return Result.success(Translation.working(input.get()));
+                    return Result.success(Translation.confirm(input.get()));
                 } else {
                     return Result.failure(input.getFailure());
                 }

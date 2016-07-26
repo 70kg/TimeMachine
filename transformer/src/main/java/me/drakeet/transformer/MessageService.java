@@ -101,16 +101,9 @@ public class MessageService extends BaseService {
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
         requireNonNull(message);
         if (isConfirmMessage) {
-            insertNewIn(new SimpleMessage.Builder()
-                .setContent((String) message.getContent())
-                .setFromUserId(TRANSFORMER)
-                .setToUserId(TimeKey.userId)
-                .setExtra("Confirmed")
-                .thenCreateAtNow()
-            );
-            presenter.setInputText(empty());
             isConfirmMessage = false;
-            return true;
+            TranslateRequests.loop(translationToken);
+            return false;
         }
         return false;
     }
@@ -124,7 +117,7 @@ public class MessageService extends BaseService {
         final SimpleMessage message = (SimpleMessage) _message;
         final String content = message.getContent();
         if (translateMode && !content.equals("关闭混沌世界")) {
-            TranslateRequests.loop(translationToken, content);
+            translationToken.current = content;
             translateReaction.accept(translationToken);
         } else {
             handleContent(content);
@@ -188,15 +181,32 @@ public class MessageService extends BaseService {
 
 
     private void handleTranslation(@NonNull Translation result) {
-        final String text = requireNonNull(result.text);
+        final String text = requireNonNull(result.current);
         Log.d("handleTranslation", result.toString());
         switch (result.step) {
             case OnCreate:
-            case OnStart:
             case OnStop:
                 newInReceiver().accept(text);
+                TranslateRequests.loop(translationToken);
+                Log.d("after-loop", translationToken.toString());
                 break;
-            default:
+            case OnStart:
+                newInReceiver().accept(text);
+                translationToken = result;
+                TranslateRequests.loop(translationToken);
+                // goto OnWorking
+                translateReaction.accept(translationToken);
+                Log.d("after-loop", translationToken.toString());
+                break;
+            case OnWorking:
+                newInReceiver().accept(text);
+                translationToken = result;
+                TranslateRequests.loop(translationToken);
+                // goto OnConfirm
+                translateReaction.accept(translationToken);
+                Log.d("after-loop", translationToken.toString());
+                break;
+            case OnConfirm:
                 presenter.setInputText(text);
                 isConfirmMessage = true;
                 break;

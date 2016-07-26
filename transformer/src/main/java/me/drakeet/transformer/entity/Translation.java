@@ -1,6 +1,7 @@
 package me.drakeet.transformer.entity;
 
 import android.support.annotation.NonNull;
+import java.io.File;
 
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.entity.Step.OnCreate;
@@ -15,12 +16,20 @@ public class Translation implements Cloneable {
     public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
 
     @NonNull public Step step;
-    @NonNull public String text;
+    @NonNull public String current;
+    public int currentIndex;
+    public Translation last;
+    public String[] sources;
+    public String[] results;
+
+    @NonNull public File from;
+    // TODO: 16/7/24
+    @NonNull public File to;
 
 
-    private Translation(@NonNull Step step, @NonNull String text) {
+    private Translation(@NonNull Step step, @NonNull String current) {
         this.step = requireNonNull(step);
-        this.text = requireNonNull(text);
+        this.current = requireNonNull(current);
     }
 
 
@@ -29,8 +38,8 @@ public class Translation implements Cloneable {
     }
 
 
-    @NonNull public static Translation working(@NonNull final String text) {
-        return new Translation(Step.OnWorking, text);
+    @NonNull public static Translation confirm(@NonNull final String text) {
+        return new Translation(Step.OnConfirm, text);
     }
 
 
@@ -42,7 +51,7 @@ public class Translation implements Cloneable {
     @Override public String toString() {
         return "Translation {" +
             "step=" + step +
-            ", text='" + text + '\'' +
+            ", text='" + current + '\'' +
             '}';
     }
 
@@ -51,13 +60,13 @@ public class Translation implements Cloneable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Translation that = (Translation) o;
-        return step == that.step && text.equals(that.text);
+        return step == that.step && current.equals(that.current);
     }
 
 
     @Override public int hashCode() {
         int result = step.hashCode();
-        result = 31 * result + text.hashCode();
+        result = 31 * result + current.hashCode();
         return result;
     }
 
