@@ -37,6 +37,7 @@ public class MessageService extends BaseService {
     private CoreContract.Presenter presenter;
     private boolean translateMode;
     private boolean isConfirmMessage;
+    /* the translation snowball */
     private Translation translationToken;
 
     private ObservableHelper helper;
