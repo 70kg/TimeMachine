@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity
     };
     private CoreContract.Presenter presenter;
     private Repository<List<SimpleMessage>> storeMessages;
-    private MenuItem currentMenuItem;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {

@@ -55,7 +55,9 @@ public class SyncDrawerLayout extends DrawerLayout {
         this.addDrawerListener(new DrawerListenerAdapter() {
             @Override public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                listener.onNavigationItemSelected(currentItem);
+                if (currentItem != null) {
+                    listener.onNavigationItemSelected(currentItem);
+                }
             }
         });
     }
