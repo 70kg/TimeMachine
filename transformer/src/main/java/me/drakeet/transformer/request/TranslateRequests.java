@@ -16,6 +16,7 @@ import com.google.android.agera.net.HttpResponse;
 import com.google.gson.Gson;
 import me.drakeet.transformer.BuildVars;
 import me.drakeet.transformer.StringRes;
+import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.entity.YouDao;
 
@@ -110,9 +111,14 @@ public class TranslateRequests {
     }
 
 
-    @NonNull private static Function<Translation, Result<Translation>> stepHandler() {
+    /**
+     * Handle the steps except {@link Step#OnConfirm}
+     *
+     * @return Functions apply result
+     */
+    @NonNull private static Function<Translation, Result<Translation>> uncaughtStepHandler() {
         return input -> {
-            Log.d("stepHandler", input.toString());
+            Log.d("uncaughtStepHandler", input.toString());
             switch (input.step) {
                 case OnCreate:
                     return onCreateFunction().apply(input);
@@ -138,7 +144,7 @@ public class TranslateRequests {
             .attemptGetFrom(reaction).orSkip()
             .goTo(networkExecutor)
             .check(input -> input.step == OnConfirm)
-            .orEnd(stepHandler())
+            .orEnd(uncaughtStepHandler())
             .mergeIn(YOU_DAO, urlMerger())
             .attemptTransform(urlToResponse())
             .orEnd(Result::failure)
