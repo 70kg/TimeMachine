@@ -28,6 +28,12 @@ public class DrawerDelegate extends Fragment {
     private SyncDrawerLayout drawer;
 
 
+    /**
+     * Attach the fragment to hold the drawer and toolbar
+     *
+     * @param parent a Activity that extends AppCompatActivity & OnNavigationItemSelectedListener
+     * @return {@link DrawerDelegate}
+     */
     public static <ParentActivity extends AppCompatActivity & OnNavigationItemSelectedListener> DrawerDelegate attach(
         @Nullable ParentActivity parent) {
         return attach(parent.getSupportFragmentManager());
