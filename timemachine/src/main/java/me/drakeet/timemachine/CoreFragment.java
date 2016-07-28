@@ -22,8 +22,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author drakeet
  */
-public class CoreFragment extends Fragment
-    implements CoreContract.View, View.OnClickListener, CoreHelper.CoreFragment {
+public class CoreFragment extends Fragment implements CoreContract.View, View.OnClickListener {
 
     private static final String TAG = CoreFragment.class.getSimpleName();
     private ImageButton leftAction;
@@ -40,7 +39,6 @@ public class CoreFragment extends Fragment
 
     private CoreContract.Presenter presenter;
     private CoreContract.Delegate delegate;
-    private CoreHelper coreHelper;
 
     private RecyclerView.SmoothScroller smoothScroller;
 
@@ -96,7 +94,6 @@ public class CoreFragment extends Fragment
         super.onCreate(savedInstanceState);
         messages = delegate.provideInitialMessages();
         adapter = new MessageAdapter(messages);
-        coreHelper = CoreHelper.attach(this);
     }
 
 

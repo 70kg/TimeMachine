@@ -4,10 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,8 +30,6 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private ActionBarDrawerToggle toggle;
-    private SyncDrawerLayout drawer;
     private List<Message> messages = new ArrayList<Message>(100) {
         {
             add(new SimpleMessage.Builder()
@@ -46,14 +41,13 @@ public class MainActivity extends AppCompatActivity
     };
     private CoreContract.Presenter presenter;
     private Repository<List<SimpleMessage>> storeMessages;
+    private DrawerDelegate drawerDelegate;
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        setupDrawerLayout(toolbar);
+        drawerDelegate = DrawerDelegate.attach(this);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
@@ -74,18 +68,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override public void setPresenter(@NonNull final CoreContract.Presenter presenter) {
         this.presenter = requireNonNull(presenter);
-    }
-
-
-    private void setupDrawerLayout(Toolbar toolbar) {
-        drawer = (SyncDrawerLayout) findViewById(R.id.drawer_layout);
-        toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open,
-            R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        drawer.setNavigationView(navigationView, this);
-        navigationView.setItemIconTintList(null);
     }
 
 
@@ -154,11 +136,8 @@ public class MainActivity extends AppCompatActivity
 
 
     @Override public void onBackPressed() {
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
+        if (!drawerDelegate.onBackPressed()) {
             super.onBackPressed();
-            drawer.removeDrawerListener(toggle);
         }
     }
 
