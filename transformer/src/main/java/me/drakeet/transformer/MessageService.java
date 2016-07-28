@@ -14,6 +14,7 @@ import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.SimpleMessage;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.request.TranslateRequests;
 import me.drakeet.transformer.request.YinRequests;
@@ -49,8 +50,9 @@ public class MessageService extends BaseService {
 
     public MessageService(Context context) {
         super(context);
-        store = messagesStore(getContext().getApplicationContext());
-        helper = new ObservableHelper();
+        this.store = messagesStore(getContext().getApplicationContext());
+        this.helper = new ObservableHelper();
+        this.translationToken = Translation.create();
     }
 
 
@@ -93,12 +95,6 @@ public class MessageService extends BaseService {
     }
 
 
-    @Override public void stop() {
-        AgeraBus.repository().removeUpdatable(newInEvent);
-        helper.removeObservables();
-    }
-
-
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
         requireNonNull(message);
         if (isConfirmMessage) {
@@ -138,13 +134,14 @@ public class MessageService extends BaseService {
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                this.translationToken = Translation.create();
+                translationToken.step = Step.OnCreate;
                 translateReaction.accept(translationToken);
                 this.translateMode = true;
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
-                translateReaction.accept(Translation.stop());
+                translationToken.step = Step.OnStop;
+                translateReaction.accept(translationToken);
                 this.translateMode = false;
                 break;
             default:
@@ -189,23 +186,21 @@ public class MessageService extends BaseService {
             case OnStop:
                 newInReceiver().accept(text);
                 TranslateRequests.loop(translationToken);
-                Log.d("after-loop", translationToken.toString());
+                // TODO: 16/7/28 should turn to translateReaction
                 break;
             case OnStart:
                 newInReceiver().accept(text);
                 translationToken = result;
                 TranslateRequests.loop(translationToken);
-                // goto OnWorking
+                /* goto OnWorking */
                 translateReaction.accept(translationToken);
-                Log.d("after-loop", translationToken.toString());
                 break;
             case OnWorking:
                 newInReceiver().accept(text);
                 translationToken = result;
                 TranslateRequests.loop(translationToken);
-                // goto OnConfirm
+                /* goto OnConfirm */
                 translateReaction.accept(translationToken);
-                Log.d("after-loop", translationToken.toString());
                 break;
             case OnConfirm:
                 presenter.setInputText(text);
@@ -217,5 +212,11 @@ public class MessageService extends BaseService {
 
     @Override public void onClear() {
         store.clear();
+    }
+
+
+    @Override public void stop() {
+        AgeraBus.repository().removeUpdatable(newInEvent);
+        helper.removeObservables();
     }
 }

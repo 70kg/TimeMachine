@@ -27,6 +27,7 @@ import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.Requests.urlToResponse;
+import static me.drakeet.transformer.StringRes.CLOSE_TRANSLATION_ERROR;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 import static me.drakeet.transformer.entity.Step.OnConfirm;
 import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_CLOSE;
@@ -91,7 +92,13 @@ public class TranslateRequests {
 
     @NonNull private static Function<Translation, Result<Translation>> onStopFunction() {
         return Functions.functionFrom(Translation.class)
-            .thenApply(Result::success);
+            .thenApply(input -> {
+                if (input.last == null) {
+                    return Result.failure(new Throwable(CLOSE_TRANSLATION_ERROR));
+                } else {
+                    return Result.success(Translation.stop());
+                }
+            });
     }
 
 
