@@ -1,13 +1,10 @@
 package me.drakeet.transformer.request;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.android.agera.Function;
 import com.google.android.agera.Functions;
 import com.google.android.agera.Merger;
-import com.google.android.agera.Repositories;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
@@ -20,10 +17,8 @@ import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.entity.YouDao;
 
-import static android.preference.PreferenceManager.getDefaultSharedPreferences;
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
-import static com.google.android.agera.content.ContentObservables.sharedPreferencesObservable;
 import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Objects.requireNonNull;
@@ -31,15 +26,11 @@ import static me.drakeet.transformer.Requests.urlToResponse;
 import static me.drakeet.transformer.StringRes.CLOSE_TRANSLATION_ERROR;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;
 import static me.drakeet.transformer.entity.Step.OnConfirm;
-import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_CLOSE;
-import static me.drakeet.transformer.entity.Translation.LIGHT_AND_DARK_GATE_OPEN;
 
 /**
  * @author drakeet
  */
 public class TranslateRequests {
-
-    private static final String LIGHT_AND_DARK_GATE = "light_and_dark_gate";
 
     @NonNull private final static Supplier<String> YOU_DAO
         = () -> String.format(
@@ -173,34 +164,6 @@ public class TranslateRequests {
                 }
                 return Result.failure();
             });
-    }
-
-
-    public static void lightAndDarkGateTerminal(@NonNull Context context, final boolean open) {
-        final SharedPreferences preferences = getDefaultSharedPreferences(context);
-        preferences.edit()
-            .putBoolean(LIGHT_AND_DARK_GATE, open)
-            .apply();
-    }
-
-
-    @NonNull
-    public static Repository<Result<String>> observeLightAndDarkGate(@NonNull Context context) {
-        final SharedPreferences preferences = getDefaultSharedPreferences(context);
-        return Repositories.repositoryWithInitialValue(Result.<String>absent())
-            .observe(sharedPreferencesObservable(preferences, LIGHT_AND_DARK_GATE))
-            .onUpdatesPerLoop()
-            .goLazy()
-            .transform(input -> preferences.getBoolean(LIGHT_AND_DARK_GATE, true))
-            .thenTransform(open -> {
-                if (open) {
-                    return Result.success(LIGHT_AND_DARK_GATE_OPEN);
-                } else {
-                    return Result.success(LIGHT_AND_DARK_GATE_CLOSE);
-                }
-            })
-            .onDeactivation(SEND_INTERRUPT)
-            .compile();
     }
 
 
