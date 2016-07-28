@@ -1,6 +1,7 @@
 package me.drakeet.transformer;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
@@ -16,7 +17,7 @@ import android.view.inputmethod.InputMethodManager;
  */
 public class SyncDrawerLayout extends DrawerLayout {
 
-    private MenuItem currentItem;
+    @Nullable private MenuItem currentItem;
 
 
     public SyncDrawerLayout(Context context) {
@@ -57,6 +58,7 @@ public class SyncDrawerLayout extends DrawerLayout {
                 super.onDrawerClosed(drawerView);
                 if (currentItem != null) {
                     listener.onNavigationItemSelected(currentItem);
+                    currentItem = null;
                 }
             }
         });
