@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
         fragment.setService(messageService(this));
-        transaction.add(R.id.core_container, fragment).commitAllowingStateLoss();
+        transaction.add(R.id.core_container, fragment).commitNow();
         final SimpleMessagesStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
         storeMessages.addUpdatable(new Updatable() {

@@ -44,7 +44,7 @@ public class DrawerDelegate extends Fragment {
         DrawerDelegate delegate = (DrawerDelegate) fragmentManager.findFragmentByTag(FRAG_TAG);
         if (delegate == null) {
             delegate = new DrawerDelegate();
-            fragmentManager.beginTransaction().add(delegate, FRAG_TAG).commit();
+            fragmentManager.beginTransaction().add(delegate, FRAG_TAG).commitNow();
         }
         return delegate;
     }
