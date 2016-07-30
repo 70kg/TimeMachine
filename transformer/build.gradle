@@ -92,4 +92,7 @@ dependencies {
     compile "com.google.android.agera:content:$gradle.ageraVersion"
     compile 'me.drakeet.agera:bus:1.0.0'
     compile 'com.google.code.gson:gson:2.7'
+    debugCompile "com.squareup.leakcanary:leakcanary-android:$gradle.leakCanaryVersion"
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
+    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
 }

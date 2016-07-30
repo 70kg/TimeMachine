@@ -3,3 +3,4 @@ include ':timemachine'
 
 gradle.ext.supportLibraryVersion = '24.1.1'
 gradle.ext.ageraVersion = '1.1.0'
+gradle.ext.leakCanaryVersion = '1.4-beta2'
