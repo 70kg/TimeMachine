@@ -186,7 +186,10 @@ public class MessageService extends BaseService {
             case OnStop:
                 newInReceiver().accept(text);
                 TranslateRequests.loop(translationToken);
-                // TODO: 16/7/28 should turn to translateReaction
+                break;
+            case OnDone:
+                newInReceiver().accept(text);
+                this.translateMode = false;
                 break;
             case OnStart:
                 newInReceiver().accept(text);

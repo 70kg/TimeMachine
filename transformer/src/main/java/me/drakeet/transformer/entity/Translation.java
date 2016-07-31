@@ -1,10 +1,12 @@
 package me.drakeet.transformer.entity;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import java.io.File;
 
 import static me.drakeet.transformer.Objects.requireNonNull;
 import static me.drakeet.transformer.entity.Step.OnCreate;
+import static me.drakeet.transformer.entity.Step.OnDone;
 import static me.drakeet.transformer.entity.Step.OnStop;
 
 /**
@@ -14,16 +16,17 @@ public class Translation implements Cloneable {
 
     public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!\n请发送一篇你需要翻译的内容";
     public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
+    public static final String TEXT_DONE = "翻译结束";
 
     @NonNull public Step step;
     @NonNull public String current;
+    @Nullable public Translation last;
     public int currentIndex;
-    public Translation last;
     public String[] sources;
+    // TODO: 16/7/31  
     public String[] results;
 
     @NonNull public File from;
-    // TODO: 16/7/24
     @NonNull public File to;
 
 
@@ -40,6 +43,11 @@ public class Translation implements Cloneable {
 
     @NonNull public static Translation confirm(@NonNull final String text) {
         return new Translation(Step.OnConfirm, text);
+    }
+
+
+    @NonNull public static Translation done() {
+        return new Translation(OnDone, TEXT_DONE);
     }
 
 

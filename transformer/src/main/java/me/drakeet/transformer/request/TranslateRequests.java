@@ -56,7 +56,6 @@ public class TranslateRequests {
             .thenApply(input -> {
                 Log.d("onStartFunction", input.toString());
                 // TODO: 16/7/24 split just mock for test
-                // 必须要新对象
                 final Translation result = input.clone();
                 result.current = StringRes.TRANSLATION_START_RULE;
                 result.sources = input.current.split("。");
@@ -70,15 +69,25 @@ public class TranslateRequests {
         return Functions.functionFrom(Translation.class)
             .thenApply(input -> {
                 Log.d("onWorkingFunction", input.toString());
-                // 必须要新对象
                 final Translation result = input.clone();
                 if (result.sources != null && result.currentIndex < result.sources.length) {
                     result.current = result.sources[result.currentIndex];
                     result.currentIndex += 1;
+                } else {
+                    return onDoneFunction().apply(input);
                 }
                 result.last = input;
                 return Result.success(result);
             });
+    }
+
+
+    @NonNull private static Function<Translation, Result<Translation>> onDoneFunction() {
+        return Functions.functionFrom(Translation.class)
+            .thenApply(input ->
+                // TODO: 16/7/31 Save results to file
+                Result.success(Translation.done())
+            );
     }
 
 
