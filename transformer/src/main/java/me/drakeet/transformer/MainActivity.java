@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity
     };
     private CoreContract.Presenter presenter;
     private Repository<List<SimpleMessage>> storeMessages;
+    private Updatable initialUpdatable;
     private DrawerDelegate drawerDelegate;
 
 
@@ -54,15 +55,14 @@ public class MainActivity extends AppCompatActivity
         fragment.setDelegate(this);
         fragment.setService(messageService(this));
         transaction.add(R.id.core_container, fragment).commitNow();
+
         final SimpleMessagesStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
-        storeMessages.addUpdatable(new Updatable() {
-            @Override public void update() {
-                messages.addAll(storeMessages.get());
-                presenter.notifyDataSetChanged();
-                storeMessages.removeUpdatable(this);
-            }
-        });
+        initialUpdatable = () -> {
+            messages.addAll(storeMessages.get());
+            presenter.notifyDataSetChanged();
+        };
+        storeMessages.addUpdatable(initialUpdatable);
     }
 
 
@@ -169,5 +169,12 @@ public class MainActivity extends AppCompatActivity
     @Override protected void onPause() {
         super.onPause();
         presenter.stop();
+    }
+
+
+    @Override protected void onDestroy() {
+        super.onDestroy();
+        // Maybe we have another graceful way
+        storeMessages.removeUpdatable(initialUpdatable);
     }
 }
