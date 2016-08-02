@@ -16,7 +16,6 @@
 
 package me.drakeet.timemachine.scroller;
 
-
 import android.content.Context;
 
 public class SnapperSmoothScroller extends FlexibleSmoothScroller {

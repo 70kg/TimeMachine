@@ -12,8 +12,9 @@ import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.BaseService;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
-import me.drakeet.timemachine.SimpleMessage;
+import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.request.TranslateRequests;
@@ -21,8 +22,8 @@ import me.drakeet.transformer.request.YinRequests;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
-import static me.drakeet.transformer.Objects.requireNonNull;
-import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
+import static me.drakeet.timemachine.Objects.requireNonNull;
+import static me.drakeet.transformer.MessagesStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
 
 /**
@@ -34,7 +35,8 @@ public class MessageService extends BaseService {
     public static final String TRANSFORMER = "transformer";
     public static final String DEFAULT = "default";
 
-    private final SimpleMessagesStore store;
+    private final MessagesStore store;
+    private MessageFactory inMessageFactory;
     private CoreContract.Presenter presenter;
     private boolean translateMode;
     private boolean isConfirmMessage;
@@ -53,6 +55,10 @@ public class MessageService extends BaseService {
         this.store = messagesStore(getContext().getApplicationContext());
         this.helper = new ObservableHelper();
         this.translationToken = Translation.create();
+        inMessageFactory = new MessageFactory.Builder()
+            .setFromUserId(TRANSFORMER)
+            .setToUserId(TimeKey.userId)
+            .build();
     }
 
 
@@ -106,20 +112,18 @@ public class MessageService extends BaseService {
     }
 
 
-    @Override public void onNewOut(@NonNull final Message _message) {
-        requireNonNull(_message);
-        if (!(_message instanceof SimpleMessage)) {
-            throw new IllegalArgumentException("Only supports SimpleMessage currently.");
+    @Override public void onNewOut(@NonNull final Message message) {
+        requireNonNull(message);
+        if (!(message.content instanceof TextContent)) {
+            throw new IllegalArgumentException("Only supports TextContent currently.");
         }
-        final SimpleMessage message = (SimpleMessage) _message;
-        final String content = message.getContent();
+        final String content = ((TextContent) message.content).text;
         if (translateMode && !content.equals("关闭混沌世界")) {
             translationToken.current = content;
             translateReaction.accept(translationToken);
         } else {
             handleContent(content);
         }
-
         store.insert(message);
     }
 
@@ -151,19 +155,15 @@ public class MessageService extends BaseService {
     }
 
 
-    private void insertNewIn(@NonNull final SimpleMessage simpleMessage) {
-        requireNonNull(simpleMessage);
-        presenter.addNewIn(simpleMessage);
-        store.insert(simpleMessage);
+    private void insertNewIn(@NonNull final Message message) {
+        requireNonNull(message);
+        presenter.addNewIn(message);
+        store.insert(message);
     }
 
 
     @NonNull private Receiver<String> newInReceiver() {
-        return value -> insertNewIn(new SimpleMessage.Builder()
-            .setContent(value)
-            .setFromUserId(DEFAULT)
-            .setToUserId(TimeKey.userId)
-            .thenCreateAtNow());
+        return value -> insertNewIn(inMessageFactory.newMessage(new TextContent(value)));
     }
 
 

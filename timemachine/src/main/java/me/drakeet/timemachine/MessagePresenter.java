@@ -3,7 +3,7 @@ package me.drakeet.timemachine;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import static java.util.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 
 /**
  * @author drakeet
@@ -43,8 +43,8 @@ public class MessagePresenter implements CoreContract.Presenter {
         if (service.onInterceptNewOut(message)) {
             return true;
         } else {
-            Log.d(TAG, "The new out Message(" + message.getContent() +
-                ") has been intercepted by Service");
+            Log.d(TAG, "The new out Message has been intercepted by Service: "
+                + message.toString());
         }
         return false;
     }

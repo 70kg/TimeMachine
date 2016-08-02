@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.io.File;
 
-import static me.drakeet.transformer.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.entity.Step.OnCreate;
 import static me.drakeet.transformer.entity.Step.OnDone;
 import static me.drakeet.transformer.entity.Step.OnStop;
@@ -23,7 +23,7 @@ public class Translation implements Cloneable {
     @Nullable public Translation last;
     public int currentIndex;
     public String[] sources;
-    // TODO: 16/7/31  
+    // TODO: 16/7/31
     public String[] results;
 
     @NonNull public File from;

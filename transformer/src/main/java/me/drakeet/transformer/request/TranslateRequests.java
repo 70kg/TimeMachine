@@ -21,7 +21,7 @@ import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.networkExecutor;
-import static me.drakeet.transformer.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.Requests.urlToResponse;
 import static me.drakeet.transformer.StringRes.CLOSE_TRANSLATION_ERROR;
 import static me.drakeet.transformer.Strings.toUtf8URLEncode;

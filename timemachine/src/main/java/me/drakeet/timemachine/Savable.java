@@ -1,4 +1,4 @@
-package me.drakeet.transformer;
+package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
 
@@ -8,6 +8,5 @@ import android.support.annotation.NonNull;
 
 public interface Savable {
 
-    void init(@NonNull byte[] bytes);
     @NonNull byte[] toBytes();
 }

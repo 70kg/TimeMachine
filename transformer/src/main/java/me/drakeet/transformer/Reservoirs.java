@@ -8,7 +8,7 @@ import com.google.android.agera.Result;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
-import static me.drakeet.transformer.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 
 /**
  * @author drakeet

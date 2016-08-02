@@ -15,32 +15,25 @@ import java.util.List;
 import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.CoreFragment;
 import me.drakeet.timemachine.Message;
-import me.drakeet.timemachine.SimpleMessage;
+import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.TextContent;
 
+import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.TRANSFORMER;
-import static me.drakeet.transformer.MessageService.YIN;
-import static me.drakeet.transformer.Objects.requireNonNull;
+import static me.drakeet.transformer.MessagesStore.messagesStore;
 import static me.drakeet.transformer.Services.messageService;
-import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener,
     CoreContract.Delegate {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private MessageFactory messageFactory;
 
-    private List<Message> messages = new ArrayList<Message>(100) {
-        {
-            add(new SimpleMessage.Builder()
-                .setContent("Can I help you?")
-                .setFromUserId("transformer")
-                .setToUserId(TimeKey.userId)
-                .thenCreateAtNow());
-        }
-    };
+    private List<Message> messages = new ArrayList<Message>(100);
     private CoreContract.Presenter presenter;
-    private Repository<List<SimpleMessage>> storeMessages;
+    private Repository<List<Message>> storeMessages;
     private Updatable initialUpdatable;
     private DrawerDelegate drawerDelegate;
 
@@ -56,13 +49,20 @@ public class MainActivity extends AppCompatActivity
         fragment.setService(messageService(this));
         transaction.add(R.id.core_container, fragment).commitNow();
 
-        final SimpleMessagesStore store = messagesStore(getApplicationContext());
+        final MessagesStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
         initialUpdatable = () -> {
             messages.addAll(storeMessages.get());
             presenter.notifyDataSetChanged();
         };
         storeMessages.addUpdatable(initialUpdatable);
+
+        messageFactory = new MessageFactory.Builder()
+            .setFromUserId(TimeKey.userId)
+            .setToUserId(TRANSFORMER)
+            .build();
+        TextContent welcome = new TextContent("Can I help you?");
+        messages.add(messageFactory.newMessage(welcome));
     }
 
 
@@ -75,25 +75,16 @@ public class MainActivity extends AppCompatActivity
     @Override public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
-            SimpleMessage message = new SimpleMessage.Builder()
-                .setContent("求王垠的最新文章")
-                .setFromUserId(TimeKey.userId)
-                .setToUserId(YIN)
-                .thenCreateAtNow();
+            TextContent content = new TextContent("求王垠的最新文章");
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_translate_open) {
-            SimpleMessage message = new SimpleMessage.Builder()
-                .setContent("发动魔法卡——混沌仪式!")
-                .setFromUserId(TimeKey.userId)
-                .setToUserId(TRANSFORMER)
-                .thenCreateAtNow();
+            TextContent content = new TextContent("发动魔法卡——混沌仪式!");
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_translate_close) {
-            SimpleMessage message = new SimpleMessage.Builder()
-                .setContent("关闭混沌世界")
-                .setFromUserId(TimeKey.userId)
-                .setToUserId(TRANSFORMER)
-                .thenCreateAtNow();
+            TextContent content = new TextContent("关闭混沌世界");
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         }
         return true;

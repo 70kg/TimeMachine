@@ -1,11 +1,10 @@
 package me.drakeet.timemachine;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import java.util.List;
 
 /**
@@ -13,58 +12,47 @@ import java.util.List;
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
-    private final int TYPE_OUT = 1;
-    private final int TYPE_IN = 2;
-    private List<Message> list;
+    private List<Message> messages;
 
 
     public MessageAdapter(List<Message> list) {
-        this.list = list;
-    }
-
-
-    @Override public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        int resId = (viewType == TYPE_OUT) ? R.layout.item_message_out : R.layout.item_message_in;
-        View v = LayoutInflater.from(parent.getContext()).inflate(resId, parent, false);
-        return new ViewHolder(v);
-    }
-
-
-    @Override public void onBindViewHolder(ViewHolder holder, int position) {
-        Message message = list.get(position);
-        if (message instanceof SimpleMessage) {
-            holder.content.setText(((SimpleMessage) message).getContent());
-        } else {
-            // call its register views
-        }
+        this.messages = list;
     }
 
 
     @Override public int getItemViewType(int position) {
-        Message message = list.get(position);
-        if (TimeKey.isCurrentUser(message.getFromUserId())) {
-            return TYPE_OUT;
-        } else {
-            return TYPE_IN;
-        }
+        Content content = messages.get(position).content;
+        int index = MessageTypePool.getContents().indexOf(content.getClass());
+        Log.d("TM-index", String.valueOf(index));
+        return index;
+    }
+
+
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int indexViewType) {
+        View root = MessageTypePool.getProviderByIndex(indexViewType).onCreateView(parent);
+        ViewHolder holder = new ViewHolder(root);
+        return holder;
+    }
+
+
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
+        int type = getItemViewType(position);
+        Message message = messages.get(position);
+        MessageTypePool.getProviderByIndex(type).onBindView(holder.itemView, message);
     }
 
 
     @Override public int getItemCount() {
-        return list.size();
+        return messages.size();
     }
 
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    static class ViewHolder extends RecyclerView.ViewHolder {
 
-        Context context;
-        TextView content;
-
-
-        ViewHolder(View itemView) {
+        ViewHolder(@NonNull View itemView) {
             super(itemView);
-            context = itemView.getContext();
-            content = (TextView) itemView.findViewById(R.id.content);
         }
     }
 }

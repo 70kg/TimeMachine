@@ -5,13 +5,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import com.google.android.agera.database.SqlDatabaseSupplier;
 
-import static me.drakeet.transformer.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 
 /**
  * @author drakeet
  */
 
-final class SimpleMessagesSqlDatabaseSupplier extends SqlDatabaseSupplier {
+final class MessagesSqlDatabaseSupplier extends SqlDatabaseSupplier {
 
     static final String ID_COLUMN = "id";
     static final String CONTENT_COLUMN = "content";
@@ -32,14 +32,14 @@ final class SimpleMessagesSqlDatabaseSupplier extends SqlDatabaseSupplier {
     private static final int VERSION = 1;
 
 
-    public SimpleMessagesSqlDatabaseSupplier(@NonNull final Context context) {
+    public MessagesSqlDatabaseSupplier(@NonNull final Context context) {
         super(context, DATABASE_NAME, null, VERSION);
     }
 
 
     @NonNull
-    public static SimpleMessagesSqlDatabaseSupplier databaseSupplier(@NonNull final Context context) {
-        return new SimpleMessagesSqlDatabaseSupplier(context);
+    public static MessagesSqlDatabaseSupplier databaseSupplier(@NonNull final Context context) {
+        return new MessagesSqlDatabaseSupplier(context);
     }
 
 

@@ -30,7 +30,9 @@ import com.google.android.agera.database.SqlInsertRequest;
 import com.google.android.agera.database.SqlUpdateRequest;
 import java.util.List;
 import java.util.concurrent.Executor;
-import me.drakeet.timemachine.SimpleMessage;
+import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.MessageFactory;
+import me.drakeet.timemachine.message.TextContent;
 
 import static com.google.android.agera.Functions.staticFunction;
 import static com.google.android.agera.Mergers.staticMerger;
@@ -47,16 +49,16 @@ import static com.google.android.agera.database.SqlRequests.sqlInsertRequest;
 import static com.google.android.agera.database.SqlRequests.sqlRequest;
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static me.drakeet.transformer.Objects.requireNonNull;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.CONTENT_COLUMN;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.CREATED_AT_COLUMN;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.FROM_USER_ID_COLUMN;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.ID_COLUMN;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.TABLE;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.TO_USER_ID_COLUMN;
-import static me.drakeet.transformer.SimpleMessagesSqlDatabaseSupplier.databaseSupplier;
+import static me.drakeet.timemachine.Objects.requireNonNull;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.CONTENT_COLUMN;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.CREATED_AT_COLUMN;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.FROM_USER_ID_COLUMN;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.ID_COLUMN;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.TABLE;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.TO_USER_ID_COLUMN;
+import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.databaseSupplier;
 
-final class SimpleMessagesStore {
+final class MessagesStore {
 
     private static final String MODIFY_WHERE = ID_COLUMN + "=?";
     private static final String GET_MESSAGES_FROM_TABLE =
@@ -66,25 +68,25 @@ final class SimpleMessagesStore {
     private static final int FROM_USER_ID_COLUMN_INDEX = 2;
     private static final int TO_USER_ID_COLUMN_INDEX = 3;
     private static final int CREATED_AT_COLUMN_INDEX = 4;
-    private static final List<SimpleMessage> INITIAL_VALUE = emptyList();
+    private static final List<Message> INITIAL_VALUE = emptyList();
 
-    private static SimpleMessagesStore messagesStore;
+    private static MessagesStore messagesStore;
 
     @NonNull
     private final Receiver<Object> writeRequestReceiver;
     @NonNull
-    private final Repository<List<SimpleMessage>> messagesRepository;
+    private final Repository<List<Message>> messagesRepository;
 
 
-    private SimpleMessagesStore(@NonNull final Repository<List<SimpleMessage>> messagesRepository,
-                                @NonNull final Receiver<Object> writeRequestReceiver) {
+    private MessagesStore(@NonNull final Repository<List<Message>> messagesRepository,
+                          @NonNull final Receiver<Object> writeRequestReceiver) {
         this.messagesRepository = messagesRepository;
         this.writeRequestReceiver = writeRequestReceiver;
     }
 
 
     @NonNull
-    public synchronized static SimpleMessagesStore messagesStore(
+    public synchronized static MessagesStore messagesStore(
         @NonNull final Context applicationContext) {
         if (messagesStore != null) {
             return messagesStore;
@@ -94,7 +96,7 @@ final class SimpleMessagesStore {
 
         // Create a database supplier that initializes the database. This is also used to supply the
         // database in all database operations.
-        final SimpleMessagesSqlDatabaseSupplier databaseSupplier = databaseSupplier(
+        final MessagesSqlDatabaseSupplier databaseSupplier = databaseSupplier(
             applicationContext);
 
         // Create a function that processes database write operations.
@@ -146,20 +148,22 @@ final class SimpleMessagesStore {
         // messages from the database on the database thread executor.
 
         // Create the wired up messages store
-        messagesStore = new SimpleMessagesStore(repositoryWithInitialValue(INITIAL_VALUE)
+        messagesStore = new MessagesStore(repositoryWithInitialValue(INITIAL_VALUE)
             .observe(writeReaction)
             .onUpdatesPerLoop()
             .goTo(executor)
-            .goLazy() // todo: add go lazy to reload the same content when restart
+            .goLazy()
             .getFrom(() -> sqlRequest().sql(GET_MESSAGES_FROM_TABLE).compile())
             .thenAttemptTransform(databaseQueryFunction(databaseSupplier,
-                cursor -> new SimpleMessage.Builder()
-                    .setId(cursor.getString(ID_COLUMN_INDEX))
-                    .setContent(cursor.getString(CONTENT_COLUMN_INDEX))
-                    .setFromUserId(cursor.getString(FROM_USER_ID_COLUMN_INDEX))
-                    .setToUserId(cursor.getString(TO_USER_ID_COLUMN_INDEX))
-                    .setCreatedAt(cursor.getLong(CREATED_AT_COLUMN_INDEX))
-                    .build()
+                cursor -> {
+                    MessageFactory factory = new MessageFactory.Builder()
+                        .setId(cursor.getString(ID_COLUMN_INDEX))
+                        .setFromUserId(cursor.getString(FROM_USER_ID_COLUMN_INDEX))
+                        .setToUserId(cursor.getString(TO_USER_ID_COLUMN_INDEX))
+                        .build();
+                    TextContent content = new TextContent(cursor.getString(CONTENT_COLUMN_INDEX));
+                    return factory.newMessage(content);
+                }
             ))
             .orEnd(staticFunction(INITIAL_VALUE))
             .onConcurrentUpdate(SEND_INTERRUPT)
@@ -170,30 +174,31 @@ final class SimpleMessagesStore {
 
 
     @NonNull
-    public Repository<List<SimpleMessage>> getSimpleMessagesRepository() {
+    public Repository<List<Message>> getSimpleMessagesRepository() {
         return messagesRepository;
     }
 
 
-    public void insert(@NonNull final SimpleMessage message) {
+    public void insert(@NonNull final Message message) {
         requireNonNull(message);
+        // TODO: 16/8/2 column is not support message.content.toBytes()
         writeRequestReceiver.accept(sqlInsertRequest()
             .table(TABLE)
-            .column(ID_COLUMN, message.getId())
-            .column(CONTENT_COLUMN, message.getContent())
-            .column(FROM_USER_ID_COLUMN, message.getFromUserId())
-            .column(TO_USER_ID_COLUMN, message.getToUserId())
-            .column(CREATED_AT_COLUMN, String.valueOf(message.getCreatedAt().getTime()))
+            .column(ID_COLUMN, message.id)
+            .column(CONTENT_COLUMN, ((TextContent)message.content).text)
+            .column(FROM_USER_ID_COLUMN, message.fromUserId)
+            .column(TO_USER_ID_COLUMN, message.toUserId)
+            .column(CREATED_AT_COLUMN, String.valueOf(message.createdTime))
             .compile());
     }
 
 
-    public boolean delete(@NonNull final SimpleMessage message) {
+    public boolean delete(@NonNull final Message message) {
         requireNonNull(message);
         writeRequestReceiver.accept(sqlDeleteRequest()
             .table(TABLE)
             .where(MODIFY_WHERE)
-            .arguments(String.valueOf(message.getId()))
+            .arguments(String.valueOf(message.id))
             .compile());
         return true;
     }

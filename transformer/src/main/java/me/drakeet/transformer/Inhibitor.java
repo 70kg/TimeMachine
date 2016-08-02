@@ -25,13 +25,16 @@ import com.google.android.agera.Repository;
 import com.google.android.agera.Result;
 import com.google.android.agera.Updatable;
 import me.drakeet.agera.eventbus.AgeraBus;
-import me.drakeet.timemachine.SimpleMessage;
+import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.MessageFactory;
+import me.drakeet.timemachine.Objects;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.transformer.request.YinRequests;
 
+import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.YIN;
-import static me.drakeet.transformer.Objects.requireNonNull;
-import static me.drakeet.transformer.SimpleMessagesStore.messagesStore;
+import static me.drakeet.transformer.MessagesStore.messagesStore;
 
 /**
  * Created by drakeet on 16/6/13.
@@ -56,11 +59,11 @@ public class Inhibitor extends IntentService implements Updatable {
 
     @Override public void update() {
         if (repository.get().succeeded()) {
-            SimpleMessage in = new SimpleMessage.Builder()
-                .setContent(repository.get().get())
-                .setFromUserId(YIN)
-                .setToUserId(TimeKey.userId)
-                .thenCreateAtNow();
+            MessageFactory factory = new MessageFactory.Builder()
+                .setFromUserId(TimeKey.userId)
+                .setToUserId(YIN)
+                .build();
+            Message in = factory.newMessage(new TextContent(repository.get().get()));
             if (AgeraBus.repository().hasObservers()) {
                 AgeraBus.repository().accept(new NewInEvent(in));
             } else {
@@ -73,12 +76,12 @@ public class Inhibitor extends IntentService implements Updatable {
     }
 
 
-    private void notify(@NonNull final SimpleMessage message) {
+    private void notify(@NonNull final Message message) {
         requireNonNull(message);
-        String title = message.getFromUserId();
-        String content = message.getContent().toString();
-        if (Objects.equals(message.getFromUserId(), YIN)) {
-            String[] messageContents = message.getContent().toString().split("\n");
+        String title = message.fromUserId;
+        String content = ((TextContent)message.content).text;
+        if (Objects.equals(message.fromUserId, YIN)) {
+            String[] messageContents = ((TextContent)message.content).text.split("\n");
             title = messageContents[0];
             content = messageContents[1];
         }

@@ -8,7 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 
 import static android.support.v4.app.NotificationCompat.PRIORITY_MAX;
-import static me.drakeet.transformer.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 
 /**
  * Created by drakeet on 16/6/21.

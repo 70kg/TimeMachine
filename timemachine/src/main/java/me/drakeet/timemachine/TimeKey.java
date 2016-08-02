@@ -1,6 +1,8 @@
 package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
+import me.drakeet.timemachine.message.TextContent;
+import me.drakeet.timemachine.message.TextMessageViewProvider;
 
 import static java.util.Objects.requireNonNull;
 
@@ -29,6 +31,8 @@ public class TimeKey {
     public static void install(@NonNull final String appName, @NonNull final String userId) {
         TimeKey.appName = requireNonNull(appName);
         TimeKey.userId = requireNonNull(userId);
+
+        MessageTypePool.register(TextContent.class, new TextMessageViewProvider());
     }
 
 

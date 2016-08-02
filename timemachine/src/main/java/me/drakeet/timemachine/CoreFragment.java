@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
+import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
 import static java.util.Objects.requireNonNull;
@@ -24,7 +25,6 @@ import static java.util.Objects.requireNonNull;
  */
 public class CoreFragment extends Fragment implements CoreContract.View, View.OnClickListener {
 
-    private static final String TAG = CoreFragment.class.getSimpleName();
     private ImageButton leftAction;
     private ImageButton rightAction;
     private EditText input;
@@ -41,6 +41,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
     private CoreContract.Delegate delegate;
 
     private RecyclerView.SmoothScroller smoothScroller;
+    private MessageFactory messageFactory;
 
 
     public CoreFragment() {
@@ -94,6 +95,10 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         super.onCreate(savedInstanceState);
         messages = delegate.provideInitialMessages();
         adapter = new MessageAdapter(messages);
+        messageFactory = new MessageFactory.Builder()
+            .setFromUserId(TimeKey.userId)
+            .setToUserId("")
+            .build();
     }
 
 
@@ -170,9 +175,9 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
     private void addMessage(@NonNull final Message message) {
         requireNonNull(message);
-        int _size = messages.size();
+        int size = messages.size();
         messages.add(message);
-        adapter.notifyItemInserted(_size);
+        adapter.notifyItemInserted(size);
         attemptSmoothScrollToBottom();
     }
 
@@ -189,12 +194,8 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         if (id == R.id.left_action) {
             delegate.onLeftActionClick();
         } else if (id == R.id.right_action && !TextUtils.isEmpty(input.getText().toString())) {
-            Message message = new SimpleMessage.Builder()
-                .setContent(input.getText().toString())
-                .setFromUserId(TimeKey.userId)
-                .setToUserId("")
-                .setCreatedAt(new Now())
-                .build();
+            TextContent content = new TextContent(input.getText().toString());
+            Message message = messageFactory.newMessage(content);
             if (!delegate.onRightActionClick() && !presenter.onInterceptNewOut(message)) {
                 input.setText("");
                 presenter.addNewOut(message);
@@ -215,7 +216,6 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
     @Override public void onDataSetChanged() {
         adapter.notifyDataSetChanged();
-        // TODO: 16/6/30
         recyclerView.scrollToPosition(messages.size() - 1);
     }
 
