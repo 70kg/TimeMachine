@@ -6,9 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import me.drakeet.multitype.ItemViewProvider;
-import me.drakeet.multitype.TypeItem;
 import me.drakeet.timemachine.Message;
+import me.drakeet.timemachine.MessageViewProvider;
 import me.drakeet.timemachine.R;
 import me.drakeet.timemachine.TimeKey;
 
@@ -16,7 +15,7 @@ import me.drakeet.timemachine.TimeKey;
  * @author drakeet
  */
 public class TextMessageViewProvider
-    extends ItemViewProvider<TextContent, TextMessageViewProvider.ViewHolder> {
+    extends MessageViewProvider<TextContent, TextMessageViewProvider.ViewHolder> {
 
     @NonNull @Override
     protected ViewHolder onCreateViewHolder(
@@ -28,11 +27,12 @@ public class TextMessageViewProvider
 
     @Override
     protected void onBindViewHolder(
-        @NonNull ViewHolder holder, @NonNull TextContent content, @NonNull TypeItem typeItem) {
-        Message message = (Message) typeItem;
+        @NonNull ViewHolder holder, @NonNull TextContent content, @NonNull Message message) {
         holder.text.setText(content.text);
         if (TimeKey.isCurrentUser(message.fromUserId)) {
+            // TODO: 16/8/8  
         } else {
+            // TODO: 16/8/8  
         }
     }
 
