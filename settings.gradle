@@ -1,5 +1,8 @@
 include ':transformer'
 include ':timemachine'
+include ':multitype'
+
+project(':multitype').projectDir = new File(rootProject.projectDir, '../MultiType/library')
 
 gradle.ext.supportLibraryVersion = '24.1.1'
 gradle.ext.ageraVersion = '1.1.0'
