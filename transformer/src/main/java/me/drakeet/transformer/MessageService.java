@@ -14,6 +14,7 @@ import me.drakeet.timemachine.CoreContract;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
@@ -163,7 +164,7 @@ public class MessageService extends BaseService {
 
 
     @NonNull private Receiver<String> newInReceiver() {
-        return value -> insertNewIn(inMessageFactory.newMessage(new TextContent(value)));
+        return value -> insertNewIn(inMessageFactory.newMessage(new InTextContent(value)));
     }
 
 

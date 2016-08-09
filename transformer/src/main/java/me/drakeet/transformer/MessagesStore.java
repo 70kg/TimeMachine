@@ -32,6 +32,9 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
+import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.InTextContent;
+import me.drakeet.timemachine.message.OutTextContent;
 import me.drakeet.timemachine.message.TextContent;
 
 import static com.google.android.agera.Functions.staticFunction;
@@ -161,7 +164,13 @@ final class MessagesStore {
                         .setFromUserId(cursor.getString(FROM_USER_ID_COLUMN_INDEX))
                         .setToUserId(cursor.getString(TO_USER_ID_COLUMN_INDEX))
                         .build();
-                    TextContent content = new TextContent(cursor.getString(CONTENT_COLUMN_INDEX));
+                    final TextContent content;
+                    // TODO: 16/8/9 to improve
+                    if (TimeKey.isCurrentUser(cursor.getString(TO_USER_ID_COLUMN_INDEX))) {
+                        content = new OutTextContent(cursor.getString(CONTENT_COLUMN_INDEX));
+                    } else {
+                        content = new InTextContent(cursor.getString(CONTENT_COLUMN_INDEX));
+                    }
                     return factory.newMessage(content);
                 }
             ))

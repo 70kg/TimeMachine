@@ -4,7 +4,7 @@
     style="@style/TimeMachine.Message.Frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="left">
+    android:gravity="start">
 
     <TextView
         style="@style/TimeMachine.Message.Content.In"

@@ -2,8 +2,10 @@ package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
 import me.drakeet.multitype.ItemTypePool;
-import me.drakeet.timemachine.message.TextContent;
-import me.drakeet.timemachine.message.TextMessageViewProvider;
+import me.drakeet.timemachine.message.InTextContent;
+import me.drakeet.timemachine.message.InTextMessageViewProvider;
+import me.drakeet.timemachine.message.OutTextContent;
+import me.drakeet.timemachine.message.OutTextMessageViewProvider;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +26,8 @@ public class TimeKey {
 
 
     /**
-     * Initialize the time machine SDK
+     * Initialize the time machine SDK,
+     * and register some base Message Content e.g. {@link InTextContent} & {@link OutTextContent}
      *
      * @param appName your app name
      * @param userId your current user uuid.
@@ -32,8 +35,9 @@ public class TimeKey {
     public static void install(@NonNull final String appName, @NonNull final String userId) {
         TimeKey.appName = requireNonNull(appName);
         TimeKey.userId = requireNonNull(userId);
-
-        ItemTypePool.register(TextContent.class, new TextMessageViewProvider());
+        /* Default registers */
+        ItemTypePool.register(OutTextContent.class, new OutTextMessageViewProvider());
+        ItemTypePool.register(InTextContent.class, new InTextMessageViewProvider());
     }
 
 

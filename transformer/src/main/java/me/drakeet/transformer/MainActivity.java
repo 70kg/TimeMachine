@@ -17,6 +17,8 @@ import me.drakeet.timemachine.CoreFragment;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.InTextContent;
+import me.drakeet.timemachine.message.OutTextContent;
 import me.drakeet.timemachine.message.TextContent;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
@@ -31,7 +33,7 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = MainActivity.class.getSimpleName();
     private MessageFactory messageFactory;
 
-    private List<Message> messages = new ArrayList<Message>(100);
+    private List<Message> messages = new ArrayList<>(100);
     private CoreContract.Presenter presenter;
     private Repository<List<Message>> storeMessages;
     private Updatable initialUpdatable;
@@ -61,7 +63,7 @@ public class MainActivity extends AppCompatActivity
             .setFromUserId(TimeKey.userId)
             .setToUserId(TRANSFORMER)
             .build();
-        TextContent welcome = new TextContent("Can I help you?");
+        TextContent welcome = new InTextContent("Can I help you?");
         messages.add(messageFactory.newMessage(welcome));
     }
 
@@ -75,15 +77,15 @@ public class MainActivity extends AppCompatActivity
     @Override public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
-            TextContent content = new TextContent("求王垠的最新文章");
+            TextContent content = new OutTextContent("求王垠的最新文章");
             Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_translate_open) {
-            TextContent content = new TextContent("发动魔法卡——混沌仪式!");
+            TextContent content = new OutTextContent("发动魔法卡——混沌仪式!");
             Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_translate_close) {
-            TextContent content = new TextContent("关闭混沌世界");
+            TextContent content = new OutTextContent("关闭混沌世界");
             Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         }

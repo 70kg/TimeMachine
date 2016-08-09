@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
 import me.drakeet.multitype.MultiTypeAdapter;
+import me.drakeet.timemachine.message.OutTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
@@ -195,7 +196,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         if (id == R.id.left_action) {
             delegate.onLeftActionClick();
         } else if (id == R.id.right_action && !TextUtils.isEmpty(input.getText().toString())) {
-            TextContent content = new TextContent(input.getText().toString());
+            TextContent content = new OutTextContent(input.getText().toString());
             Message message = messageFactory.newMessage(content);
             if (!delegate.onRightActionClick() && !presenter.onInterceptNewOut(message)) {
                 input.setText("");

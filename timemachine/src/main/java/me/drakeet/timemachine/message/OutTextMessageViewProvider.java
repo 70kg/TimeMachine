@@ -9,13 +9,12 @@ import android.widget.TextView;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageViewProvider;
 import me.drakeet.timemachine.R;
-import me.drakeet.timemachine.TimeKey;
 
 /**
  * @author drakeet
  */
-public class TextMessageViewProvider
-    extends MessageViewProvider<TextContent, TextMessageViewProvider.ViewHolder> {
+public class OutTextMessageViewProvider
+    extends MessageViewProvider<TextContent, OutTextMessageViewProvider.ViewHolder> {
 
     @NonNull @Override
     protected ViewHolder onCreateViewHolder(
@@ -29,17 +28,11 @@ public class TextMessageViewProvider
     protected void onBindViewHolder(
         @NonNull ViewHolder holder, @NonNull TextContent content, @NonNull Message message) {
         holder.text.setText(content.text);
-        if (TimeKey.isCurrentUser(message.fromUserId)) {
-            // TODO: 16/8/8  
-        } else {
-            // TODO: 16/8/8  
-        }
     }
 
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         @NonNull final TextView text;
-
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);

@@ -29,6 +29,7 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.Objects;
 import me.drakeet.timemachine.TimeKey;
+import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.transformer.request.YinRequests;
 
@@ -63,7 +64,7 @@ public class Inhibitor extends IntentService implements Updatable {
                 .setFromUserId(TimeKey.userId)
                 .setToUserId(YIN)
                 .build();
-            Message in = factory.newMessage(new TextContent(repository.get().get()));
+            Message in = factory.newMessage(new InTextContent(repository.get().get()));
             if (AgeraBus.repository().hasObservers()) {
                 AgeraBus.repository().accept(new NewInEvent(in));
             } else {

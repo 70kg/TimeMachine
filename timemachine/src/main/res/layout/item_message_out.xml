@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/TimeMachine.Message.Frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="right">
+    android:gravity="end">
 
     <!--TODO: Modify the background drawable -->
 
