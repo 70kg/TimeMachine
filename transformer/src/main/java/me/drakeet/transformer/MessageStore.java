@@ -53,15 +53,15 @@ import static com.google.android.agera.database.SqlRequests.sqlRequest;
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.CONTENT_COLUMN;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.CREATED_AT_COLUMN;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.FROM_USER_ID_COLUMN;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.ID_COLUMN;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.TABLE;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.TO_USER_ID_COLUMN;
-import static me.drakeet.transformer.MessagesSqlDatabaseSupplier.databaseSupplier;
+import static me.drakeet.transformer.DatabaseSupplier.CONTENT_COLUMN;
+import static me.drakeet.transformer.DatabaseSupplier.CREATED_AT_COLUMN;
+import static me.drakeet.transformer.DatabaseSupplier.FROM_USER_ID_COLUMN;
+import static me.drakeet.transformer.DatabaseSupplier.ID_COLUMN;
+import static me.drakeet.transformer.DatabaseSupplier.TABLE;
+import static me.drakeet.transformer.DatabaseSupplier.TO_USER_ID_COLUMN;
+import static me.drakeet.transformer.DatabaseSupplier.databaseSupplier;
 
-final class MessagesStore {
+final class MessageStore {
 
     private static final String MODIFY_WHERE = ID_COLUMN + "=?";
     private static final String GET_MESSAGES_FROM_TABLE =
@@ -73,7 +73,7 @@ final class MessagesStore {
     private static final int CREATED_AT_COLUMN_INDEX = 4;
     private static final List<Message> INITIAL_VALUE = emptyList();
 
-    private static MessagesStore messagesStore;
+    private static MessageStore messageStore;
 
     @NonNull
     private final Receiver<Object> writeRequestReceiver;
@@ -81,25 +81,25 @@ final class MessagesStore {
     private final Repository<List<Message>> messagesRepository;
 
 
-    private MessagesStore(@NonNull final Repository<List<Message>> messagesRepository,
-                          @NonNull final Receiver<Object> writeRequestReceiver) {
+    private MessageStore(@NonNull final Repository<List<Message>> messagesRepository,
+                         @NonNull final Receiver<Object> writeRequestReceiver) {
         this.messagesRepository = messagesRepository;
         this.writeRequestReceiver = writeRequestReceiver;
     }
 
 
     @NonNull
-    public synchronized static MessagesStore messagesStore(
+    public synchronized static MessageStore messagesStore(
         @NonNull final Context applicationContext) {
-        if (messagesStore != null) {
-            return messagesStore;
+        if (messageStore != null) {
+            return messageStore;
         }
         // Create a thread executor to execute all database operations on.
         final Executor executor = newSingleThreadExecutor();
 
         // Create a database supplier that initializes the database. This is also used to supply the
         // database in all database operations.
-        final MessagesSqlDatabaseSupplier databaseSupplier = databaseSupplier(
+        final DatabaseSupplier databaseSupplier = databaseSupplier(
             applicationContext);
 
         // Create a function that processes database write operations.
@@ -111,7 +111,7 @@ final class MessagesStore {
             databaseDeleteFunction(databaseSupplier);
 
         // Create a reservoir of database write requests. This will be used as the receiver of write
-        // requests submitted to the SimpleMessagesStore, and the event/data source of the reacting repository.
+        // requests submitted to the MessageStore, and the event/data source of the reacting repository.
         final Reservoir<Object> writeRequestReservoir = reservoir();
 
         // Create a reacting repository that processes all write requests. The value of the repository
@@ -151,7 +151,7 @@ final class MessagesStore {
         // messages from the database on the database thread executor.
 
         // Create the wired up messages store
-        messagesStore = new MessagesStore(repositoryWithInitialValue(INITIAL_VALUE)
+        messageStore = new MessageStore(repositoryWithInitialValue(INITIAL_VALUE)
             .observe(writeReaction)
             .onUpdatesPerLoop()
             .goTo(executor)
@@ -160,25 +160,24 @@ final class MessagesStore {
             .thenAttemptTransform(databaseQueryFunction(databaseSupplier,
                 cursor -> {
                     MessageFactory factory = new MessageFactory.Builder()
-                        .setId(cursor.getString(ID_COLUMN_INDEX))
                         .setFromUserId(cursor.getString(FROM_USER_ID_COLUMN_INDEX))
                         .setToUserId(cursor.getString(TO_USER_ID_COLUMN_INDEX))
                         .build();
                     final TextContent content;
                     // TODO: 16/8/9 to improve
-                    if (TimeKey.isCurrentUser(cursor.getString(TO_USER_ID_COLUMN_INDEX))) {
+                    if (TimeKey.isCurrentUser(cursor.getString(FROM_USER_ID_COLUMN_INDEX))) {
                         content = new OutTextContent(cursor.getString(CONTENT_COLUMN_INDEX));
                     } else {
                         content = new InTextContent(cursor.getString(CONTENT_COLUMN_INDEX));
                     }
-                    return factory.newMessage(content);
+                    return factory.newMessage(content, cursor.getString(ID_COLUMN_INDEX));
                 }
             ))
             .orEnd(staticFunction(INITIAL_VALUE))
             .onConcurrentUpdate(SEND_INTERRUPT)
             .onDeactivation(SEND_INTERRUPT)
             .compile(), writeRequestReservoir);
-        return messagesStore;
+        return messageStore;
     }
 
 

@@ -23,7 +23,7 @@ import me.drakeet.timemachine.message.TextContent;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.TRANSFORMER;
-import static me.drakeet.transformer.MessagesStore.messagesStore;
+import static me.drakeet.transformer.MessageStore.messagesStore;
 import static me.drakeet.transformer.Services.messageService;
 
 public class MainActivity extends AppCompatActivity
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity
     private List<Message> messages = new ArrayList<>(100);
     private CoreContract.Presenter presenter;
     private Repository<List<Message>> storeMessages;
-    private Updatable initialUpdatable;
+    private Updatable dataUpdatable;
     private DrawerDelegate drawerDelegate;
 
 
@@ -51,13 +51,16 @@ public class MainActivity extends AppCompatActivity
         fragment.setService(messageService(this));
         transaction.add(R.id.core_container, fragment).commitNow();
 
-        final MessagesStore store = messagesStore(getApplicationContext());
+        final MessageStore store = messagesStore(getApplicationContext());
         storeMessages = store.getSimpleMessagesRepository();
-        initialUpdatable = () -> {
+        // TODO: 16/8/9 double notify!
+        dataUpdatable = () -> {
             messages.addAll(storeMessages.get());
             presenter.notifyDataSetChanged();
+            // Maybe we have another graceful way
+            storeMessages.removeUpdatable(dataUpdatable);
         };
-        storeMessages.addUpdatable(initialUpdatable);
+        storeMessages.addUpdatable(dataUpdatable);
 
         messageFactory = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
@@ -167,7 +170,5 @@ public class MainActivity extends AppCompatActivity
 
     @Override protected void onDestroy() {
         super.onDestroy();
-        // Maybe we have another graceful way
-        storeMessages.removeUpdatable(initialUpdatable);
     }
 }

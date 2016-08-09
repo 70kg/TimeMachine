@@ -27,7 +27,8 @@ public class MessagePresenter implements CoreContract.Presenter {
 
     @Override public void addNewIn(@NonNull final Message message) {
         requireNonNull(message);
-        this.view.onNewIn(message);
+        view.onNewIn(message);
+        service.onNewIn(message);
     }
 
 

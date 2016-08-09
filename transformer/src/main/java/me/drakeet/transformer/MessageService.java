@@ -24,7 +24,7 @@ import me.drakeet.transformer.request.YinRequests;
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.transformer.MessagesStore.messagesStore;
+import static me.drakeet.transformer.MessageStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
 
 /**
@@ -36,7 +36,7 @@ public class MessageService extends BaseService {
     public static final String TRANSFORMER = "transformer";
     public static final String DEFAULT = "default";
 
-    private final MessagesStore store;
+    private final MessageStore store;
     private MessageFactory inMessageFactory;
     private CoreContract.Presenter presenter;
     private boolean translateMode;
@@ -113,6 +113,11 @@ public class MessageService extends BaseService {
     }
 
 
+    @Override public void onNewIn(@NonNull Message message) {
+        store.insert(message);
+    }
+
+
     @Override public void onNewOut(@NonNull final Message message) {
         requireNonNull(message);
         if (!(message.content instanceof TextContent)) {
@@ -157,9 +162,7 @@ public class MessageService extends BaseService {
 
 
     private void insertNewIn(@NonNull final Message message) {
-        requireNonNull(message);
         presenter.addNewIn(message);
-        store.insert(message);
     }
 
 

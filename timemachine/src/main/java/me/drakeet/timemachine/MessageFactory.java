@@ -12,17 +12,15 @@ import static java.util.Objects.requireNonNull;
  */
 public class MessageFactory {
 
-    @NonNull private final String id;
+    @NonNull private String id;
     @NonNull private final String fromUserId;
     @NonNull private final String toUserId;
     @Nullable private final String extra;
 
 
-    private MessageFactory(@NonNull String id,
-                           @NonNull String fromUserId,
+    private MessageFactory(@NonNull String fromUserId,
                            @NonNull String toUserId,
                            @Nullable String extra) {
-        this.id = id;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.extra = extra;
@@ -30,6 +28,12 @@ public class MessageFactory {
 
 
     public Message newMessage(@NonNull ItemContent content) {
+        id = UUID.randomUUID().toString();
+        return newMessage(content, id);
+    }
+
+
+    public Message newMessage(@NonNull ItemContent content, @NonNull String id) {
         long createdTime = System.currentTimeMillis();
         return new Message(id, fromUserId, toUserId, createdTime, -1, extra, content);
     }
@@ -39,23 +43,9 @@ public class MessageFactory {
 
     public static class Builder {
 
-        private String id;
         private String fromUserId;
         private String toUserId;
         private String extra;
-
-
-        /**
-         * Set the id of Message, it's optional,
-         * will be set with {@code UUID.randomUUID()} when null at build
-         *
-         * @param id uuid
-         * @return Builder self
-         */
-        public Builder setId(@NonNull String id) {
-            this.id = requireNonNull(id);
-            return this;
-        }
 
 
         public Builder setFromUserId(@NonNull String fromUserId) {
@@ -77,10 +67,7 @@ public class MessageFactory {
 
 
         public MessageFactory build() {
-            if (this.id == null) {
-                this.id = UUID.randomUUID().toString();
-            }
-            return new MessageFactory(id, fromUserId, toUserId, extra);
+            return new MessageFactory(fromUserId, toUserId, extra);
         }
     }
 }

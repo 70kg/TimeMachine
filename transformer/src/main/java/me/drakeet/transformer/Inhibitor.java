@@ -35,7 +35,7 @@ import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.YIN;
-import static me.drakeet.transformer.MessagesStore.messagesStore;
+import static me.drakeet.transformer.MessageStore.messagesStore;
 
 /**
  * Created by drakeet on 16/6/13.

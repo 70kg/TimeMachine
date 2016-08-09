@@ -36,6 +36,7 @@ public interface CoreContract {
     interface Service extends LifeCycle {
         void setPresenter(@NonNull Presenter presenter);
         void onNewOut(@NonNull Message message);
+        void onNewIn(@NonNull Message message);
         void onClear();
         boolean onInterceptNewOut(@NonNull Message message);
     }
