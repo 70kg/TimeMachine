@@ -20,4 +20,11 @@ SDK:
 #### Goals
 - One-way APIs.
 
+#### Build
+
+```bash
+./repo.sh
+./gradlew
+```
+
 
