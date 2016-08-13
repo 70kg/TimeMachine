@@ -1,7 +1,7 @@
 package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
-import me.drakeet.multitype.ItemTypePool;
+import me.drakeet.multitype.MultiTypePool;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.InTextMessageViewProvider;
 import me.drakeet.timemachine.message.OutTextContent;
@@ -36,8 +36,8 @@ public class TimeKey {
         TimeKey.appName = requireNonNull(appName);
         TimeKey.userId = requireNonNull(userId);
         /* Default registers */
-        ItemTypePool.register(OutTextContent.class, new OutTextMessageViewProvider());
-        ItemTypePool.register(InTextContent.class, new InTextMessageViewProvider());
+        MultiTypePool.register(OutTextContent.class, new OutTextMessageViewProvider());
+        MultiTypePool.register(InTextContent.class, new InTextMessageViewProvider());
     }
 
 
