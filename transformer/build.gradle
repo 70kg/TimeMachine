@@ -23,7 +23,7 @@ def keyStore = file('transformer.keystore')
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.0"
+    buildToolsVersion "24.0.1"
 
     lintOptions {
         abortOnError false
