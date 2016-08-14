@@ -3,6 +3,7 @@ package me.drakeet.transformer;
 import android.app.Application;
 import com.squareup.leakcanary.LeakCanary;
 import java.util.concurrent.Executor;
+import me.drakeet.library.CrashWoodpecker;
 import me.drakeet.timemachine.TimeKey;
 
 import static java.util.concurrent.Executors.newFixedThreadPool;
@@ -18,6 +19,7 @@ public class App extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
+        CrashWoodpecker.init(this);
         LeakCanary.install(this);
         TimeKey.install(getString(R.string.app_name), "drakeet");
     }

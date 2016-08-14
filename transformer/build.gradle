@@ -95,4 +95,7 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$gradle.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
+    debugCompile 'me.drakeet.library:crashwoodpecker:1.1.1'
+    releaseCompile 'me.drakeet.library:crashwoodpecker-do-nothing:1.1.1'
+    testCompile 'me.drakeet.library:crashwoodpecker-do-nothing:1.1.1'
 }
