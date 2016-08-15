@@ -61,8 +61,8 @@ public class Inhibitor extends IntentService implements Updatable {
     @Override public void update() {
         if (repository.get().succeeded()) {
             MessageFactory factory = new MessageFactory.Builder()
-                .setFromUserId(TimeKey.userId)
-                .setToUserId(YIN)
+                .setFromUserId(YIN)
+                .setToUserId(TimeKey.userId)
                 .build();
             Message in = factory.newMessage(new InTextContent(repository.get().get()));
             if (AgeraBus.repository().hasObservers()) {
@@ -80,9 +80,9 @@ public class Inhibitor extends IntentService implements Updatable {
     private void notify(@NonNull final Message message) {
         requireNonNull(message);
         String title = message.fromUserId;
-        String content = ((TextContent)message.content).text;
+        String content = ((TextContent) message.content).text;
         if (Objects.equals(message.fromUserId, YIN)) {
-            String[] messageContents = ((TextContent)message.content).text.split("\n");
+            String[] messageContents = ((TextContent) message.content).text.split("\n");
             title = messageContents[0];
             content = messageContents[1];
         }
