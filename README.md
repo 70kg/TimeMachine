@@ -1,7 +1,7 @@
 # TimeMachine
 时空稳定装置
 
-![](https://travis-ci.org/drakeet/TimeMachine.svg)
+![travis-ci](https://travis-ci.org/drakeet/TimeMachine.svg)
 
 It's a SDK that looks like IM, but it's not IM.
 
