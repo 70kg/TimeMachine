@@ -9,7 +9,7 @@
         <color android:color="@color/selected_color"/>
     </item>
 
-    <item android:state_selected="true">
+    <item>
         <color android:color="@android:color/transparent"/>
     </item>
 
