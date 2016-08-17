@@ -9,9 +9,12 @@ import me.drakeet.multitype.Savable;
 /**
  * @author drakeet
  */
-public abstract class TextContent implements ItemContent, Savable {
+public class TextContent implements ItemContent, Savable {
 
     @NonNull public String text;
+
+
+    public TextContent() {}
 
 
     public TextContent(@NonNull String text) {

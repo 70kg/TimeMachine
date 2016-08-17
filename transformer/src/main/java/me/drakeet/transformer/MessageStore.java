@@ -166,9 +166,9 @@ final class MessageStore {
                     final TextContent content;
                     // TODO: 16/8/9 to improve
                     if (TimeKey.isCurrentUser(cursor.getString(FROM_USER_ID_COLUMN_INDEX))) {
-                        content = new OutTextContent(cursor.getString(CONTENT_COLUMN_INDEX));
+                        content = new OutTextContent(cursor.getBlob(CONTENT_COLUMN_INDEX));
                     } else {
-                        content = new InTextContent(cursor.getString(CONTENT_COLUMN_INDEX));
+                        content = new InTextContent(cursor.getBlob(CONTENT_COLUMN_INDEX));
                     }
                     return factory.newMessage(content, cursor.getString(ID_COLUMN_INDEX));
                 }
@@ -189,11 +189,10 @@ final class MessageStore {
 
     public void insert(@NonNull final Message message) {
         requireNonNull(message);
-        // TODO: 16/8/2 column is not support message.content.toBytes()
         writeRequestReceiver.accept(sqlInsertRequest()
             .table(TABLE)
             .column(ID_COLUMN, message.id)
-            .column(CONTENT_COLUMN, ((TextContent)message.content).text)
+            .column(CONTENT_COLUMN, ((TextContent)message.content).toBytes())
             .column(FROM_USER_ID_COLUMN, message.fromUserId)
             .column(TO_USER_ID_COLUMN, message.toUserId)
             .column(CREATED_AT_COLUMN, String.valueOf(message.createdTime))
