@@ -2,6 +2,7 @@ import org.moallemi.gradle.internal.VersionCodeType
 
 apply plugin: 'com.android.application'
 apply plugin: 'org.moallemi.advanced-build-version'
+apply plugin: 'jacoco'
 
 advancedVersioning {
     nameOptions {
