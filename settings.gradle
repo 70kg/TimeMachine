@@ -15,6 +15,7 @@ gradle.allprojects {
             if (android.hasProperty('libraryVariants')) {
                 android {
                     lintOptions {
+                        abortOnError false
                         textReport true
                         textOutput 'stdout'
                         checkAllWarnings true
