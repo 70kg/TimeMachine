@@ -24,4 +24,4 @@ configurations.all {
     resolutionStrategy.force "com.android.support:support-annotations:$gradle.supportLibraryVersion"
 }
 
-defaultTasks 'jacocoTestReport'
+defaultTasks 'jacocoTestReport', ':transformer:assembleRelease'
