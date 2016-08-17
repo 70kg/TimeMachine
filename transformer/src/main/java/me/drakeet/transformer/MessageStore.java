@@ -30,6 +30,7 @@ import com.google.android.agera.database.SqlInsertRequest;
 import com.google.android.agera.database.SqlUpdateRequest;
 import java.util.List;
 import java.util.concurrent.Executor;
+import me.drakeet.multitype.Savable;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
@@ -192,7 +193,7 @@ final class MessageStore {
         writeRequestReceiver.accept(sqlInsertRequest()
             .table(TABLE)
             .column(ID_COLUMN, message.id)
-            .column(CONTENT_COLUMN, ((TextContent)message.content).toBytes())
+            .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
             .column(FROM_USER_ID_COLUMN, message.fromUserId)
             .column(TO_USER_ID_COLUMN, message.toUserId)
             .column(CREATED_AT_COLUMN, String.valueOf(message.createdTime))
