@@ -23,7 +23,7 @@ final class DatabaseSupplier extends SqlDatabaseSupplier {
 
     private static final String CREATE_TABLE = "CREATE TABLE IF NOT EXISTS " + TABLE
         + " (" + ID_COLUMN + " VARCHAR(32) PRIMARY KEY, "
-        + CONTENT_COLUMN + " VARCHAR(255), "
+        + CONTENT_COLUMN + " BLOB, "
         + FROM_USER_ID_COLUMN + " VARCHAR(32), "
         + TO_USER_ID_COLUMN + " VARCHAR(32), "
         + CREATED_AT_COLUMN + " INTEGER); ";
