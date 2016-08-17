@@ -23,3 +23,5 @@ task clean(type: Delete) {
 configurations.all {
     resolutionStrategy.force "com.android.support:support-annotations:$gradle.supportLibraryVersion"
 }
+
+defaultTasks 'lint', 'jacocoTestReport', ':transformer:assembleRelease'
