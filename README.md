@@ -27,4 +27,8 @@ SDK:
 ./gradlew
 ```
 
+#### Screenshot
+
+<img src="/art/ts2.jpg" alt="screenshot" title="screenshot" width="270" height="486" /> <img src="/art/ts3.jpg" alt="screenshot" title="screenshot" width="270" height="486" />
+
 
