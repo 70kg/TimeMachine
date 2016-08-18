@@ -2,6 +2,7 @@ import org.moallemi.gradle.internal.VersionCodeType
 
 apply plugin: 'com.android.application'
 apply plugin: 'org.moallemi.advanced-build-version'
+apply plugin: 'jacoco'
 
 advancedVersioning {
     nameOptions {
@@ -81,7 +82,6 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
     compile project(':timemachine')
     compile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
     compile "com.android.support:design:$gradle.supportLibraryVersion"
