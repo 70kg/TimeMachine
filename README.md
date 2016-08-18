@@ -3,7 +3,7 @@
 
 ![travis-ci](https://travis-ci.org/drakeet/TimeMachine.svg)
 
-It's a SDK that looks like IM, but it's not IM.
+It's an SDK that looks like IM, but it's not IM.
 
 It is still in its infancy. Change frequently.
 
