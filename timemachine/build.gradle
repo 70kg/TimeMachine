@@ -4,6 +4,7 @@ apply plugin: 'jacoco'
 android {
     compileSdkVersion 24
     buildToolsVersion gradle.buildToolsVersion
+    resourcePrefix "time_machine"
     defaultPublishConfig "debug"
 
     defaultConfig {
