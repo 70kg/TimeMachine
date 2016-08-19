@@ -26,11 +26,6 @@ android {
     compileSdkVersion 24
     buildToolsVersion gradle.buildToolsVersion
 
-    lintOptions {
-        abortOnError false
-        checkReleaseBuilds false
-    }
-
     defaultConfig {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
@@ -40,6 +35,19 @@ android {
         jackOptions {
             enabled true
         }
+    }
+
+    dexOptions {
+        dexInProcess = true
+    }
+
+    compileOptions {
+        incremental = true
+    }
+
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
     }
 
     signingConfigs {

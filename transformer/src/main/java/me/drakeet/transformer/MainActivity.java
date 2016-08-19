@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     private List<Message> messages = new ArrayList<>(100);
     private CoreContract.Presenter presenter;
-    private Repository<List<Message>> storeMessages;
+    private Repository<List<Message>> messagesRepository;
     private Updatable dataUpdatable;
     private DrawerDelegate drawerDelegate;
 
@@ -52,15 +52,15 @@ public class MainActivity extends AppCompatActivity
         transaction.add(R.id.core_container, fragment).commitNow();
 
         final MessageStore store = messagesStore(getApplicationContext());
-        storeMessages = store.getSimpleMessagesRepository();
+        messagesRepository = store.getSimpleMessagesRepository();
         // TODO: 16/8/9 double notify!
         dataUpdatable = () -> {
-            messages.addAll(storeMessages.get());
+            messages.addAll(messagesRepository.get());
             presenter.notifyDataSetChanged();
             // Maybe we have another graceful way
-            storeMessages.removeUpdatable(dataUpdatable);
+            messagesRepository.removeUpdatable(dataUpdatable);
         };
-        storeMessages.addUpdatable(dataUpdatable);
+        messagesRepository.addUpdatable(dataUpdatable);
 
         messageFactory = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
