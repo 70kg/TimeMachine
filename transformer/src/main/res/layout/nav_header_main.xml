@@ -31,6 +31,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorPrimary"
-        android:text="Base on Drakeet's TimeMachine"/>
+        android:text="@string/hint_drawer_header"/>
 
 </LinearLayout>

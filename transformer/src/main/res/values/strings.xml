@@ -6,4 +6,5 @@
 
     <string name="action_settings">Settings</string>
     <string name="action_clear">Clear</string>
+    <string name="hint_drawer_header">Based on Drakeet\'s TimeMachine</string>
 </resources>
