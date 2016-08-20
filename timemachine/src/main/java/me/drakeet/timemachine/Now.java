@@ -5,6 +5,7 @@ import java.util.Date;
 /**
  * @author drakeet
  */
+@SuppressWarnings("ALL")
 public final class Now extends Date {
 
     public Now() {

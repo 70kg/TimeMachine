@@ -70,7 +70,9 @@ android {
             debuggable false
             minifyEnabled false
             shrinkResources false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFile 'proguard-android-patch.pro'
+            proguardFile 'proguard-rules.pro'
 
             if (keyStore.exists()) {
                 println "transformer: using drakeet's key"
