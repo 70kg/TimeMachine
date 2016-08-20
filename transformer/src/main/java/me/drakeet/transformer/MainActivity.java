@@ -51,6 +51,11 @@ public class MainActivity extends AppCompatActivity
         fragment.setService(messageService(this));
         transaction.add(R.id.core_container, fragment).commitNow();
 
+        onLoadData();
+    }
+
+
+    protected void onLoadData() {
         final MessageStore store = messagesStore(getApplicationContext());
         messagesRepository = store.getSimpleMessagesRepository();
         // TODO: 16/8/9 double notify!
@@ -59,9 +64,9 @@ public class MainActivity extends AppCompatActivity
             presenter.notifyDataSetChanged();
             // Maybe we have another graceful way
             messagesRepository.removeUpdatable(dataUpdatable);
+            dataUpdatable = null;
         };
         messagesRepository.addUpdatable(dataUpdatable);
-
         messageFactory = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
             .setToUserId(TRANSFORMER)
@@ -170,5 +175,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override protected void onDestroy() {
         super.onDestroy();
+        // TODO: 16/8/20  Maybe we have another graceful way
+        if (dataUpdatable != null) {
+            messagesRepository.removeUpdatable(dataUpdatable);
+        }
     }
 }
