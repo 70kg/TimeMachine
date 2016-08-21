@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import me.drakeet.multitype.Savable;
 import me.drakeet.timemachine.Message;
-import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.OutTextContent;
@@ -167,10 +166,11 @@ public final class MessageStore {
             .getFrom(() -> sqlRequest().sql(GET_MESSAGES_FROM_TABLE).compile())
             .thenAttemptTransform(databaseQueryFunction(databaseSupplier,
                 cursor -> {
-                    MessageFactory factory = new MessageFactory.Builder()
-                        .setFromUserId(cursor.getString(FROM_USER_ID_COLUMN_INDEX))
-                        .setToUserId(cursor.getString(TO_USER_ID_COLUMN_INDEX))
-                        .build();
+                    Message message = new Message();
+                    message.id = cursor.getString(ID_COLUMN_INDEX);
+                    message.createdTime = cursor.getLong(CREATED_AT_COLUMN_INDEX);
+                    message.fromUserId = cursor.getString(FROM_USER_ID_COLUMN_INDEX);
+                    message.toUserId = cursor.getString(TO_USER_ID_COLUMN_INDEX);
                     final TextContent content;
                     // TODO: 16/8/9 to improve
                     if (TimeKey.isCurrentUser(cursor.getString(FROM_USER_ID_COLUMN_INDEX))) {
@@ -178,7 +178,8 @@ public final class MessageStore {
                     } else {
                         content = new InTextContent(cursor.getBlob(CONTENT_COLUMN_INDEX));
                     }
-                    return factory.newMessage(content, cursor.getString(ID_COLUMN_INDEX));
+                    message.content = content;
+                    return message;
                 }
             ))
             .orEnd(staticFunction(INITIAL_VALUE))
@@ -204,7 +205,7 @@ public final class MessageStore {
             .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
             .column(FROM_USER_ID_COLUMN, message.fromUserId)
             .column(TO_USER_ID_COLUMN, message.toUserId)
-            .column(CREATED_AT_COLUMN, String.valueOf(message.createdTime))
+            .column(CREATED_AT_COLUMN, message.createdTime)
             .compile(), observer);
         writeRequestReceiver.accept(request);
     }
@@ -218,7 +219,7 @@ public final class MessageStore {
             .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
             .column(FROM_USER_ID_COLUMN, message.fromUserId)
             .column(TO_USER_ID_COLUMN, message.toUserId)
-            .column(CREATED_AT_COLUMN, String.valueOf(message.createdTime))
+            .column(CREATED_AT_COLUMN, message.createdTime)
             .compile());
     }
 
