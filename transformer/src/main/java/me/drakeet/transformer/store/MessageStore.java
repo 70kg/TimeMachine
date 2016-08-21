@@ -19,6 +19,7 @@ package me.drakeet.transformer.store;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.android.agera.Function;
 import com.google.android.agera.Merger;
 import com.google.android.agera.Observable;
@@ -31,12 +32,11 @@ import com.google.android.agera.database.SqlInsertRequest;
 import com.google.android.agera.database.SqlUpdateRequest;
 import java.util.List;
 import java.util.concurrent.Executor;
+import me.drakeet.multitype.ItemContent;
 import me.drakeet.multitype.Savable;
 import me.drakeet.timemachine.Message;
-import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.OutTextContent;
-import me.drakeet.timemachine.message.TextContent;
 
 import static com.google.android.agera.Functions.staticFunction;
 import static com.google.android.agera.Mergers.staticMerger;
@@ -55,6 +55,7 @@ import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.store.DatabaseSupplier.CONTENT_COLUMN;
+import static me.drakeet.transformer.store.DatabaseSupplier.CONTENT_DESC_COLUMN;
 import static me.drakeet.transformer.store.DatabaseSupplier.CREATED_AT_COLUMN;
 import static me.drakeet.transformer.store.DatabaseSupplier.FROM_USER_ID_COLUMN;
 import static me.drakeet.transformer.store.DatabaseSupplier.ID_COLUMN;
@@ -69,9 +70,10 @@ public final class MessageStore {
         "SELECT * FROM " + TABLE + " ORDER BY " + CREATED_AT_COLUMN;
     private static final int ID_COLUMN_INDEX = 0;
     private static final int CONTENT_COLUMN_INDEX = 1;
-    private static final int FROM_USER_ID_COLUMN_INDEX = 2;
-    private static final int TO_USER_ID_COLUMN_INDEX = 3;
-    private static final int CREATED_AT_COLUMN_INDEX = 4;
+    private static final int CONTENT_DESC_COLUMN_INDEX = 2;
+    private static final int FROM_USER_ID_COLUMN_INDEX = 3;
+    private static final int TO_USER_ID_COLUMN_INDEX = 4;
+    private static final int CREATED_AT_COLUMN_INDEX = 5;
     private static final List<Message> INITIAL_VALUE = emptyList();
 
     private static MessageStore messageStore;
@@ -171,14 +173,9 @@ public final class MessageStore {
                     message.createdTime = cursor.getLong(CREATED_AT_COLUMN_INDEX);
                     message.fromUserId = cursor.getString(FROM_USER_ID_COLUMN_INDEX);
                     message.toUserId = cursor.getString(TO_USER_ID_COLUMN_INDEX);
-                    final TextContent content;
-                    // TODO: 16/8/9 to improve
-                    if (TimeKey.isCurrentUser(cursor.getString(FROM_USER_ID_COLUMN_INDEX))) {
-                        content = new OutTextContent(cursor.getBlob(CONTENT_COLUMN_INDEX));
-                    } else {
-                        content = new InTextContent(cursor.getBlob(CONTENT_COLUMN_INDEX));
-                    }
-                    message.content = content;
+                    String contentDesc = cursor.getString(CONTENT_DESC_COLUMN_INDEX);
+                    message.content = searchContent(contentDesc,
+                        cursor.getBlob(CONTENT_COLUMN_INDEX));
                     return message;
                 }
             ))
@@ -191,36 +188,54 @@ public final class MessageStore {
 
 
     @NonNull
+    private static ItemContent searchContent(@Nullable String contentDesc, @NonNull byte[] blob) {
+        if (contentDesc == null) {
+            contentDesc = "";
+        }
+        final ItemContent content;
+        switch (contentDesc) {
+            default:
+            case "InText":
+                content = new InTextContent(blob);
+                break;
+            case "OutText":
+                content = new OutTextContent(blob);
+                break;
+        }
+        return content;
+    }
+
+
+    @NonNull
     public Repository<List<Message>> getSimpleMessagesRepository() {
         return messagesRepository;
+    }
+
+
+    private SqlInsertRequest getInsertRequest(@NonNull Message message) {
+        return sqlInsertRequest()
+            .table(TABLE)
+            .column(ID_COLUMN, message.id)
+            .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
+            .column(CONTENT_DESC_COLUMN, ((Savable) message.content).describe())
+            .column(FROM_USER_ID_COLUMN, message.fromUserId)
+            .column(TO_USER_ID_COLUMN, message.toUserId)
+            .column(CREATED_AT_COLUMN, message.createdTime)
+            .compile();
     }
 
 
     public void insert(@NonNull final Message message, @NonNull final ResultObserver observer) {
         requireNonNull(message);
         requireNonNull(observer);
-        EchoRequest request = new EchoRequest(sqlInsertRequest()
-            .table(TABLE)
-            .column(ID_COLUMN, message.id)
-            .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
-            .column(FROM_USER_ID_COLUMN, message.fromUserId)
-            .column(TO_USER_ID_COLUMN, message.toUserId)
-            .column(CREATED_AT_COLUMN, message.createdTime)
-            .compile(), observer);
+        EchoRequest request = new EchoRequest(getInsertRequest(message), observer);
         writeRequestReceiver.accept(request);
     }
 
 
     public void insert(@NonNull final Message message) {
         requireNonNull(message);
-        writeRequestReceiver.accept(sqlInsertRequest()
-            .table(TABLE)
-            .column(ID_COLUMN, message.id)
-            .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
-            .column(FROM_USER_ID_COLUMN, message.fromUserId)
-            .column(TO_USER_ID_COLUMN, message.toUserId)
-            .column(CREATED_AT_COLUMN, message.createdTime)
-            .compile());
+        writeRequestReceiver.accept(getInsertRequest(message));
     }
 
 

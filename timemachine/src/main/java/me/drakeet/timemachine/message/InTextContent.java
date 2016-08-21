@@ -15,4 +15,9 @@ public class InTextContent extends TextContent {
     public InTextContent(@NonNull String text) {
         super(text);
     }
+
+
+    @NonNull @Override public String describe() {
+        return "InText";
+    }
 }

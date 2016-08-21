@@ -15,4 +15,9 @@ public class OutTextContent extends TextContent {
     public OutTextContent(@NonNull String text) {
         super(text);
     }
+
+
+    @NonNull @Override public String describe() {
+        return "OutText";
+    }
 }

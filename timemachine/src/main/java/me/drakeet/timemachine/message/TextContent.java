@@ -38,12 +38,17 @@ public class TextContent implements ItemContent, Savable {
     }
 
 
+    // TODO: 16/8/21 shall be ab abstract?
+    @NonNull @Override public String describe() {
+        return "Text";
+    }
+
+
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TextContent content = (TextContent) o;
         return text.equals(content.text);
-
     }
 
 
