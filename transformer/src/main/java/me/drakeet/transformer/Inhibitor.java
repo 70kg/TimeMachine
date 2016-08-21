@@ -73,7 +73,6 @@ public class Inhibitor extends IntentService implements Updatable {
             }
             messagesStore(getApplicationContext()).insert(in);
         }
-        repository.removeUpdatable(this);
     }
 
 
