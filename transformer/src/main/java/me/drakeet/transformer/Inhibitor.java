@@ -35,7 +35,7 @@ import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.YIN;
-import static me.drakeet.transformer.MessageStore.messagesStore;
+import static me.drakeet.transformer.store.MessageStore.messagesStore;
 
 /**
  * Created by drakeet on 16/6/13.
@@ -64,14 +64,22 @@ public class Inhibitor extends IntentService implements Updatable {
                 .setFromUserId(YIN)
                 .setToUserId(TimeKey.userId)
                 .build();
-            Message in = factory.newMessage(new InTextContent(repository.get().get()));
-            if (AgeraBus.repository().hasObservers()) {
-                AgeraBus.repository().accept(new NewInEvent(in));
-            } else {
-                Log.d(YIN, "DeadEvent");
-                notify(in);
-            }
-            messagesStore(getApplicationContext()).insert(in);
+            final String content = repository.get().get();
+            /* keep unique */
+            final String id = String.valueOf(content.hashCode());
+            final Message in = factory.newMessage(new InTextContent(content), id);
+            // TODO: 16/8/21 if succeeded sent to
+            messagesStore(getApplicationContext()).insert(in, succeeded -> {
+                Log.d("insert", "result: " + succeeded);
+                if (succeeded) {
+                    if (AgeraBus.repository().hasObservers()) {
+                        AgeraBus.repository().accept(new NewInEvent(in));
+                    } else {
+                        Log.d(YIN, "DeadEvent");
+                        notify(in);
+                    }
+                }
+            });
         }
     }
 

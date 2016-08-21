@@ -17,6 +17,7 @@ public class Reservoirs {
 
     private static final String TAG = Reservoirs.class.getSimpleName();
 
+
     @NonNull public static <T> Reservoir reactionReservoir() {
         return new ReactionReservoir<>(new ArrayDeque<T>());
     }

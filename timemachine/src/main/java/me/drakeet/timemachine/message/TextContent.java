@@ -36,4 +36,18 @@ public class TextContent implements ItemContent, Savable {
     @Nullable @Override public byte[] toBytes() {
         return new Gson().toJson(this).getBytes();
     }
+
+
+    @Override public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TextContent content = (TextContent) o;
+        return text.equals(content.text);
+
+    }
+
+
+    @Override public int hashCode() {
+        return text.hashCode();
+    }
 }

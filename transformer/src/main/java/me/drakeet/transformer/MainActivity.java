@@ -20,10 +20,11 @@ import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.OutTextContent;
 import me.drakeet.timemachine.message.TextContent;
+import me.drakeet.transformer.store.MessageStore;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.TRANSFORMER;
-import static me.drakeet.transformer.MessageStore.messagesStore;
+import static me.drakeet.transformer.store.MessageStore.messagesStore;
 import static me.drakeet.transformer.Services.messageService;
 
 public class MainActivity extends AppCompatActivity

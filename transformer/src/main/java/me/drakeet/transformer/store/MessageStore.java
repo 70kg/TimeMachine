@@ -1,4 +1,5 @@
 /*
+ * Copyright 2016 drakeet. All Rights Reserved.
  * Copyright 2015 Google Inc. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-package me.drakeet.transformer;
+package me.drakeet.transformer.store;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -54,15 +55,15 @@ import static com.google.android.agera.database.SqlRequests.sqlRequest;
 import static java.util.Collections.emptyList;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.transformer.DatabaseSupplier.CONTENT_COLUMN;
-import static me.drakeet.transformer.DatabaseSupplier.CREATED_AT_COLUMN;
-import static me.drakeet.transformer.DatabaseSupplier.FROM_USER_ID_COLUMN;
-import static me.drakeet.transformer.DatabaseSupplier.ID_COLUMN;
-import static me.drakeet.transformer.DatabaseSupplier.TABLE;
-import static me.drakeet.transformer.DatabaseSupplier.TO_USER_ID_COLUMN;
-import static me.drakeet.transformer.DatabaseSupplier.databaseSupplier;
+import static me.drakeet.transformer.store.DatabaseSupplier.CONTENT_COLUMN;
+import static me.drakeet.transformer.store.DatabaseSupplier.CREATED_AT_COLUMN;
+import static me.drakeet.transformer.store.DatabaseSupplier.FROM_USER_ID_COLUMN;
+import static me.drakeet.transformer.store.DatabaseSupplier.ID_COLUMN;
+import static me.drakeet.transformer.store.DatabaseSupplier.TABLE;
+import static me.drakeet.transformer.store.DatabaseSupplier.TO_USER_ID_COLUMN;
+import static me.drakeet.transformer.store.DatabaseSupplier.databaseSupplier;
 
-final class MessageStore {
+public final class MessageStore {
 
     private static final String MODIFY_WHERE = ID_COLUMN + "=?";
     private static final String GET_MESSAGES_FROM_TABLE =
@@ -137,6 +138,12 @@ final class MessageStore {
                 if (input instanceof SqlDeleteRequest) {
                     return deleteSimpleMessageFunction.apply((SqlDeleteRequest) input);
                 }
+                if (input instanceof EchoRequest) {
+                    Result result = insertSimpleMessageFunction.apply(
+                        (SqlInsertRequest) ((EchoRequest) input).request);
+                    ((EchoRequest) input).observer.onResult(result.succeeded());
+                    return result;
+                }
                 return failure();
             }).orSkip()
             .notifyIf(alwaysNotify)
@@ -185,6 +192,21 @@ final class MessageStore {
     @NonNull
     public Repository<List<Message>> getSimpleMessagesRepository() {
         return messagesRepository;
+    }
+
+
+    public void insert(@NonNull final Message message, @NonNull final ResultObserver observer) {
+        requireNonNull(message);
+        requireNonNull(observer);
+        EchoRequest request = new EchoRequest(sqlInsertRequest()
+            .table(TABLE)
+            .column(ID_COLUMN, message.id)
+            .column(CONTENT_COLUMN, ((Savable) message.content).toBytes())
+            .column(FROM_USER_ID_COLUMN, message.fromUserId)
+            .column(TO_USER_ID_COLUMN, message.toUserId)
+            .column(CREATED_AT_COLUMN, String.valueOf(message.createdTime))
+            .compile(), observer);
+        writeRequestReceiver.accept(request);
     }
 
 

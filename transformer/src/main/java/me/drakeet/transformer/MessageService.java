@@ -20,11 +20,12 @@ import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 import me.drakeet.transformer.request.TranslateRequests;
 import me.drakeet.transformer.request.YinRequests;
+import me.drakeet.transformer.store.MessageStore;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.transformer.MessageStore.messagesStore;
+import static me.drakeet.transformer.store.MessageStore.messagesStore;
 import static me.drakeet.transformer.Strings.empty;
 
 /**

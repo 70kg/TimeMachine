@@ -1,4 +1,4 @@
-package me.drakeet.transformer;
+package me.drakeet.transformer.store;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
