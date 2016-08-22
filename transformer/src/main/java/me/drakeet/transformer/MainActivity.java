@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import com.google.android.agera.Repository;
@@ -24,8 +23,8 @@ import me.drakeet.transformer.store.MessageStore;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.MessageService.TRANSFORMER;
-import static me.drakeet.transformer.store.MessageStore.messagesStore;
 import static me.drakeet.transformer.Services.messageService;
+import static me.drakeet.transformer.store.MessageStore.messagesStore;
 
 public class MainActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener,
@@ -49,6 +48,7 @@ public class MainActivity extends AppCompatActivity
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         CoreFragment fragment = CoreFragment.newInstance();
         fragment.setDelegate(this);
+        fragment.setMessageObserver(new TransformObserver(this));
         fragment.setService(messageService(this));
         transaction.add(R.id.core_container, fragment).commitNow();
 
@@ -104,26 +104,6 @@ public class MainActivity extends AppCompatActivity
 
     @NonNull @Override public List<Message> provideInitialMessages() {
         return messages;
-    }
-
-
-    @Override public void onNewOut(@NonNull final Message message) {
-        Log.v(TAG, "onNewOut: " + message.toString());
-    }
-
-
-    @Override public void onNewIn(@NonNull final Message message) {
-        Log.v(TAG, "onNewIn: " + message.toString());
-    }
-
-
-    @Override public void onMessageClick(@NonNull final Message message) {
-        Log.v(TAG, "onMessageClicked: " + message.toString());
-    }
-
-
-    @Override public void onMessageLongClick(@NonNull final Message message) {
-        Log.v(TAG, "onMessageLongClicked: " + message.toString());
     }
 
 

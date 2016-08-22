@@ -12,6 +12,7 @@ public interface CoreContract {
         @NonNull Presenter initPresenter(@NonNull Service service);
         void changePresenter(@NonNull Presenter presenter);
         void setDelegate(@NonNull Delegate delegate);
+        void setMessageObserver(@NonNull MessageObserver observer);
         void setService(@NonNull Service service);
         void onNewIn(@NonNull Message message);
         void onNewOut(@NonNull Message message);
@@ -24,10 +25,6 @@ public interface CoreContract {
     interface Delegate {
         @NonNull List<Message> provideInitialMessages();
         void setPresenter(@NonNull Presenter presenter);
-        void onNewOut(@NonNull Message message);
-        void onNewIn(@NonNull Message message);
-        void onMessageClick(@NonNull Message message);
-        void onMessageLongClick(@NonNull Message message);
         boolean onLeftActionClick();
         boolean onRightActionClick();
     }
@@ -38,6 +35,13 @@ public interface CoreContract {
         void onNewOut(@NonNull Message message);
         void onNewIn(@NonNull Message message);
         void onClear();
+        /**
+         * Implement this method to intercept all new message events. This allows you to
+         * watch events as they are dispatched to your Service, and judges whether go on or not.
+         *
+         * @param message a new message
+         * @return true to intercept and stop dispatching, otherwise false
+         */
         boolean onInterceptNewOut(@NonNull Message message);
     }
 
@@ -48,6 +52,14 @@ public interface CoreContract {
         void setInputText(@NonNull CharSequence text);
         void notifyDataSetChanged();
         void clear();
+        /**
+         * Implement this method to intercept all new message events. This allows you to
+         * watch events as they are dispatched to your Presenter then to your Service,
+         * and judges whether go on or not.
+         *
+         * @param message a new message
+         * @return true to intercept and stop dispatching, otherwise false
+         */
         boolean onInterceptNewOut(@NonNull Message message);
     }
 }
