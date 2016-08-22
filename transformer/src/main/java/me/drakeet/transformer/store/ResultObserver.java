@@ -5,5 +5,5 @@ package me.drakeet.transformer.store;
  */
 public interface ResultObserver {
 
-    void onResult(boolean succeeded);
+    void onReturn(boolean succeeded);
 }

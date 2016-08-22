@@ -43,7 +43,7 @@ import static com.google.android.agera.Mergers.staticMerger;
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static com.google.android.agera.Reservoirs.reservoir;
-import static com.google.android.agera.Result.failure;
+import static com.google.android.agera.Result.absent;
 import static com.google.android.agera.database.SqlDatabaseFunctions.databaseDeleteFunction;
 import static com.google.android.agera.database.SqlDatabaseFunctions.databaseInsertFunction;
 import static com.google.android.agera.database.SqlDatabaseFunctions.databaseQueryFunction;
@@ -79,13 +79,13 @@ public final class MessageStore {
     private static MessageStore messageStore;
 
     @NonNull
-    private final Receiver<Object> writeRequestReceiver;
+    private final Receiver<StoreRequest> writeRequestReceiver;
     @NonNull
     private final Repository<List<Message>> messagesRepository;
 
 
     private MessageStore(@NonNull final Repository<List<Message>> messagesRepository,
-                         @NonNull final Receiver<Object> writeRequestReceiver) {
+                         @NonNull final Receiver<StoreRequest> writeRequestReceiver) {
         this.messagesRepository = messagesRepository;
         this.writeRequestReceiver = writeRequestReceiver;
     }
@@ -106,16 +106,16 @@ public final class MessageStore {
             applicationContext);
 
         // Create a function that processes database write operations.
-        final Function<SqlInsertRequest, Result<Long>> insertSimpleMessageFunction =
+        final Function<SqlInsertRequest, Result<Long>> insertMessageFunction =
             databaseInsertFunction(databaseSupplier);
-        final Function<SqlUpdateRequest, Result<Integer>> updateSimpleMessageFunction =
+        final Function<SqlUpdateRequest, Result<Integer>> updateMessageFunction =
             databaseUpdateFunction(databaseSupplier);
-        final Function<SqlDeleteRequest, Result<Integer>> deleteSimpleMessageFunction =
+        final Function<SqlDeleteRequest, Result<Integer>> deleteMessageFunction =
             databaseDeleteFunction(databaseSupplier);
 
         // Create a reservoir of database write requests. This will be used as the receiver of write
         // requests submitted to the MessageStore, and the event/data source of the reacting repository.
-        final Reservoir<Object> writeRequestReservoir = reservoir();
+        final Reservoir<StoreRequest> writeRequestReservoir = reservoir();
 
         // Create a reacting repository that processes all write requests. The value of the repository
         // is unimportant, but it must be able to notify the messages repository on completing each write
@@ -130,22 +130,19 @@ public final class MessageStore {
             .goTo(executor)
             .attemptGetFrom(writeRequestReservoir).orSkip()
             .thenAttemptTransform(input -> {
-                if (input instanceof SqlInsertRequest) {
-                    return insertSimpleMessageFunction.apply((SqlInsertRequest) input);
+                Object request = input.request;
+                Result<? extends Number> result = absent();
+                if (request instanceof SqlInsertRequest) {
+                    result = insertMessageFunction.apply((SqlInsertRequest) request);
+                } else if (request instanceof SqlUpdateRequest) {
+                    result = updateMessageFunction.apply((SqlUpdateRequest) request);
+                } else if (request instanceof SqlDeleteRequest) {
+                    result = deleteMessageFunction.apply((SqlDeleteRequest) request);
                 }
-                if (input instanceof SqlUpdateRequest) {
-                    return updateSimpleMessageFunction.apply((SqlUpdateRequest) input);
+                if (input.observer != null) {
+                    input.observer.onReturn(result.succeeded());
                 }
-                if (input instanceof SqlDeleteRequest) {
-                    return deleteSimpleMessageFunction.apply((SqlDeleteRequest) input);
-                }
-                if (input instanceof EchoRequest) {
-                    Result result = insertSimpleMessageFunction.apply(
-                        (SqlInsertRequest) ((EchoRequest) input).request);
-                    ((EchoRequest) input).observer.onResult(result.succeeded());
-                    return result;
-                }
-                return failure();
+                return result;
             }).orSkip()
             .notifyIf(alwaysNotify)
             .compile();
@@ -228,31 +225,32 @@ public final class MessageStore {
     public void insert(@NonNull final Message message, @NonNull final ResultObserver observer) {
         requireNonNull(message);
         requireNonNull(observer);
-        EchoRequest request = new EchoRequest(getInsertRequest(message), observer);
+        StoreRequest request = new StoreRequest(getInsertRequest(message), observer);
         writeRequestReceiver.accept(request);
     }
 
 
     public void insert(@NonNull final Message message) {
         requireNonNull(message);
-        writeRequestReceiver.accept(getInsertRequest(message));
+        writeRequestReceiver.accept(new StoreRequest(getInsertRequest(message)));
     }
 
 
-    public boolean delete(@NonNull final Message message) {
+    public void delete(@NonNull final Message message) {
         requireNonNull(message);
-        writeRequestReceiver.accept(sqlDeleteRequest()
+        StoreRequest request = new StoreRequest(sqlDeleteRequest()
             .table(TABLE)
             .where(MODIFY_WHERE)
             .arguments(String.valueOf(message.id))
             .compile());
-        return true;
+        writeRequestReceiver.accept(request);
     }
 
 
     public void clear() {
-        writeRequestReceiver.accept(sqlDeleteRequest()
+        StoreRequest request = new StoreRequest(sqlDeleteRequest()
             .table(TABLE)
             .compile());
+        writeRequestReceiver.accept(request);
     }
 }
