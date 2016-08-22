@@ -42,12 +42,12 @@ public class MessagePresenter implements CoreContract.Presenter {
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
         requireNonNull(message);
         if (service.onInterceptNewOut(message)) {
-            return true;
-        } else {
             Log.d(TAG, "The new out Message has been intercepted by Service: "
                 + message.toString());
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
 
 

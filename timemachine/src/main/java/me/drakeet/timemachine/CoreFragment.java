@@ -41,6 +41,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
     private CoreContract.Presenter presenter;
     private CoreContract.Delegate delegate;
+    private MessageObserver messageObserver;
 
     private RecyclerView.SmoothScroller smoothScroller;
     private MessageFactory messageFactory;
@@ -65,6 +66,11 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
     @Override public void setService(@NonNull final CoreContract.Service service) {
         initPresenter(requireNonNull(service));
+    }
+
+
+    @Override public void setMessageObserver(@NonNull MessageObserver observer) {
+        this.messageObserver = requireNonNull(observer);
     }
 
 
@@ -132,12 +138,16 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         recyclerView.setAdapter(adapter);
         itemClickListener = new OnRecyclerItemClickListener(getContext()) {
             @Override void onItemClick(View view, int position) {
-                delegate.onMessageClick(messages.get(position));
+                if (messageObserver != null) {
+                    messageObserver.onMessageClick(messages.get(position));
+                }
             }
 
 
             @Override void onItemLongClick(View view, int position) {
-                delegate.onMessageLongClick(messages.get(position));
+                if (messageObserver != null) {
+                    messageObserver.onMessageLongClick(messages.get(position));
+                }
             }
         };
         recyclerView.addOnItemTouchListener(itemClickListener);
@@ -164,14 +174,18 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
     @Override public void onNewIn(@NonNull final Message message) {
         requireNonNull(message);
         addMessage(message);
-        delegate.onNewIn(message);
+        if (messageObserver != null) {
+            messageObserver.onNewIn(message);
+        }
     }
 
 
     @Override public void onNewOut(@NonNull final Message message) {
         requireNonNull(message);
         addMessage(message);
-        delegate.onNewOut(message);
+        if (messageObserver != null) {
+            messageObserver.onNewOut(message);
+        }
     }
 
 
