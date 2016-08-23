@@ -63,7 +63,7 @@ import static me.drakeet.transformer.store.DatabaseSupplier.TABLE;
 import static me.drakeet.transformer.store.DatabaseSupplier.TO_USER_ID_COLUMN;
 import static me.drakeet.transformer.store.DatabaseSupplier.databaseSupplier;
 
-public final class MessageStore {
+public final class MessageStore implements Store<Message> {
 
     private static final String MODIFY_WHERE = ID_COLUMN + "=?";
     private static final String GET_MESSAGES_FROM_TABLE =
@@ -97,15 +97,9 @@ public final class MessageStore {
         if (messageStore != null) {
             return messageStore;
         }
-        // Create a thread executor to execute all database operations on.
         final Executor executor = newSingleThreadExecutor();
+        final DatabaseSupplier databaseSupplier = databaseSupplier(applicationContext);
 
-        // Create a database supplier that initializes the database. This is also used to supply the
-        // database in all database operations.
-        final DatabaseSupplier databaseSupplier = databaseSupplier(
-            applicationContext);
-
-        // Create a function that processes database write operations.
         final Function<SqlInsertRequest, Result<Long>> insertMessageFunction =
             databaseInsertFunction(databaseSupplier);
         final Function<SqlUpdateRequest, Result<Integer>> updateMessageFunction =
@@ -113,15 +107,8 @@ public final class MessageStore {
         final Function<SqlDeleteRequest, Result<Integer>> deleteMessageFunction =
             databaseDeleteFunction(databaseSupplier);
 
-        // Create a reservoir of database write requests. This will be used as the receiver of write
-        // requests submitted to the MessageStore, and the event/data source of the reacting repository.
         final Reservoir<StoreRequest> writeRequestReservoir = reservoir();
 
-        // Create a reacting repository that processes all write requests. The value of the repository
-        // is unimportant, but it must be able to notify the messages repository on completing each write
-        // operation. The database thread executor is single-threaded to optimize for disk I/O, but if
-        // the executor can be multi-threaded, then this is the ideal place to multiply the reacting
-        // repository to achieve parallelism. The messages repository should observe all these instances.
         final Number unimportantValue = 0;
         final Merger<Number, Number, Boolean> alwaysNotify = staticMerger(true);
         final Observable writeReaction = repositoryWithInitialValue(unimportantValue)
@@ -153,10 +140,6 @@ public final class MessageStore {
         writeReaction.addUpdatable(() -> {
         });
 
-        // Create the repository of messages, wire it up to update on each database write, set it to fetch
-        // messages from the database on the database thread executor.
-
-        // Create the wired up messages store
         messageStore = new MessageStore(repositoryWithInitialValue(INITIAL_VALUE)
             .observe(writeReaction)
             .onUpdatesPerLoop()
@@ -185,7 +168,8 @@ public final class MessageStore {
 
 
     @NonNull
-    private static ItemContent searchContent(@Nullable String contentDesc, @NonNull byte[] blob) {
+    private static ItemContent searchContent(
+        @Nullable String contentDesc, @NonNull final byte[] blob) {
         if (contentDesc == null) {
             contentDesc = "";
         }
@@ -222,6 +206,7 @@ public final class MessageStore {
     }
 
 
+    @Override
     public void insert(@NonNull final Message message, @NonNull final ResultObserver observer) {
         requireNonNull(message);
         requireNonNull(observer);
@@ -230,13 +215,13 @@ public final class MessageStore {
     }
 
 
-    public void insert(@NonNull final Message message) {
+    @Override public void insert(@NonNull final Message message) {
         requireNonNull(message);
         writeRequestReceiver.accept(new StoreRequest(getInsertRequest(message)));
     }
 
 
-    public void delete(@NonNull final Message message) {
+    @Override public void delete(@NonNull final Message message) {
         requireNonNull(message);
         StoreRequest request = new StoreRequest(sqlDeleteRequest()
             .table(TABLE)
@@ -247,7 +232,7 @@ public final class MessageStore {
     }
 
 
-    public void clear() {
+    @Override public void clear() {
         StoreRequest request = new StoreRequest(sqlDeleteRequest()
             .table(TABLE)
             .compile());
