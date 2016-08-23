@@ -94,7 +94,9 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':timemachine')
     compile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
+    testCompile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
     compile "com.android.support:design:$gradle.supportLibraryVersion"
+    testCompile "com.android.support:design:$gradle.supportLibraryVersion"
 
     compile "com.google.android.agera:agera:$gradle.ageraVersion"
     compile "com.google.android.agera:database:$gradle.ageraVersion"
@@ -106,7 +108,7 @@ dependencies {
     debugCompile "com.squareup.leakcanary:leakcanary-android:$gradle.leakCanaryVersion"
     releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
     testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
-    debugCompile 'me.drakeet.library:crashwoodpecker:1.1.1'
-    releaseCompile 'me.drakeet.library:crashwoodpecker-do-nothing:1.1.1'
-    testCompile 'me.drakeet.library:crashwoodpecker-do-nothing:1.1.1'
+    debugCompile "me.drakeet.library:crashwoodpecker:$gradle.crashwoodpeckerVersion"
+    releaseCompile "me.drakeet.library:crashwoodpecker-do-nothing:$gradle.crashwoodpeckerVersion"
+    testCompile "me.drakeet.library:crashwoodpecker-do-nothing:$gradle.crashwoodpeckerVersion"
 }

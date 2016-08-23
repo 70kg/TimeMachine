@@ -14,7 +14,7 @@ final class StoreRequest {
     @Nullable ResultObserver observer;
 
 
-    public StoreRequest(@NonNull Object request) {
+    StoreRequest(@NonNull Object request) {
         this.request = requireNonNull(request);
     }
 

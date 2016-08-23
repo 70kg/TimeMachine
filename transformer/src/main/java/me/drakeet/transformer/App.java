@@ -19,7 +19,7 @@ public class App extends Application {
 
     @Override public void onCreate() {
         super.onCreate();
-        CrashWoodpecker.init(this);
+        CrashWoodpecker.flyTo(this);
         LeakCanary.install(this);
         TimeKey.install(getString(R.string.app_name), "drakeet");
     }

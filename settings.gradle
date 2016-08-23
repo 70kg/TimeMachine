@@ -7,6 +7,7 @@ project(':multitype').projectDir = new File(rootProject.projectDir, '../MultiTyp
 gradle.ext.supportLibraryVersion = '24.1.1'
 gradle.ext.ageraVersion = '1.2.0-beta2'
 gradle.ext.leakCanaryVersion = '1.4-beta2'
+gradle.ext.crashwoodpeckerVersion = '1.2'
 gradle.ext.buildToolsVersion = '24.0.1'
 
 gradle.allprojects {
