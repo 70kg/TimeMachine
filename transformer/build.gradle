@@ -35,6 +35,7 @@ android {
         jackOptions {
             enabled true
         }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     dexOptions {
@@ -94,21 +95,28 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile project(':timemachine')
     compile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
-    testCompile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
     compile "com.android.support:design:$gradle.supportLibraryVersion"
-    testCompile "com.android.support:design:$gradle.supportLibraryVersion"
 
     compile "com.google.android.agera:agera:$gradle.ageraVersion"
     compile "com.google.android.agera:database:$gradle.ageraVersion"
     compile "com.google.android.agera:net:$gradle.ageraVersion"
     compile "com.google.android.agera:content:$gradle.ageraVersion"
     compile 'me.drakeet.agera:bus:1.0.0'
-
     compile 'com.google.code.gson:gson:2.7'
+
     debugCompile "com.squareup.leakcanary:leakcanary-android:$gradle.leakCanaryVersion"
-    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
-    testCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
     debugCompile "me.drakeet.library:crashwoodpecker:$gradle.crashwoodpeckerVersion"
+
+    releaseCompile "com.squareup.leakcanary:leakcanary-android-no-op:$gradle.leakCanaryVersion"
     releaseCompile "me.drakeet.library:crashwoodpecker-do-nothing:$gradle.crashwoodpeckerVersion"
-    testCompile "me.drakeet.library:crashwoodpecker-do-nothing:$gradle.crashwoodpeckerVersion"
+
+    androidTestCompile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
+    androidTestCompile "com.android.support:design:$gradle.supportLibraryVersion"
+
+    compile 'com.android.support.test.espresso:espresso-idling-resource:2.2.2'
+
+    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
 }

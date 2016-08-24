@@ -2,7 +2,9 @@ package me.drakeet.transformer;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.NavigationView;
+import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -22,6 +24,7 @@ import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.transformer.store.MessageStore;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
+import static me.drakeet.transformer.BuildConfig.DEBUG;
 import static me.drakeet.transformer.MessageService.TRANSFORMER;
 import static me.drakeet.transformer.Services.messageService;
 import static me.drakeet.transformer.store.MessageStore.messagesStore;
@@ -38,6 +41,9 @@ public class MainActivity extends AppCompatActivity
     private Repository<List<Message>> messagesRepository;
     private Updatable dataUpdatable;
     private DrawerDelegate drawerDelegate;
+
+    @VisibleForTesting
+    CountingIdlingResource idlingResource = new CountingIdlingResource(TAG, DEBUG);
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
