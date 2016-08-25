@@ -15,7 +15,7 @@ Service sample, bases [google/Agera](https://github.com/google/Agera):
 SDK, bases on [drakeet/MultiType](https://github.com/drakeet/MultiType):
 `/timemachine`
 
-![](art/mind.png)
+![TimeMachine-Mind](art/TimeMachine-Mind.png)
 
 #### Goals
 - One-way APIs.
