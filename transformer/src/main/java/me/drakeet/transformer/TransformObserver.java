@@ -7,12 +7,12 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageObserver;
 import me.drakeet.timemachine.Objects;
 
-import static android.support.v7.widget.StaggeredGridLayoutManager.TAG;
-
 /**
  * @author drakeet
  */
 public class TransformObserver implements MessageObserver {
+
+    private final static String TAG = TransformObserver.class.getSimpleName();
 
     @NonNull private final Context context;
 

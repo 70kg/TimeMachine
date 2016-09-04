@@ -13,7 +13,7 @@ public class Services {
     }
 
 
-    @NonNull public static MessageService messageService(@NonNull Context context) {
-        return new MessageService(context);
+    @NonNull public static TranslationService messageService(@NonNull Context context) {
+        return new TranslationService(context);
     }
 }

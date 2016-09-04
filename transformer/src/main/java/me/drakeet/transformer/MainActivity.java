@@ -25,7 +25,7 @@ import me.drakeet.transformer.store.MessageStore;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.BuildConfig.DEBUG;
-import static me.drakeet.transformer.MessageService.TRANSFORMER;
+import static me.drakeet.transformer.TranslationService.TRANSFORMER;
 import static me.drakeet.transformer.Services.messageService;
 import static me.drakeet.transformer.store.MessageStore.messagesStore;
 

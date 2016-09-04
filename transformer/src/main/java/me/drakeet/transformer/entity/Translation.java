@@ -1,11 +1,10 @@
 package me.drakeet.transformer.entity;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import java.io.File;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.transformer.entity.Step.OnCreate;
+import static me.drakeet.transformer.entity.Step.OnConfirm;
 import static me.drakeet.transformer.entity.Step.OnDone;
 import static me.drakeet.transformer.entity.Step.OnStop;
 
@@ -18,9 +17,8 @@ public class Translation implements Cloneable {
     public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
     public static final String TEXT_DONE = "翻译结束";
 
-    @NonNull public Step step;
+    @NonNull private Step step;
     @NonNull public String current;
-    @Nullable public Translation last;
     public int currentIndex;
     public String[] sources;
     // TODO: 16/7/31
@@ -30,29 +28,39 @@ public class Translation implements Cloneable {
     @NonNull public File to;
 
 
-    private Translation(@NonNull Step step, @NonNull String current) {
+    public Translation(@NonNull Step step, @NonNull String current) {
+        setup(step, current);
+    }
+
+
+    private void setup(@NonNull Step step, @NonNull String current) {
         this.step = requireNonNull(step);
         this.current = requireNonNull(current);
     }
 
 
-    @NonNull public static Translation create() {
-        return new Translation(OnCreate, LIGHT_AND_DARK_GATE_OPEN);
+    public void confirm(@NonNull final String text) {
+        this.setup(OnConfirm, text);
     }
 
 
-    @NonNull public static Translation confirm(@NonNull final String text) {
-        return new Translation(Step.OnConfirm, text);
+    public void done() {
+        this.setup(OnDone, TEXT_DONE);
     }
 
 
-    @NonNull public static Translation done() {
-        return new Translation(OnDone, TEXT_DONE);
+    public void stop() {
+        this.setup(OnStop, LIGHT_AND_DARK_GATE_CLOSE);
     }
 
 
-    @NonNull public static Translation stop() {
-        return new Translation(OnStop, LIGHT_AND_DARK_GATE_CLOSE);
+    public void next() {
+        this.step = this.step.next();
+    }
+
+
+    @NonNull public Step getStep() {
+        return step;
     }
 
 
