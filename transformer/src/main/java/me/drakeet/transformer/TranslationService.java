@@ -18,8 +18,8 @@ import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
+import me.drakeet.timemachine.store.MessageStore;
 import me.drakeet.transformer.entity.Translation;
-import me.drakeet.transformer.store.MessageStore;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -32,7 +32,7 @@ import static me.drakeet.transformer.entity.Step.OnWorking;
 import static me.drakeet.transformer.request.TranslateRequests.YOU_DAO;
 import static me.drakeet.transformer.request.TranslateRequests.current2UrlMerger;
 import static me.drakeet.transformer.request.TranslateRequests.youdaoResponseToResult;
-import static me.drakeet.transformer.store.MessageStore.messagesStore;
+import static me.drakeet.timemachine.store.MessageStore.messagesStore;
 
 /**
  * @author drakeet

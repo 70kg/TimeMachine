@@ -31,11 +31,12 @@ import me.drakeet.timemachine.Objects;
 import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
+import me.drakeet.timemachine.widget.DrawerActivity;
 import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.TranslationService.YIN;
-import static me.drakeet.transformer.store.MessageStore.messagesStore;
+import static me.drakeet.timemachine.store.MessageStore.messagesStore;
 
 /**
  * Created by drakeet on 16/6/13.
@@ -94,7 +95,7 @@ public class Inhibitor extends IntentService implements Updatable {
             content = messageContents[1];
         }
         Notifications.simple(this, title, content,
-            R.drawable.ic_notification, MainActivity.class);
+            R.drawable.ic_notification, DrawerActivity.class);
     }
 }
 
