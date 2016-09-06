@@ -1,6 +1,8 @@
-include ':transformer'
 include ':timemachine'
+include ':timemachine-store'
+include ':timemachine-widget'
 include ':multitype'
+include ':transformer'
 
 project(':multitype').projectDir = new File(rootProject.projectDir, '../MultiType/library')
 

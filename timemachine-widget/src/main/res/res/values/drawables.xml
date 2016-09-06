@@ -1,0 +1,8 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <item name="ic_menu_share"
+        type="drawable">@drawable/ic_share_black
+    </item>
+    <item name="ic_menu_send"
+        type="drawable">@drawable/ic_send_black
+    </item>
+</resources>
