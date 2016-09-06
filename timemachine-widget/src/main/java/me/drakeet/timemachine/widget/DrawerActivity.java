@@ -2,7 +2,6 @@ package me.drakeet.timemachine.widget;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.VisibleForTesting;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +22,6 @@ import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.timemachine.store.MessageStore.messagesStore;
 
 public abstract class DrawerActivity extends AppCompatActivity
     implements NavigationView.OnNavigationItemSelectedListener,
@@ -89,7 +87,7 @@ public abstract class DrawerActivity extends AppCompatActivity
 
 
     @SuppressWarnings("StatementWithEmptyBody")
-    @Override public boolean onNavigationItemSelected(MenuItem item) {
+    @Override public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
             TextContent content = new OutTextContent("求王垠的最新文章");
