@@ -2,6 +2,7 @@ package me.drakeet.timemachine.widget;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
@@ -26,6 +27,7 @@ public class DrawerDelegate extends Fragment {
 
     private ActionBarDrawerToggle toggle;
     private SyncDrawerLayout drawer;
+    private NavigationView navigationView;
 
 
     /**
@@ -62,6 +64,7 @@ public class DrawerDelegate extends Fragment {
         requireNonNull(toolbar, "DrawerDelegate need a toolbar");
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         drawer = (SyncDrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) getActivity().findViewById(R.id.nav_view);
         toggle = new ActionBarDrawerToggle(getActivity(), drawer, toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close);
@@ -97,5 +100,10 @@ public class DrawerDelegate extends Fragment {
             drawer.removeDrawerListener(toggle);
             return false;
         }
+    }
+
+
+    public void inflateMenu(@MenuRes int resId) {
+        navigationView.inflateMenu(resId);
     }
 }

@@ -17,7 +17,6 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
-import me.drakeet.timemachine.message.OutTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
 
@@ -28,10 +27,10 @@ public abstract class DrawerActivity extends AppCompatActivity
     CoreContract.Delegate {
 
     private static final String TAG = DrawerActivity.class.getSimpleName();
-    private MessageFactory messageFactory;
+    protected MessageFactory messageFactory;
 
     private List<Message> messages = new ArrayList<>(100);
-    private CoreContract.Presenter presenter;
+    protected CoreContract.Presenter presenter;
     private Repository<List<Message>> messagesRepository;
     private Updatable dataUpdatable;
     private DrawerDelegate drawerDelegate;
@@ -39,8 +38,20 @@ public abstract class DrawerActivity extends AppCompatActivity
 
     public abstract String provideServiceId();
     protected abstract void onCoreFragmentCreated(@NonNull CoreFragment fragment);
-    // TODO: 16/9/6
-    public abstract boolean onCreateDrawerOptionsMenu(Menu menu);
+    /**
+     * TODO
+     *
+     * @return You must return true for the menu to be displayed;
+     * if you return false it will not be shown.(Not used currently)
+     **/
+    public abstract boolean onCreateDrawerOptionsMenu(@NonNull DrawerDelegate drawer);
+    /**
+     * Called when an item in the drawer navigation menu is selected.
+     *
+     * @param item The selected item
+     * @return true to display the item as the selected item
+     */
+    public abstract boolean onDrawerItemSelected(@NonNull final MenuItem item);
 
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -86,23 +97,8 @@ public abstract class DrawerActivity extends AppCompatActivity
     }
 
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override public boolean onNavigationItemSelected(@NonNull final MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.nav_yin) {
-            TextContent content = new OutTextContent("求王垠的最新文章");
-            Message message = messageFactory.newMessage(content);
-            presenter.addNewOut(message);
-        } else if (id == R.id.nav_translate_open) {
-            TextContent content = new OutTextContent("发动魔法卡——混沌仪式!");
-            Message message = messageFactory.newMessage(content);
-            presenter.addNewOut(message);
-        } else if (id == R.id.nav_translate_close) {
-            TextContent content = new OutTextContent("关闭混沌世界");
-            Message message = messageFactory.newMessage(content);
-            presenter.addNewOut(message);
-        }
-        return true;
+        return onDrawerItemSelected(item);
     }
 
 
@@ -130,6 +126,7 @@ public abstract class DrawerActivity extends AppCompatActivity
 
     @Override public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main, menu);
+        onCreateDrawerOptionsMenu(drawerDelegate);
         return true;
     }
 
