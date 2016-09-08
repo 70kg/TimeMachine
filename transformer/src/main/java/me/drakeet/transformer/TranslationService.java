@@ -27,6 +27,7 @@ import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Requests.urlToResponse;
+import static me.drakeet.transformer.StringRes.CLOSE_TRANSLATION_ERROR;
 import static me.drakeet.transformer.entity.Step.OnConfirm;
 import static me.drakeet.transformer.entity.Step.OnWorking;
 import static me.drakeet.transformer.request.TranslateRequests.YOU_DAO;
@@ -175,7 +176,11 @@ class TranslationService extends BaseService {
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
-                onStopStep();
+                if (token != null) {
+                    onStopStep();
+                } else {
+                    insertNewIn(CLOSE_TRANSLATION_ERROR);
+                }
                 break;
             default:
                 echoDelegate.handleContent(content);
