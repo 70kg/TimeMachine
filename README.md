@@ -19,6 +19,8 @@ SDK, bases on [drakeet/MultiType](https://github.com/drakeet/MultiType):
 
 #### Goals
 - One-way APIs.
+- Simple
+- Flexible
 
 #### Build
 
