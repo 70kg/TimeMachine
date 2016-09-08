@@ -13,19 +13,15 @@ import static me.drakeet.transformer.entity.Step.OnStop;
  */
 public class Translation implements Cloneable {
 
-    public static final String LIGHT_AND_DARK_GATE_OPEN = "混沌世界: 开启!\n请发送一篇你需要翻译的内容";
-    public static final String LIGHT_AND_DARK_GATE_CLOSE = "混沌世界: 关闭!";
-    public static final String TEXT_DONE = "翻译结束";
-
-    @NonNull private Step step;
-    @NonNull public String current;
+    private Step step;
+    public String current;
     public int currentIndex;
     public String[] sources;
     // TODO: 16/7/31
     public String[] results;
 
-    @NonNull public File from;
-    @NonNull public File to;
+    public File from;
+    public File to;
 
 
     public Translation(@NonNull Step step, @NonNull String current) {
@@ -44,13 +40,13 @@ public class Translation implements Cloneable {
     }
 
 
-    public void done() {
-        this.setup(OnDone, TEXT_DONE);
+    public void done(@NonNull final String current) {
+        this.setup(OnDone, current);
     }
 
 
-    public void stop() {
-        this.setup(OnStop, LIGHT_AND_DARK_GATE_CLOSE);
+    public void stop(@NonNull final String current) {
+        this.setup(OnStop, current);
     }
 
 

@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">TimeMachine</string>
+
+    <string name="close_translation_mode">关闭混沌世界</string>
+    <string name="light_and_dark_gate_close">混沌世界: 关闭!</string>
+
+    <string name="light_and_dark_gate_open">混沌世界: 开启!\n请发送一篇你需要翻译的内容</string>
+    <string name="rule_translation_start">"很好, 翻译工作现在开始。我会将你的内容分解, 一句一句挑拣出来, 自动翻译并将结果置于你的输入框, 如果有问题你可以修改, 最终通过发送按钮确认翻译结果。好了, 开始第一句: "</string>
+    <string name="translation_done">翻译结束</string>
+
+    <string name="tip_token_does_not_create">从未开始, 缘何结束。</string>
+    <string name="tip_network_error_retry">网络异常, 请重试</string>
 </resources>

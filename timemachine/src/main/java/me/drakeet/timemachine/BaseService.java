@@ -2,6 +2,7 @@ package me.drakeet.timemachine;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 
 /**
  * @author drakeet
@@ -16,5 +17,10 @@ public abstract class BaseService implements CoreContract.Service {
 
     @NonNull protected Context getContext() {
         return context;
+    }
+
+
+    @NonNull protected String getString(@StringRes int resId) {
+        return getContext().getString(resId);
     }
 }

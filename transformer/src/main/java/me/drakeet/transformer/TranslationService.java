@@ -24,16 +24,15 @@ import me.drakeet.transformer.entity.Translation;
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
 import static me.drakeet.timemachine.Objects.requireNonNull;
+import static me.drakeet.timemachine.store.MessageStore.messagesStore;
 import static me.drakeet.transformer.App.calculationExecutor;
 import static me.drakeet.transformer.App.networkExecutor;
 import static me.drakeet.transformer.Requests.urlToResponse;
-import static me.drakeet.transformer.StringRes.CLOSE_TRANSLATION_ERROR;
 import static me.drakeet.transformer.entity.Step.OnConfirm;
 import static me.drakeet.transformer.entity.Step.OnWorking;
 import static me.drakeet.transformer.request.TranslateRequests.YOU_DAO;
 import static me.drakeet.transformer.request.TranslateRequests.current2UrlMerger;
 import static me.drakeet.transformer.request.TranslateRequests.youdaoResponseToResult;
-import static me.drakeet.timemachine.store.MessageStore.messagesStore;
 
 /**
  * @author drakeet
@@ -152,7 +151,7 @@ class TranslationService extends BaseService {
             return;
         }
         final String content = ((TextContent) message.content).text;
-        if (translateMode && !content.equals("关闭混沌世界")) {
+        if (translateMode && !content.equals(getString(R.string.close_translation_mode))) {
             token.current = content;
             handleNextStep();
         } else {
@@ -179,7 +178,7 @@ class TranslationService extends BaseService {
                 if (token != null) {
                     onStopStep();
                 } else {
-                    insertNewIn(CLOSE_TRANSLATION_ERROR);
+                    insertNewIn(getString(R.string.tip_token_does_not_create));
                 }
                 break;
             default:
@@ -217,7 +216,7 @@ class TranslationService extends BaseService {
                 input.currentIndex += 1;
                 input.next();
             } else {
-                input.done();
+                input.done(getString(R.string.translation_done));
             }
         } else {
             input.next();
@@ -226,7 +225,7 @@ class TranslationService extends BaseService {
 
 
     private void onCreateStep() {
-        this.token = Translations.create();
+        this.token = Translations.create(getString(R.string.light_and_dark_gate_open));
         insertNewIn(token.current);
         loop(token);
         this.translateMode = true;
@@ -237,7 +236,7 @@ class TranslationService extends BaseService {
         Log.d("onTokenStart", token.toString());
         // TODO: 16/7/24 split just mock for test
         token.sources = token.current.split("。");
-        token.current = StringRes.TRANSLATION_START_RULE;
+        token.current = getString(R.string.rule_translation_start);
         insertNewIn(token.current);
         loop(token);
         handleNextStep();
@@ -266,14 +265,14 @@ class TranslationService extends BaseService {
 
 
     private void onDoneStep() {
-        token.done();
+        token.done(getString(R.string.translation_done));
         insertNewIn(token.current);
         this.translateMode = false;
     }
 
 
     private void onStopStep() {
-        token.stop();
+        token.stop(getString(R.string.light_and_dark_gate_close));
         insertNewIn(token.current);
         loop(token);
         this.translateMode = false;
@@ -297,9 +296,13 @@ class TranslationService extends BaseService {
 
     @NonNull Receiver<Throwable> errorHandler() {
         return value -> {
-            String error = (value.getMessage() != null) ?
-                           value.getMessage() :
-                           "网络异常, 请重试";
+            final String error;
+            if (value.getMessage() != null) {
+                error = value.getMessage();
+            } else {
+                value.printStackTrace();
+                error = getString(R.string.tip_network_error_retry);
+            }
             Log.e("errorHandler", error);
             newInReceiver().accept(error);
         };
