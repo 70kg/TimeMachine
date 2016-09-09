@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -223,7 +224,9 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
     private void attemptSmoothScrollToBottom() {
         int last = messages.size() - 1;
-        if (layoutManager.findLastVisibleItemPosition() >= last - 2) {
+        Log.d("findLastVisibleItemPosition",
+            layoutManager.findLastVisibleItemPosition() + " last - 2: " + (last - 2));
+        if (layoutManager.findLastVisibleItemPosition() >= last - 3) {
             smoothScroller.setTargetPosition(last);
             recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
         }
