@@ -19,6 +19,7 @@ import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
+import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
@@ -125,7 +126,7 @@ class TranslationService extends BaseService {
 
     /**
      * Transform the message's content to next sentence.
-     * before sending to {@link TranslationService#onNewOut(Message)}
+     * before sending to {@link TranslationService#onNewOut(Message)}.
      *
      * @param message a new message.
      * @return False if the service would not like to intercept the message.
@@ -171,12 +172,13 @@ class TranslationService extends BaseService {
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":
-                onCreateStep();
+                createStep();
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
                 if (token != null) {
-                    onStopStep();
+                    token.stop(getString(R.string.light_and_dark_gate_close));
+                    handleNextStep();
                 } else {
                     insertNewIn(getString(R.string.tip_token_does_not_create));
                 }
@@ -224,7 +226,11 @@ class TranslationService extends BaseService {
     }
 
 
-    private void onCreateStep() {
+    /**
+     * Create Translation token and loop it to onStart,
+     * then wait for user send the content to start.
+     */
+    private void createStep() {
         this.token = Translations.create(getString(R.string.light_and_dark_gate_open));
         insertNewIn(token.current);
         loop(token);
@@ -232,9 +238,11 @@ class TranslationService extends BaseService {
     }
 
 
+    /**
+     * Show guide and start the translation for the first sentence.
+     * TODO: 16/7/24 split just mock for test
+     */
     private void onStartStep() {
-        Log.d("onTokenStart", token.toString());
-        // TODO: 16/7/24 split just mock for test
         token.sources = token.current.split("。");
         token.current = getString(R.string.rule_translation_start);
         insertNewIn(token.current);
@@ -243,14 +251,23 @@ class TranslationService extends BaseService {
     }
 
 
+    /**
+     * Get the sentence, {@link TranslationService#insertNewIn(String)}
+     * and handle the confirm step if {@link Step#OnConfirm} after looped,
+     * otherwise handle the done step.
+     *
+     * @see TranslationService#loop(Translation)
+     */
     private void onWorkingStep() {
-        Log.d("onWorkingStep", token.toString());
         loop(token);
+        if (token.getStep() == Step.OnConfirm) {
+            insertNewIn(token.current);
+        }
         handleNextStep();
-        insertNewIn(token.current);
     }
 
 
+    // TODO: 16/9/11 the name of the method may cause confusion.
     private void onConfirm(@NonNull final Translation token) {
         translateReaction.accept(token);
     }
@@ -265,16 +282,13 @@ class TranslationService extends BaseService {
 
 
     private void onDoneStep() {
-        token.done(getString(R.string.translation_done));
         insertNewIn(token.current);
         this.translateMode = false;
     }
 
 
     private void onStopStep() {
-        token.stop(getString(R.string.light_and_dark_gate_close));
         insertNewIn(token.current);
-        loop(token);
         this.translateMode = false;
     }
 
