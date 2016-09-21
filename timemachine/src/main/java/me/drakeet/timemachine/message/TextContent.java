@@ -3,13 +3,13 @@ package me.drakeet.timemachine.message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
-import me.drakeet.multitype.ItemContent;
 import me.drakeet.multitype.Savable;
+import me.drakeet.timemachine.Content;
 
 /**
  * @author drakeet
  */
-public class TextContent implements ItemContent, Savable {
+public class TextContent implements Content, Savable {
 
     @NonNull public String text;
 

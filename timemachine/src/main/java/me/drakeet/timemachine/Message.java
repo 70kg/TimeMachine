@@ -1,21 +1,22 @@
 package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.google.gson.Gson;
-import me.drakeet.multitype.ItemContent;
-import me.drakeet.multitype.TypeItem;
+import me.drakeet.multitype.Item;
 
 /**
  * @author drakeet
  */
-public class Message extends TypeItem {
+public class Message implements Item {
 
-    @NonNull public String id;
-    @NonNull public String fromUserId;
-    @NonNull public String toUserId;
-    @NonNull public long createdTime;
-    @Nullable public long receivedTime;
+    public String id;
+    public String fromUserId;
+    public String toUserId;
+    public long createdTime;
+    public long receivedTime;
+    public Content content;
+    public String extra;
+
 
     public Message() {
     }
@@ -26,13 +27,14 @@ public class Message extends TypeItem {
         @NonNull String fromUserId,
         @NonNull String toUserId,
         @NonNull long createdTime, long receivedTime, String extra,
-        @NonNull ItemContent content) {
-        super(content, extra);
+        @NonNull Content content) {
         this.id = id;
         this.fromUserId = fromUserId;
         this.toUserId = toUserId;
         this.createdTime = createdTime;
         this.receivedTime = receivedTime;
+        this.content = content;
+        this.extra = extra;
     }
 
 

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
-import me.drakeet.multitype.MultiTypeAdapter;
 import me.drakeet.timemachine.message.OutTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
@@ -34,7 +33,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
-    private MultiTypeAdapter adapter;
+    private MessageAdapter adapter;
     private List<Message> messages;
 
     private OnRecyclerItemClickListener itemClickListener;
@@ -103,7 +102,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         messages = delegate.provideInitialMessages();
-        adapter = new MultiTypeAdapter(messages);
+        adapter = new MessageAdapter(messages);
         messageFactory = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
             .setToUserId("")
