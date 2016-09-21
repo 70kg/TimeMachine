@@ -3,7 +3,6 @@ package me.drakeet.timemachine;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.util.UUID;
-import me.drakeet.multitype.ItemContent;
 
 import static java.util.Objects.requireNonNull;
 
@@ -27,13 +26,13 @@ public class MessageFactory {
     }
 
 
-    public Message newMessage(@NonNull ItemContent content) {
+    public Message newMessage(@NonNull Content content) {
         id = UUID.randomUUID().toString();
         return newMessage(content, id);
     }
 
 
-    public Message newMessage(@NonNull ItemContent content, @NonNull String id) {
+    public Message newMessage(@NonNull Content content, @NonNull String id) {
         long createdTime = System.currentTimeMillis();
         return new Message(id, fromUserId, toUserId, createdTime, -1, extra, content);
     }

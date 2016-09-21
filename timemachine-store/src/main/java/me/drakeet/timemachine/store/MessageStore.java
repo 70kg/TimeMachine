@@ -36,8 +36,8 @@ import com.google.android.agera.database.SqlRequest;
 import com.google.android.agera.database.SqlUpdateRequest;
 import java.util.List;
 import java.util.concurrent.Executor;
-import me.drakeet.multitype.ItemContent;
 import me.drakeet.multitype.Savable;
+import me.drakeet.timemachine.Content;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.OutTextContent;
@@ -183,12 +183,12 @@ public final class MessageStore implements Store<Message> {
 
 
     @NonNull
-    private static ItemContent searchContent(
+    private static Content searchContent(
         @Nullable String contentDesc, @NonNull final byte[] blob) {
         if (contentDesc == null) {
             contentDesc = "";
         }
-        final ItemContent content;
+        final Content content;
         switch (contentDesc) {
             default:
             case "InText":
