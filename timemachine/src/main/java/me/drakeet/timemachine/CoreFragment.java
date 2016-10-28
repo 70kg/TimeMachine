@@ -16,7 +16,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
+import me.drakeet.multitype.MultiTypeAsserts;
+import me.drakeet.timemachine.message.InTextContent;
+import me.drakeet.timemachine.message.InTextMessageViewProvider;
 import me.drakeet.timemachine.message.OutTextContent;
+import me.drakeet.timemachine.message.OutTextMessageViewProvider;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
@@ -103,10 +107,17 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         super.onCreate(savedInstanceState);
         messages = delegate.provideInitialMessages();
         adapter = new MessageAdapter(messages);
+        registerMultiType(adapter);
         messageFactory = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
             .setToUserId("")
             .build();
+    }
+
+
+    private void registerMultiType(@NonNull final MessageAdapter adapter) {
+        adapter.register(OutTextContent.class, new OutTextMessageViewProvider());
+        adapter.register(InTextContent.class, new InTextMessageViewProvider());
     }
 
 
@@ -135,6 +146,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         layoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(layoutManager);
+        MultiTypeAsserts.assertAllRegistered(adapter, messages);
         recyclerView.setAdapter(adapter);
         itemClickListener = new OnRecyclerItemClickListener(getContext()) {
             @Override void onItemClick(View view, int position) {

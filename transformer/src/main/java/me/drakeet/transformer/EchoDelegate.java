@@ -21,6 +21,7 @@ public class EchoDelegate extends MessageServiceDelegate {
     }
 
 
+    @SuppressWarnings("unchecked")
     @Override protected void prepare() {
         echoReaction = Reservoirs.<String>reactionReservoir();
         Repository<String> echoRepo = repositoryWithInitialValue(empty())

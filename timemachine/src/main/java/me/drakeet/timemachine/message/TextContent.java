@@ -3,8 +3,8 @@ package me.drakeet.timemachine.message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.Gson;
-import me.drakeet.multitype.Savable;
 import me.drakeet.timemachine.Content;
+import me.drakeet.timemachine.Savable;
 
 /**
  * @author drakeet
