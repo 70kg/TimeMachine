@@ -12,8 +12,8 @@ import java.util.regex.Pattern;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
-import static me.drakeet.transformer.App.calculationExecutor;
-import static me.drakeet.transformer.App.networkExecutor;
+import static me.drakeet.transformer.Executors.calculationExecutor;
+import static me.drakeet.transformer.Executors.networkExecutor;
 import static me.drakeet.transformer.Requests.urlToResponse;
 
 /**
