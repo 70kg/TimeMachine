@@ -95,7 +95,7 @@ public class Inhibitor extends IntentService implements Updatable {
             content = messageContents[1];
         }
         Notifications.simple(this, title, content,
-            R.drawable.ic_notification, DrawerActivity.class);
+            R.drawable.ic_notification, MainActivity.class);
     }
 }
 
