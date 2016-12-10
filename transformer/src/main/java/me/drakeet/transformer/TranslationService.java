@@ -21,6 +21,7 @@ import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
 import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
+import me.drakeet.transformer.module.AndroidSDKDelegate;
 import me.drakeet.transformer.module.EchoDelegate;
 import me.drakeet.transformer.module.TomatoDelegate;
 import me.drakeet.transformer.module.YinDelegate;
@@ -61,6 +62,7 @@ public class TranslationService extends BaseService {
     // TODO: 2016/11/13 Delegate List
     private EchoDelegate echoDelegate;
     private YinDelegate yinDelegate;
+    private AndroidSDKDelegate androidSDKDelegate;
     private TomatoDelegate tomatoDelegate;
 
 
@@ -90,9 +92,11 @@ public class TranslationService extends BaseService {
         AgeraBus.repository().addUpdatable(newInEvent);
         echoDelegate = new EchoDelegate(this);
         yinDelegate = new YinDelegate(this);
+        androidSDKDelegate = new AndroidSDKDelegate(this);
         tomatoDelegate = new TomatoDelegate(this);
         echoDelegate.prepare();
         yinDelegate.prepare();
+        androidSDKDelegate.prepare();
         tomatoDelegate.prepare();
         this.prepare();
     }
@@ -177,6 +181,10 @@ public class TranslationService extends BaseService {
                 break;
             case "求王垠的最新文章":
                 yinDelegate.handleContent(content);
+                break;
+            case "ASS":
+            case "请告诉我最新的 Android SDK Source 版本":
+                androidSDKDelegate.handleContent(content);
                 break;
             case "发动魔法卡——混沌仪式!":
             case "混沌仪式":

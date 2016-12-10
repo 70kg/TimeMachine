@@ -53,6 +53,10 @@ public class MainActivity extends DrawerActivity {
             TextContent content = new OutTextContent("关闭混沌世界");
             Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
+        } else if (id == R.id.nav_android_sdk_source) {
+            TextContent content = new OutTextContent("请告诉我最新的 Android SDK Source 版本");
+            Message message = messageFactory.newMessage(content);
+            presenter.addNewOut(message);
         }
         return true;
     }

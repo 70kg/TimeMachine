@@ -8,6 +8,11 @@
             android:title="YinWang.org"/>
 
         <item
+            android:id="@+id/nav_android_sdk_source"
+            android:icon="@drawable/ic_studio"
+            android:title="Check Android SDK Source Version"/>
+
+        <item
             android:id="@+id/nav_translate_open"
             android:icon="@drawable/ic_menu_send"
             android:title="Open Translate Mode"/>
