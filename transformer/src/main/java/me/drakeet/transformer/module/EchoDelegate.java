@@ -1,8 +1,11 @@
-package me.drakeet.transformer;
+package me.drakeet.transformer.module;
 
 import android.support.annotation.NonNull;
 import com.google.android.agera.Repository;
 import com.google.android.agera.Reservoir;
+import me.drakeet.transformer.MessageServiceDelegate;
+import me.drakeet.transformer.Reservoirs;
+import me.drakeet.transformer.TranslationService;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -22,7 +25,7 @@ public class EchoDelegate extends MessageServiceDelegate {
 
 
     @SuppressWarnings("unchecked")
-    @Override protected void prepare() {
+    @Override public void prepare() {
         echoReaction = Reservoirs.<String>reactionReservoir();
         Repository<String> echoRepo = repositoryWithInitialValue(empty())
             .observe(echoReaction)
@@ -36,7 +39,7 @@ public class EchoDelegate extends MessageServiceDelegate {
     }
 
 
-    @Override protected void handleContent(@NonNull String content) {
+    @Override public void handleContent(@NonNull String content) {
         echoReaction.accept(content);
     }
 }

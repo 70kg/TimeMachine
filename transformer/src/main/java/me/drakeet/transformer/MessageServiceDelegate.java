@@ -17,7 +17,7 @@ public abstract class MessageServiceDelegate {
     }
 
 
-    @NonNull public TranslationService getService() {
+    @NonNull protected TranslationService getService() {
         return service;
     }
 
@@ -27,7 +27,7 @@ public abstract class MessageServiceDelegate {
     }
 
 
-    protected abstract void prepare();
+    public abstract void prepare();
 
-    protected abstract void handleContent(@NonNull String content);
+    public abstract void handleContent(@NonNull String content);
 }

@@ -15,7 +15,7 @@ public abstract class BaseService implements CoreContract.Service {
     protected BaseService(Context context) {this.context = context;}
 
 
-    @NonNull protected Context getContext() {
+    @NonNull public Context getContext() {
         return context;
     }
 

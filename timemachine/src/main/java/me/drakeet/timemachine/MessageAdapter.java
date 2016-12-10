@@ -2,7 +2,6 @@ package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
 import java.util.List;
-import me.drakeet.multitype.Item;
 import me.drakeet.multitype.MultiTypeAdapter;
 
 /**
@@ -15,7 +14,7 @@ public class MessageAdapter extends MultiTypeAdapter {
     }
 
 
-    @NonNull @Override public Class onFlattenClass(@NonNull Item message) {
+    @NonNull @Override public Class onFlattenClass(@NonNull Object message) {
         return ((Message) message).content.getClass();
     }
 }

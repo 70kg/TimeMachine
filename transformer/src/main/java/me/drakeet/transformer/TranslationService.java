@@ -21,6 +21,9 @@ import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
 import me.drakeet.transformer.entity.Step;
 import me.drakeet.transformer.entity.Translation;
+import me.drakeet.transformer.module.EchoDelegate;
+import me.drakeet.transformer.module.TomatoDelegate;
+import me.drakeet.transformer.module.YinDelegate;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -38,7 +41,7 @@ import static me.drakeet.transformer.request.TranslateRequests.youdaoResponseToR
 /**
  * @author drakeet
  */
-class TranslationService extends BaseService {
+public class TranslationService extends BaseService {
 
     static final String YIN = "YIN";
     static final String TRANSFORMER = "transformer";
@@ -55,8 +58,10 @@ class TranslationService extends BaseService {
     private Updatable newInEvent;
     private Reservoir<Translation> translateReaction;
 
+    // TODO: 2016/11/13 Delegate List
     private EchoDelegate echoDelegate;
     private YinDelegate yinDelegate;
+    private TomatoDelegate tomatoDelegate;
 
 
     TranslationService(Context context) {
@@ -85,8 +90,10 @@ class TranslationService extends BaseService {
         AgeraBus.repository().addUpdatable(newInEvent);
         echoDelegate = new EchoDelegate(this);
         yinDelegate = new YinDelegate(this);
+        tomatoDelegate = new TomatoDelegate(this);
         echoDelegate.prepare();
         yinDelegate.prepare();
+        tomatoDelegate.prepare();
         this.prepare();
     }
 
@@ -163,6 +170,7 @@ class TranslationService extends BaseService {
 
 
     private void handleContent(@NonNull final String content) {
+        // TODO: 2016/11/13 matcher
         switch (requireNonNull(content)) {
             case "滚":
                 newInReceiver().accept("但是...但是...");
@@ -182,6 +190,9 @@ class TranslationService extends BaseService {
                 } else {
                     insertNewIn(getString(R.string.tip_token_does_not_create));
                 }
+                break;
+            case "每隔一小时提醒我":
+                tomatoDelegate.handleContent(content);
                 break;
             default:
                 echoDelegate.handleContent(content);
@@ -303,12 +314,12 @@ class TranslationService extends BaseService {
     }
 
 
-    @NonNull Receiver<String> newInReceiver() {
+    @NonNull public Receiver<String> newInReceiver() {
         return value -> insertNewIn(value);
     }
 
 
-    @NonNull Receiver<Throwable> errorHandler() {
+    @NonNull public Receiver<Throwable> errorHandler() {
         return value -> {
             final String error;
             if (value.getMessage() != null) {
