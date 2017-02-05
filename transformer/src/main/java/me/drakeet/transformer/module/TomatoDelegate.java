@@ -12,7 +12,6 @@ import me.drakeet.agera.eventbus.AgeraBus;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.transformer.MainActivity;
 import me.drakeet.transformer.MessageServiceDelegate;
@@ -77,7 +76,7 @@ public class TomatoDelegate extends MessageServiceDelegate {
                 .setToUserId(TimeKey.userId)
                 .build();
             final String id = String.valueOf(System.currentTimeMillis());
-            final Message in = factory.newMessage(new InTextContent(content), id);
+            final Message in = factory.newMessage(new TextContent(content), id);
             messagesStore(appContext).insert(in, succeeded -> {
                 Log.d("insert", "result: " + succeeded);
                 if (succeeded) {

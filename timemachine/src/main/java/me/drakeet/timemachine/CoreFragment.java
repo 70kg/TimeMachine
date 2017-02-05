@@ -17,11 +17,8 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
 import me.drakeet.multitype.MultiTypeAsserts;
-import me.drakeet.timemachine.message.InTextContent;
-import me.drakeet.timemachine.message.InTextMessageViewProvider;
-import me.drakeet.timemachine.message.OutTextContent;
-import me.drakeet.timemachine.message.OutTextMessageViewProvider;
 import me.drakeet.timemachine.message.TextContent;
+import me.drakeet.timemachine.message.TextMessageViewProvider;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
 import static java.util.Objects.requireNonNull;
@@ -116,15 +113,14 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
 
     private void registerMultiType(@NonNull final MessageAdapter adapter) {
-        adapter.register(OutTextContent.class, new OutTextMessageViewProvider());
-        adapter.register(InTextContent.class, new InTextMessageViewProvider());
+        adapter.register(TextContent.class, new TextMessageViewProvider());
     }
 
 
     @Nullable @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_core, container, false);
-        setupRecyclerView(rootView);
+        setUpRecyclerView(rootView);
         leftAction = (ImageButton) rootView.findViewById(R.id.left_action);
         input = (EditText) rootView.findViewById(R.id.input);
         rightAction = (ImageButton) rootView.findViewById(R.id.right_action);
@@ -139,7 +135,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
     }
 
 
-    private void setupRecyclerView(@NonNull final View rootView) {
+    private void setUpRecyclerView(@NonNull final View rootView) {
         requireNonNull(rootView);
         recyclerView = (RecyclerView) rootView.findViewById(R.id.list);
         layoutManager = new LinearLayoutManager(getContext());
@@ -222,7 +218,7 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
         if (id == R.id.left_action) {
             delegate.onLeftActionClick();
         } else if (id == R.id.right_action && !TextUtils.isEmpty(input.getText().toString())) {
-            TextContent content = new OutTextContent(input.getText().toString());
+            TextContent content = new TextContent(input.getText().toString());
             Message message = messageFactory.newMessage(content);
             if (!delegate.onRightActionClick() && !presenter.onInterceptNewOut(message)) {
                 input.setText("");

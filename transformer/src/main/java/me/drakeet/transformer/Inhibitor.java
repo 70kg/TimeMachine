@@ -29,14 +29,12 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.Objects;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
-import me.drakeet.timemachine.widget.DrawerActivity;
 import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
-import static me.drakeet.transformer.TranslationService.YIN;
 import static me.drakeet.timemachine.store.MessageStore.messagesStore;
+import static me.drakeet.transformer.TranslationService.YIN;
 
 /**
  * Created by drakeet on 16/6/13.
@@ -68,7 +66,7 @@ public class Inhibitor extends IntentService implements Updatable {
             final String content = repository.get().get();
             /* keep unique */
             final String id = String.valueOf(content.hashCode());
-            final Message in = factory.newMessage(new InTextContent(content), id);
+            final Message in = factory.newMessage(new TextContent(content), id);
             // TODO: 16/8/21 if succeeded sent to
             messagesStore(getApplicationContext()).insert(in, succeeded -> {
                 Log.d("insert", "result: " + succeeded);

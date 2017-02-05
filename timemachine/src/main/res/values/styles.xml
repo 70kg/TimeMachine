@@ -12,6 +12,14 @@
     </style>
 
     <style name="TimeMachine.Message.Content">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorLink">#76a1ff</item>
+        <item name="android:autoLink">web|email|phone</item>
+        <item name="android:textColor">@color/textColorPrimary</item>
+    </style>
+
+    <style name="TimeMachine.Message.Container">
         <item name="android:textColorLink">#76a1ff</item>
         <item name="android:autoLink">web|email|phone</item>
         <item name="android:textColor">@color/textColorPrimary</item>
@@ -19,7 +27,7 @@
         <item name="android:paddingBottom">@dimen/message_padding_normal</item>
     </style>
 
-    <style name="TimeMachine.Message.Content.Out">
+    <style name="TimeMachine.Message.Container.Out">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/message_padding_normal</item>
@@ -30,7 +38,7 @@
         <item name="android:background">@drawable/bg_msg_out</item>
     </style>
 
-    <style name="TimeMachine.Message.Content.In">
+    <style name="TimeMachine.Message.Container.In">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingLeft">@dimen/message_padding_arrow</item>

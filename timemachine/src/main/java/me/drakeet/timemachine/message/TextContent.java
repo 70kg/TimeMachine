@@ -11,6 +11,8 @@ import me.drakeet.timemachine.Savable;
  */
 public class TextContent implements Content, Savable {
 
+    public static final String DESCRIBE = "Text";
+
     @NonNull public String text;
 
 
@@ -38,9 +40,8 @@ public class TextContent implements Content, Savable {
     }
 
 
-    // TODO: 16/8/21 shall be ab abstract?
     @NonNull @Override public String describe() {
-        return "Text";
+        return DESCRIBE;
     }
 
 
