@@ -39,8 +39,7 @@ import java.util.concurrent.Executor;
 import me.drakeet.timemachine.Content;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.Savable;
-import me.drakeet.timemachine.message.InTextContent;
-import me.drakeet.timemachine.message.OutTextContent;
+import me.drakeet.timemachine.message.TextContent;
 
 import static com.google.android.agera.Functions.staticFunction;
 import static com.google.android.agera.Mergers.staticMerger;
@@ -191,11 +190,8 @@ public final class MessageStore implements Store<Message> {
         final Content content;
         switch (contentDesc) {
             default:
-            case "InText":
-                content = new InTextContent(blob);
-                break;
-            case "OutText":
-                content = new OutTextContent(blob);
+            case TextContent.DESCRIBE:
+                content = new TextContent(blob);
                 break;
         }
         return content;

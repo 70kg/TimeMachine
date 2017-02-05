@@ -16,7 +16,6 @@ import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.Savable;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
 import me.drakeet.transformer.entity.Step;
@@ -313,7 +312,7 @@ public class TranslationService extends BaseService {
 
 
     private void insertNewIn(@NonNull final String value) {
-        insertNewIn(inMessageFactory.newMessage(new InTextContent(value)));
+        insertNewIn(inMessageFactory.newMessage(new TextContent(value)));
     }
 
 
@@ -323,7 +322,7 @@ public class TranslationService extends BaseService {
 
 
     @NonNull public Receiver<String> newInReceiver() {
-        return value -> insertNewIn(value);
+        return this::insertNewIn;
     }
 
 

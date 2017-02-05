@@ -1,8 +1,7 @@
 package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
-import me.drakeet.timemachine.message.InTextContent;
-import me.drakeet.timemachine.message.OutTextContent;
+import me.drakeet.timemachine.message.TextContent;
 
 import static java.util.Objects.requireNonNull;
 
@@ -24,7 +23,7 @@ public class TimeKey {
 
     /**
      * Initialize the time machine SDK,
-     * and register some base Message Content e.g. {@link InTextContent} & {@link OutTextContent}
+     * and register some base Message Content e.g. {@link TextContent}
      *
      * @param appName your app name
      * @param userId your current user uuid.
@@ -38,6 +37,6 @@ public class TimeKey {
     public static boolean isCurrentUser(@NonNull final String userId) {
         requireNonNull(userId);
         requireNonNull(TimeKey.userId, "TimeKey.userId is null, did you initialize the TimeKey?");
-        return userId != null && TimeKey.userId.equals(userId);
+        return TimeKey.userId.equals(userId);
     }
 }

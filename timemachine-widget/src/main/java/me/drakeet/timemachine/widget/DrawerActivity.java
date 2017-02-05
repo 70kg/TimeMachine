@@ -16,7 +16,6 @@ import me.drakeet.timemachine.CoreFragment;
 import me.drakeet.timemachine.Message;
 import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.TimeKey;
-import me.drakeet.timemachine.message.InTextContent;
 import me.drakeet.timemachine.message.TextContent;
 import me.drakeet.timemachine.store.MessageStore;
 
@@ -27,7 +26,7 @@ public abstract class DrawerActivity extends AppCompatActivity
     CoreContract.Delegate {
 
     private static final String TAG = DrawerActivity.class.getSimpleName();
-    protected MessageFactory messageFactory;
+    protected MessageFactory messageFactory4User;
 
     private List<Message> messages = new ArrayList<>(100);
     protected CoreContract.Presenter presenter;
@@ -37,6 +36,7 @@ public abstract class DrawerActivity extends AppCompatActivity
 
 
     public abstract String provideServiceId();
+
     protected abstract void onCoreFragmentCreated(@NonNull CoreFragment fragment);
     /**
      * TODO
@@ -83,12 +83,16 @@ public abstract class DrawerActivity extends AppCompatActivity
             }
         };
         messagesRepository.addUpdatable(dataUpdatable);
-        messageFactory = new MessageFactory.Builder()
+        messageFactory4User = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
             .setToUserId(provideServiceId())
             .build();
-        TextContent welcome = new InTextContent("Can I help you?");
-        messages.add(messageFactory.newMessage(welcome));
+        MessageFactory messageFactory4Service = new MessageFactory.Builder()
+            .setFromUserId(provideServiceId())
+            .setToUserId(TimeKey.userId)
+            .build();
+        TextContent welcome = new TextContent("Can I help you?");
+        messages.add(messageFactory4Service.newMessage(welcome));
     }
 
 
