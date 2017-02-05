@@ -23,13 +23,13 @@ def appVersionCode = advancedVersioning.versionCode
 def keyStore = file('transformer.keystore')
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion gradle.buildToolsVersion
 
     defaultConfig {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
-        targetSdkVersion 24
+        targetSdkVersion 25
         versionCode appVersionCode
         versionName appVersionName
         jackOptions {
