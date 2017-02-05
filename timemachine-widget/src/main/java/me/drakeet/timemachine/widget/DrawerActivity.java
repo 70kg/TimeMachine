@@ -26,7 +26,7 @@ public abstract class DrawerActivity extends AppCompatActivity
     CoreContract.Delegate {
 
     private static final String TAG = DrawerActivity.class.getSimpleName();
-    protected MessageFactory messageFactory4User;
+    protected MessageFactory messageFactory;
 
     private List<Message> messages = new ArrayList<>(100);
     protected CoreContract.Presenter presenter;
@@ -83,7 +83,7 @@ public abstract class DrawerActivity extends AppCompatActivity
             }
         };
         messagesRepository.addUpdatable(dataUpdatable);
-        messageFactory4User = new MessageFactory.Builder()
+        messageFactory = new MessageFactory.Builder()
             .setFromUserId(TimeKey.userId)
             .setToUserId(provideServiceId())
             .build();

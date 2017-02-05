@@ -42,19 +42,19 @@ public class MainActivity extends DrawerActivity {
         int id = item.getItemId();
         if (id == R.id.nav_yin) {
             TextContent content = new TextContent("求王垠的最新文章");
-            Message message = messageFactory4User.newMessage(content);
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_translate_open) {
             TextContent content = new TextContent("发动魔法卡——混沌仪式!");
-            Message message = messageFactory4User.newMessage(content);
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_translate_close) {
             TextContent content = new TextContent("关闭混沌世界");
-            Message message = messageFactory4User.newMessage(content);
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         } else if (id == R.id.nav_android_sdk_source) {
             TextContent content = new TextContent("请告诉我最新的 Android SDK Source 版本");
-            Message message = messageFactory4User.newMessage(content);
+            Message message = messageFactory.newMessage(content);
             presenter.addNewOut(message);
         }
         return true;
