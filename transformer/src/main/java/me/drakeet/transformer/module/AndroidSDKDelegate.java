@@ -6,7 +6,7 @@ import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
 import me.drakeet.transformer.MessageServiceDelegate;
 import me.drakeet.transformer.Reservoirs;
-import me.drakeet.transformer.TranslationService;
+import me.drakeet.transformer.TransformService;
 import me.drakeet.transformer.request.AndroidSDKRequests;
 
 /**
@@ -19,7 +19,7 @@ public class AndroidSDKDelegate extends MessageServiceDelegate {
     private Reservoir<String> reaction;
 
 
-    public AndroidSDKDelegate(@NonNull TranslationService service) {
+    public AndroidSDKDelegate(@NonNull TransformService service) {
         super(service);
     }
 

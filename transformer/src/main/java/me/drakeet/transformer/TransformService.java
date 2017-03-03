@@ -41,7 +41,7 @@ import static me.drakeet.transformer.request.TranslateRequests.youdaoResponseToR
 /**
  * @author drakeet
  */
-public class TranslationService extends BaseService {
+public class TransformService extends BaseService {
 
     static final String YIN = "YIN";
     static final String TRANSFORMER = "transformer";
@@ -52,7 +52,7 @@ public class TranslationService extends BaseService {
     private boolean translateMode;
     private boolean isConfirmMessage;
     /* the translation snowball */
-    private Translation token;
+    private Translation translationToken;
 
     ObservableHelper helper;
     private Updatable newInEvent;
@@ -65,7 +65,7 @@ public class TranslationService extends BaseService {
     private TomatoDelegate tomatoDelegate;
 
 
-    TranslationService(Context context) {
+    TransformService(Context context) {
         super(context);
         this.store = messagesStore(getContext().getApplicationContext());
         this.helper = new ObservableHelper();
@@ -136,17 +136,17 @@ public class TranslationService extends BaseService {
 
     /**
      * Transform the message's content to next sentence.
-     * before sending to {@link TranslationService#onNewOut(Message)}.
+     * before sending to {@link TransformService#onNewOut(Message)}.
      *
      * @param message a new message.
      * @return False if the service would not like to intercept the message.
-     * and prevent {@link TranslationService#onNewOut(Message)} from receiving it.
+     * and prevent {@link TransformService#onNewOut(Message)} from receiving it.
      */
     @Override public boolean onInterceptNewOut(@NonNull final Message message) {
         requireNonNull(message);
         if (isConfirmMessage) {
             isConfirmMessage = false;
-            loop(token);
+            loop(translationToken);
             return false;
         }
         return false;
@@ -163,7 +163,7 @@ public class TranslationService extends BaseService {
         }
         final String content = ((TextContent) message.content).text;
         if (translateMode && !content.equals(getString(R.string.close_translation_mode))) {
-            token.current = content;
+            translationToken.current = content;
             handleNextStep();
         } else {
             handleContent(content);
@@ -191,8 +191,8 @@ public class TranslationService extends BaseService {
                 break;
             case "关闭混沌仪式":
             case "关闭混沌世界":
-                if (token != null) {
-                    token.stop(getString(R.string.light_and_dark_gate_close));
+                if (translationToken != null) {
+                    translationToken.stop(getString(R.string.light_and_dark_gate_close));
                     handleNextStep();
                 } else {
                     insertNewIn(getString(R.string.tip_token_does_not_create));
@@ -209,7 +209,7 @@ public class TranslationService extends BaseService {
 
 
     private void handleNextStep() {
-        switch (token.getStep()) {
+        switch (translationToken.getStep()) {
             case OnStart:
                 onStartStep();
                 break;
@@ -217,7 +217,7 @@ public class TranslationService extends BaseService {
                 onWorkingStep();
                 break;
             case OnConfirm:
-                onConfirm(token);
+                onConfirm(translationToken);
                 break;
             case OnDone:
                 onDoneStep();
@@ -249,9 +249,9 @@ public class TranslationService extends BaseService {
      * then wait for user send the content to start.
      */
     private void createStep() {
-        this.token = Translations.create(getString(R.string.light_and_dark_gate_open));
-        insertNewIn(token.current);
-        loop(token);
+        this.translationToken = Translations.create(getString(R.string.light_and_dark_gate_open));
+        insertNewIn(translationToken.current);
+        loop(translationToken);
         this.translateMode = true;
     }
 
@@ -261,25 +261,25 @@ public class TranslationService extends BaseService {
      * TODO: 16/7/24 split just mock for test
      */
     private void onStartStep() {
-        token.sources = token.current.split("。");
-        token.current = getString(R.string.rule_translation_start);
-        insertNewIn(token.current);
-        loop(token);
+        translationToken.sources = translationToken.current.split("。");
+        translationToken.current = getString(R.string.rule_translation_start);
+        insertNewIn(translationToken.current);
+        loop(translationToken);
         handleNextStep();
     }
 
 
     /**
-     * Get the sentence, {@link TranslationService#insertNewIn(String)}
+     * Get the sentence, {@link TransformService#insertNewIn(String)}
      * and handle the confirm step if {@link Step#OnConfirm} after looped,
      * otherwise handle the done step.
      *
-     * @see TranslationService#loop(Translation)
+     * @see TransformService#loop(Translation)
      */
     private void onWorkingStep() {
-        loop(token);
-        if (token.getStep() == Step.OnConfirm) {
-            insertNewIn(token.current);
+        loop(translationToken);
+        if (translationToken.getStep() == Step.OnConfirm) {
+            insertNewIn(translationToken.current);
         }
         handleNextStep();
     }
@@ -300,13 +300,13 @@ public class TranslationService extends BaseService {
 
 
     private void onDoneStep() {
-        insertNewIn(token.current);
+        insertNewIn(translationToken.current);
         this.translateMode = false;
     }
 
 
     private void onStopStep() {
-        insertNewIn(token.current);
+        insertNewIn(translationToken.current);
         this.translateMode = false;
     }
 

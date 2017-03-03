@@ -9,15 +9,15 @@ import static me.drakeet.timemachine.Objects.requireNonNull;
  */
 public abstract class MessageServiceDelegate {
 
-    @NonNull private final TranslationService service;
+    @NonNull private final TransformService service;
 
 
-    public MessageServiceDelegate(@NonNull TranslationService service) {
+    public MessageServiceDelegate(@NonNull TransformService service) {
         this.service = requireNonNull(service);
     }
 
 
-    @NonNull protected TranslationService getService() {
+    @NonNull protected TransformService getService() {
         return service;
     }
 

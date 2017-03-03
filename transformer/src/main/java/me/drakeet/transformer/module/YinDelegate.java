@@ -6,7 +6,7 @@ import com.google.android.agera.Reservoir;
 import com.google.android.agera.Result;
 import me.drakeet.transformer.MessageServiceDelegate;
 import me.drakeet.transformer.Reservoirs;
-import me.drakeet.transformer.TranslationService;
+import me.drakeet.transformer.TransformService;
 import me.drakeet.transformer.request.YinRequests;
 
 /**
@@ -17,7 +17,7 @@ public class YinDelegate extends MessageServiceDelegate {
     private Reservoir<String> yinReaction;
 
 
-    public YinDelegate(@NonNull TranslationService service) {
+    public YinDelegate(@NonNull TransformService service) {
         super(service);
     }
 

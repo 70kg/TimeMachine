@@ -5,7 +5,7 @@ import com.google.android.agera.Repository;
 import com.google.android.agera.Reservoir;
 import me.drakeet.transformer.MessageServiceDelegate;
 import me.drakeet.transformer.Reservoirs;
-import me.drakeet.transformer.TranslationService;
+import me.drakeet.transformer.TransformService;
 
 import static com.google.android.agera.Repositories.repositoryWithInitialValue;
 import static com.google.android.agera.RepositoryConfig.SEND_INTERRUPT;
@@ -19,7 +19,7 @@ public class EchoDelegate extends MessageServiceDelegate {
     private Reservoir<String> echoReaction;
 
 
-    public EchoDelegate(@NonNull TranslationService service) {
+    public EchoDelegate(@NonNull TransformService service) {
         super(service);
     }
 

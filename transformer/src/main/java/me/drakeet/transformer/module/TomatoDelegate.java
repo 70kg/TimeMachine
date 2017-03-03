@@ -18,7 +18,7 @@ import me.drakeet.transformer.MessageServiceDelegate;
 import me.drakeet.transformer.NewInEvent;
 import me.drakeet.transformer.Notifications;
 import me.drakeet.transformer.R;
-import me.drakeet.transformer.TranslationService;
+import me.drakeet.transformer.TransformService;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
 import static me.drakeet.timemachine.store.MessageStore.messagesStore;
@@ -36,7 +36,7 @@ public class TomatoDelegate extends MessageServiceDelegate {
     private final Context context;
 
 
-    public TomatoDelegate(@NonNull TranslationService service) {
+    public TomatoDelegate(@NonNull TransformService service) {
         super(service);
         this.context = service.getContext();
     }

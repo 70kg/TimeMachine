@@ -22,7 +22,7 @@ public class MainActivity extends DrawerActivity {
 
 
     @Override public String provideServiceId() {
-        return TranslationService.TRANSFORMER;
+        return TransformService.TRANSFORMER;
     }
 
 
