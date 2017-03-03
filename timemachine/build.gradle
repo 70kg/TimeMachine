@@ -27,5 +27,5 @@ dependencies {
     compile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
     compile "com.android.support:recyclerview-v7:$gradle.supportLibraryVersion"
     compile 'com.google.code.gson:gson:2.7'
-    compile 'me.drakeet.multitype:multitype:2.4.1'
+    compile 'me.drakeet.multitype:multitype:2.4.2'
 }
