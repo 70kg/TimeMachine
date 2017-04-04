@@ -32,9 +32,6 @@ android {
         targetSdkVersion 25
         versionCode appVersionCode
         versionName appVersionName
-        jackOptions {
-            enabled true
-        }
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
