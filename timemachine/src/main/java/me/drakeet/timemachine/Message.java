@@ -2,12 +2,11 @@ package me.drakeet.timemachine;
 
 import android.support.annotation.NonNull;
 import com.google.gson.Gson;
-import me.drakeet.multitype.Item;
 
 /**
  * @author drakeet
  */
-public class Message implements Item {
+public class Message {
 
     public String id;
     public String fromUserId;

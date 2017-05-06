@@ -9,15 +9,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import me.drakeet.timemachine.ContentViewHolder;
 import me.drakeet.timemachine.Message;
-import me.drakeet.timemachine.MessageViewProvider;
+import me.drakeet.timemachine.MessageViewBinder;
 import me.drakeet.timemachine.R;
 import me.drakeet.timemachine.TimeKey;
 
 /**
  * @author drakeet
  */
-public class TextMessageViewProvider
-    extends MessageViewProvider<TextContent, TextMessageViewProvider.ViewHolder> {
+public class TextMessageViewBinder
+    extends MessageViewBinder<TextContent, TextMessageViewBinder.ViewHolder> {
 
     @Override
     protected ContentViewHolder onCreateContentViewHolder(

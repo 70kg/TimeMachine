@@ -16,12 +16,14 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import java.util.List;
+import me.drakeet.multitype.ClassLinker;
+import me.drakeet.multitype.ItemViewBinder;
 import me.drakeet.multitype.MultiTypeAsserts;
 import me.drakeet.timemachine.message.TextContent;
-import me.drakeet.timemachine.message.TextMessageViewProvider;
+import me.drakeet.timemachine.message.TextMessageViewBinder;
 import me.drakeet.timemachine.scroller.SnapperSmoothScroller;
 
-import static java.util.Objects.requireNonNull;
+import static me.drakeet.timemachine.Objects.requireNonNull;
 
 /**
  * @author drakeet
@@ -113,7 +115,17 @@ public class CoreFragment extends Fragment implements CoreContract.View, View.On
 
 
     private void registerMultiType(@NonNull final MessageAdapter adapter) {
-        adapter.register(TextContent.class, new TextMessageViewProvider());
+        adapter.register(Message.class)
+            .to(new TextMessageViewBinder())
+            .withClassLinker(new ClassLinker<Message>() {
+                @NonNull @Override @SuppressWarnings("unchecked")
+                public Class<? extends ItemViewBinder<Message, ?>> index(@NonNull Message message) {
+                    if (message.content.getClass() == TextContent.class) {
+                        return TextMessageViewBinder.class;
+                    }
+                    return TextMessageViewBinder.class;
+                }
+            });
     }
 
 

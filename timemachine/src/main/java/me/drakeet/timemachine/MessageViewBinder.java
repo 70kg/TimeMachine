@@ -7,14 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import me.drakeet.multitype.ItemViewProvider;
+import me.drakeet.multitype.ItemViewBinder;
 
 /**
  * @author drakeet
  */
-public abstract class MessageViewProvider
+public abstract class MessageViewBinder
     <C extends Content, SubViewHolder extends ContentViewHolder>
-    extends ItemViewProvider<Message, MessageViewProvider.FrameHolder> {
+    extends ItemViewBinder<Message, MessageViewBinder.FrameHolder> {
 
     protected abstract ContentViewHolder onCreateContentViewHolder(
         @NonNull LayoutInflater inflater, @NonNull ViewGroup parent);
