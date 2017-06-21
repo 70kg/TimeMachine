@@ -23,9 +23,9 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided project(':timemachine')
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly project(':timemachine')
 
-    compile "com.google.android.agera:agera:$gradle.ageraVersion"
-    compile "com.google.android.agera:database:$gradle.ageraVersion"
+    implementation "com.google.android.agera:agera:$gradle.ageraVersion"
+    implementation "com.google.android.agera:database:$gradle.ageraVersion"
 }

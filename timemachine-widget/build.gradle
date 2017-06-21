@@ -23,12 +23,15 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided project(':timemachine')
-    provided project(':timemachine-store')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly project(':timemachine')
+    compileOnly project(':timemachine-store')
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support'
     })
-    compile "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
-    compile "com.android.support:design:$gradle.supportLibraryVersion"
+    implementation "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
+    implementation "com.android.support:design:$gradle.supportLibraryVersion"
+
+    // todo: should be removed
+    implementation "com.google.android.agera:agera:$gradle.ageraVersion"
 }

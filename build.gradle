@@ -2,17 +2,19 @@
 
 buildscript {
     repositories {
+        google()
         mavenCentral()
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.4.0-alpha7'
+        classpath 'com.android.tools.build:gradle:3.0.0-alpha4'
         classpath 'org.moallemi.gradle.advanced-build-version:gradle-plugin:1.5.3'
     }
 }
 
 allprojects {
     repositories {
+        google()
         mavenCentral()
         jcenter()
     }
