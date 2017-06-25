@@ -5,4 +5,4 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:showIn="@layout/app_bar_main"
-    tools:context="me.drakeet.transformer.me.drakeet.timemachine.widget.DrawerActivity"/>
+    tools:context="me.drakeet.timemachine.widget.DrawerActivity"/>

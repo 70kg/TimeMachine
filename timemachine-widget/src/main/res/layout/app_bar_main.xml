@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context="me.drakeet.transformer.me.drakeet.timemachine.widget.DrawerActivity">
+    tools:context="me.drakeet.timemachine.widget.DrawerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
