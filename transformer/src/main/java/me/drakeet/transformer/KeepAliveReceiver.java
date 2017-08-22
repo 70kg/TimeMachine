@@ -13,5 +13,4 @@ public class KeepAliveReceiver extends BroadcastReceiver {
         Intent restart = new Intent(context, Inhibitor.class);
         context.startService(restart);
     }
-
 }

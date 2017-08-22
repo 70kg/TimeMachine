@@ -27,5 +27,5 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
     implementation "com.android.support:recyclerview-v7:$gradle.supportLibraryVersion"
     implementation 'com.google.code.gson:gson:2.8.1'
-    implementation 'me.drakeet.multitype:multitype:3.1.0-beta1'
+    implementation 'me.drakeet.multitype:multitype:3.3.0'
 }

@@ -23,7 +23,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="me.drakeet.transformer.MainActivity"
+            android:name=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
             android:launchMode="singleTask"

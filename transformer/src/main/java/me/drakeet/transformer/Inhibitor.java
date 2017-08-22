@@ -30,6 +30,7 @@ import me.drakeet.timemachine.MessageFactory;
 import me.drakeet.timemachine.Objects;
 import me.drakeet.timemachine.TimeKey;
 import me.drakeet.timemachine.message.TextContent;
+import me.drakeet.transformer.request.AndroidSDKRequests;
 import me.drakeet.transformer.request.YinRequests;
 
 import static me.drakeet.timemachine.Objects.requireNonNull;
@@ -43,7 +44,8 @@ public class Inhibitor extends IntentService implements Updatable {
 
     private final static String TAG = Inhibitor.class.getSimpleName();
 
-    private Repository<Result<String>> repository;
+    private Repository<Result<String>> yinRepository;
+    private Repository<Result<String>> androidSDKRepository;
 
 
     public Inhibitor() {
@@ -52,33 +54,37 @@ public class Inhibitor extends IntentService implements Updatable {
 
 
     @Override protected void onHandleIntent(Intent intent) {
-        repository = YinRequests.sync();
-        repository.addUpdatable(this);
+        yinRepository = YinRequests.sync();
+        yinRepository.addUpdatable(this);
+
+        androidSDKRepository = AndroidSDKRequests.sync();
+        androidSDKRepository.addUpdatable(this);
     }
 
 
     @Override public void update() {
-        if (repository.get().succeeded()) {
+        if (yinRepository.get().succeeded()) {
             MessageFactory factory = new MessageFactory.Builder()
                 .setFromUserId(YIN)
                 .setToUserId(TimeKey.userId)
                 .build();
-            final String content = repository.get().get();
+            final String content = yinRepository.get().get();
             /* keep unique */
             final String id = String.valueOf(content.hashCode());
             final Message in = factory.newMessage(new TextContent(content), id);
-            // TODO: 16/8/21 if succeeded sent to
-            messagesStore(getApplicationContext()).insert(in, succeeded -> {
-                Log.d("insert", "result: " + succeeded);
-                if (succeeded) {
-                    if (AgeraBus.repository().hasObservers()) {
-                        AgeraBus.repository().accept(new NewInEvent(in));
-                    } else {
-                        Log.d(YIN, "DeadEvent");
-                        notify(in);
-                    }
-                }
-            });
+            insertMessage(in);
+        }
+
+        if (androidSDKRepository.get().succeeded()) {
+            MessageFactory factory = new MessageFactory.Builder()
+                .setFromUserId(TAG)
+                .setToUserId(TimeKey.userId)
+                .build();
+            final String content = androidSDKRepository.get().get();
+            /* keep unique */
+            final String id = String.valueOf(content.hashCode());
+            final Message in = factory.newMessage(new TextContent(content), id);
+            insertMessage(in);
         }
     }
 
@@ -94,6 +100,22 @@ public class Inhibitor extends IntentService implements Updatable {
         }
         Notifications.simple(this, title, content,
             R.drawable.ic_notification, MainActivity.class);
+    }
+
+
+    // TODO: 16/8/21 if succeeded sent to
+    private void insertMessage(Message in) {
+        messagesStore(getApplicationContext()).insert(in, succeeded -> {
+            Log.d("insert", "result: " + succeeded);
+            if (succeeded) {
+                if (AgeraBus.repository().hasObservers()) {
+                    AgeraBus.repository().accept(new NewInEvent(in));
+                } else {
+                    Log.d(TAG, "DeadEvent");
+                    notify(in);
+                }
+            }
+        });
     }
 }
 
