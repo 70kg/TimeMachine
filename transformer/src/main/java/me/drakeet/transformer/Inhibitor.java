@@ -84,7 +84,7 @@ public class Inhibitor extends IntentService implements Updatable {
             /* keep unique */
             final String id = String.valueOf(content.hashCode());
             final Message in = factory.newMessage(new TextContent(content), id);
-            insertMessage(in);
+            insertMessage(in, true);
         }
     }
 
@@ -103,8 +103,16 @@ public class Inhibitor extends IntentService implements Updatable {
     }
 
 
+    private void insertMessage(@NonNull Message in) {
+        insertMessage(in, false);
+    }
+
+
     // TODO: 16/8/21 if succeeded sent to
-    private void insertMessage(Message in) {
+    private void insertMessage(@NonNull Message in, boolean forcedNotice) {
+        if (forcedNotice) {
+            notify(in);
+        }
         messagesStore(getApplicationContext()).insert(in, succeeded -> {
             Log.d("insert", "result: " + succeeded);
             if (succeeded) {
@@ -112,7 +120,9 @@ public class Inhibitor extends IntentService implements Updatable {
                     AgeraBus.repository().accept(new NewInEvent(in));
                 } else {
                     Log.d(TAG, "DeadEvent");
-                    notify(in);
+                    if (!forcedNotice) {
+                        notify(in);
+                    }
                 }
             }
         });
