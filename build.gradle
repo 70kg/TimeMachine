@@ -7,8 +7,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.0-beta2'
-        classpath 'org.moallemi.gradle.advanced-build-version:gradle-plugin:1.5.3'
+        classpath 'com.android.tools.build:gradle:3.0.0-beta7'
+        classpath 'org.moallemi.gradle.advanced-build-version:gradle-plugin:1.6.0'
     }
 }
 

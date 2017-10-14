@@ -2,14 +2,14 @@ apply plugin: 'com.android.library'
 apply plugin: 'jacoco'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion gradle.buildToolsVersion
     resourcePrefix "time_machine"
     defaultPublishConfig "debug"
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
     }

@@ -1,8 +1,9 @@
+import org.moallemi.gradle.internal.VersionCodeType
+
 apply plugin: 'com.android.application'
-// apply plugin: 'org.moallemi.advanced-build-version'
+apply plugin: 'org.moallemi.advanced-build-version'
 apply plugin: 'jacoco'
 
-/*
 advancedVersioning {
     nameOptions {
         versionPatch versionCode
@@ -16,22 +17,21 @@ advancedVersioning {
         nameFormat 'Transformer-${buildType}-${versionName}'
     }
 }
-*/
 
-// def appVersionName = advancedVersioning.versionName
-// def appVersionCode = advancedVersioning.versionCode
+def appVersionName = advancedVersioning.versionName
+def appVersionCode = advancedVersioning.versionCode
 def keyStore = file('transformer.keystore')
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion gradle.buildToolsVersion
 
     defaultConfig {
         applicationId "me.drakeet.transformer"
         minSdkVersion 14
-        targetSdkVersion 25
-        versionCode 527
-        versionName 'x.xx'
+        targetSdkVersion 26
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -100,10 +100,10 @@ dependencies {
     implementation "com.google.android.agera:net:$gradle.ageraVersion"
     implementation "com.google.android.agera:content:$gradle.ageraVersion"
     implementation 'me.drakeet.agera:bus:1.0.0'
-    implementation 'com.google.code.gson:gson:2.8.1'
+    implementation 'com.google.code.gson:gson:2.8.2'
 
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$gradle.leakCanaryVersion"
-    debugImplementation ("me.drakeet.library:crashwoodpecker:$gradle.crashwoodpeckerVersion", {
+    debugImplementation("me.drakeet.library:crashwoodpecker:$gradle.crashwoodpeckerVersion", {
         exclude group: 'com.android.support'
     })
 
@@ -113,10 +113,10 @@ dependencies {
     androidTestImplementation "com.android.support:appcompat-v7:$gradle.supportLibraryVersion"
     androidTestImplementation "com.android.support:design:$gradle.supportLibraryVersion"
 
-    implementation 'com.android.support.test.espresso:espresso-idling-resource:2.2.2'
+    implementation 'com.android.support.test.espresso:espresso-idling-resource:3.0.1'
 
-    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:2.2.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestImplementation 'com.android.support.test:runner:0.5'
-    androidTestImplementation 'com.android.support.test:rules:0.5'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-contrib:3.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test:rules:1.0.1'
 }
